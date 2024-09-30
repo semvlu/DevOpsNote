@@ -1,0 +1,100 @@
+version: "3.8"
+
+services: # define serv, a serv can init multi containers
+
+  frontend: # frontend is a container
+    image: node:14
+    container_name: frontend
+    volumes:
+      - ./frontend:/app
+      # ./frontend src dir
+      # :/app dest dir where ./frontend will be mounted
+      # mount the ./backend directory from the host machine to the /app directory inside the container.
+    working_dir: /app
+    command: npm start
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - front 
+
+  backend:
+    image: python:3.11
+    container_name: backend
+    volumes:  # mount host dir to container dir
+      - ./backend:/app
+    working_dir: /app
+    command: bash -c "pip install -r requirements.txt && python app.py"
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    networks:
+      - front
+      - back 
+
+  db:
+    image: mariadb:10.5
+    container_name: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: mydatabase
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3307" outsider reach via 3306, insider via 3307
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    networks:
+      - back
+
+  redis:
+    image: redis:alpine
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 150M
+        reservations: # init allocation
+          cpus: '0.25' # 1/4 of CPU
+          memory: 20M
+
+# private registry saved in local host or server, not in docker hub
+  registry:
+    image: registry:2
+    container_name: registry
+    ports:
+      - "5000:5000"
+    environment:
+      REGISTRY_HTTP_TLS_CERTIFICATE: /certs/domain.crt
+      REGISTRY_HTTP_TLS_KEY: /certs/domain.key
+    volumes:
+      - ./certs:/certs
+      - registry-data:/var/lib/registry
+
+# define 2 volumes     
+volumes:
+  mariadb_data:
+  registry-data:
+
+networks:
+  front:
+  back:
+# 2 networks:
+# front member: frontend & backend
+# back member: back & db
+# frontend cannot comm w/ db 
+
+
+
+# docker compose up -d
+# docker compose -p test2 up -d: run an instance as a proj
+
+# Bind mounts: stored on the host and can be shared among multi containers. 
+# maintaining data consistency and lossless when containers are stopped/removed.
+# used more often than volumes
+
+# Volumes: similar to bind mounts, e.g.:
+# volumes:
+#  - <vol_name>:/<container_dir>
