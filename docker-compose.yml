@@ -1,6 +1,6 @@
 version: "3.8"
 
-services: # define serv, a serv can init multi containers
+services: # define serv, init multi containers
 
   frontend: # frontend is a container
     image: node:14
@@ -60,7 +60,7 @@ services: # define serv, a serv can init multi containers
           cpus: '0.25' # 1/4 of CPU
           memory: 20M
 
-# private registry saved in local host or server, not in docker hub
+# private registry saved in local host / server, not in docker hub
   registry:
     image: registry:2
     container_name: registry
