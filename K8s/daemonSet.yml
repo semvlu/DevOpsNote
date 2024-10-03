@@ -1,0 +1,31 @@
+# daemonSet: make sure each node in a cluster runs some pods
+# Except master node
+
+apiVersion: v1
+kind: DaemonSet
+
+metadata:
+  name: daemonSetExample
+  labels:
+    app: daemonSetExample
+
+spec:
+  selector:
+    matchLabels:
+      app: daemonSetExample
+
+  template:
+    metadata:
+      labels: 
+        app: daemonSetExample
+
+    spec:
+      tolerations: # do not run pods on master node
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+      containers: 
+      - name: busybox
+        image: busybox:latest
+        args:
+        - sleep
+        - "3600"

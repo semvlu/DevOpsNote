@@ -1,0 +1,81 @@
+# Persistent Volume Claim
+# 1-to-1 mapping to PV
+
+apiVersion: v1
+kind: PersistentVolume # pv: no one can claim remain 4Gi before release
+metadata:
+  name: pv1
+  labels:
+    type: local
+spec:
+  stroageClassName: ssd
+  capacity:
+    storage: 5Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+    # ReadWriteMany, ReadOnlyMany
+    # accessModes in pv & pvc must be the same
+  persistentVolumeReclaimPolicy: Retain
+
+  # hostPath allows local storage on the node
+  # works only on single-node cluster
+  hostPath:
+     path: "/data/"
+
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-static
+
+spec:
+  accessModes:
+  - ReadWriteOnce
+  # accessModes in pv & pvc must be the same
+  resources:
+    requests:
+      storage: 1Gi 
+selector:
+  matchLabels:
+    type: local
+
+---
+
+# StorageClass: other claims can claim resource to a vol even already claimed
+
+apiVersion: v1
+kind: StorageClass
+metadata:
+  name: disk1
+provisioner: kubernetes.io/azure-file # vol plugin
+# for AWS EBS: ebs.csi.aws.com
+parameters:
+  storageaccounttype: Standard_LRS
+  kind: Managed
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-dynamic
+spec:
+  storageClassName: <storageClass.name> # e.g. disk1
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+
+spec:
+  accessModes:
+  - ReadWriteOnce
+  # accessModes in pv & pvc must be the same
+  resources:
+    requests:
+      storage: 1Gi 
+selector:
+  matchLabels:
+    type: local

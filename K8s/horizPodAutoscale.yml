@@ -1,0 +1,17 @@
+# Horizontal Pod Autoscaling is for dynamic scaling
+
+apiVersion: v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: hpa-example
+spec:
+  scaleTargetRef: # ref to deployment
+    apiVersion: apps/v1
+    kind: Deployment
+    name: myDeployment
+  minReplicas: 2
+  maxReplicas: 8
+  targetCPUUtilizationPercentage: 60
+  # When CPU util reaches 60% of 100m CPU (vide deploy.yml
+  # spec.template.spec.containers.resources.requests.cpu)
+  # Generate a new pod

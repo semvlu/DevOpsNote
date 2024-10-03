@@ -1,0 +1,29 @@
+# service: for inter-pod comm.
+# has a static IP adr
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-service
+spec:
+  type: NodePort / LoadBalancer # opt load balancer if use 3rd party cloud
+  # default: ClusterIP: internal, internet cannot acc
+  # NodePort: internal & external. 
+  #   outsider access method: nodeIP:nodePort, e.g. 127.0.0.1:32000
+  ports:
+  - port: 5000
+    targetPort: 5000
+    # map spec.ports.port to spec.ports.targetPort
+    protocol: TCP
+    # nodePort host#: 30000-32767
+    nodePort: 32000
+
+  selector:
+    app: deployLbl1 # e.g. webserver, appv1, appv2
+
+# write/apply deployment/replicaSet yml
+# kubectl create/apply -f ./deploy.yml
+
+# write/apply service yml
+# kubectl create/apply -f ./service.yml
+
+# No Need to write pod yml, already in deployment in casu

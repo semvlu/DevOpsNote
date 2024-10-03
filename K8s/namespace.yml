@@ -1,0 +1,6 @@
+# namespace define resources in a group
+# delete a namespace will delete all its child objs
+apiVersion: v1
+kind: namespace
+metadata:
+  name: test

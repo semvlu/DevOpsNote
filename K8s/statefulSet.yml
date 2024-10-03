@@ -1,0 +1,43 @@
+# statefulSet: pods must persist state
+# each pod has a persistent id
+# if one dies, replace w/ a new one w/ the same id
+# E.g. scale a database, main node is allowed R/W,
+# while others only allow R
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+  labels:
+    app: mysql
+
+spec:
+  ports:
+  - name: mysql
+    port: 3306
+  clusterIP: None # headless service
+  selector:
+    app: mysql
+
+---
+#...
+kind: StatefulState
+
+metadata:
+#...
+
+spec:
+  #...
+  volumeClaimTemplates:
+  - metadata:
+      name: www
+    spec:
+      storageClassName: hostpath
+      accessModes:
+        - ReadWriteOnce
+        # R/W by a single pod
+        # R by others
+        
+      resources:
+        requests:
+          storage: 10Mi

@@ -1,0 +1,8 @@
+# ConfigMap method 1: read config from env var
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cm1
+data:
+  province: Noord Brabant
+  city: Eindhoven

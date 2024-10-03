@@ -1,0 +1,76 @@
+apiVersion: v1
+
+kind: Pod
+metadata:
+  name: my-pod
+  namespace: test
+  labels: # k8s will group those with same labels
+   app: dataConv_microservice
+spec:
+  containers:
+    - name: pod_dataConv
+      image: dockerUsr/repos
+      ports:
+        - containerPort: 5000
+        
+      envFrom:
+      - secretRef:
+          name: secret1 # from secret.yml metadata.name
+
+    # configMap method 2: expect config files
+    - name: nginx
+      image: nginx:latest
+      ports:
+      - containerPort: 80
+      volumeMounts:
+      - name: nginxConfVol
+        mountPath: /etc/nginx/config
+
+      # persistent volume (claim)
+      - name: storage
+        mountPath: /persistVolStorage/
+
+      env: # configMap method 1, along w/ configMap.yml
+      - name: CITY
+        valueFrom:
+          configMapKeyRef:
+            name: cm1
+            key: city
+
+      #envFrom:
+      #- configMapRef:
+      #  name: cm1
+
+  volumes:
+  # configMap method 2
+  - name: nginxConfVol
+    configMap:
+      name: nginxConf
+      items:
+      - key: nginx.conf
+        path: nginx.conf
+
+  - name: storageVol
+    # vide pvc.yml PersistentVolumeClaim.name
+    persistentVolumeClaim:
+      claimName: <pvcName>
+
+
+
+  initContainers: # will run the 1st, then 2nd
+  - name: _1st-init
+    image: busybox:1.28
+    command: ['sh', '-c', "until nslookup "] # like ENTRYPOINT in docker
+  
+  - name: _2nd-init
+    image: busybox:1.28
+    command: ['sh', '-c', "until nslookup "] 
+
+  # run the pod on the node that fits the condition
+  nodeSelector:
+
+
+# Copy pod def, from metadata to spec, under to ReplicaSet / Deployment.spec.template
+
+Deployment (rolling updates & rollbacks) > ReplicaSet (self-heal & scalablity ) > Pod > Container
+Node > Pod

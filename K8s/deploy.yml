@@ -1,0 +1,41 @@
+# use deployment to create replicaSet
+apiVersion: v1
+
+kind: Deployment
+
+metadata:
+  name: myDeployment
+
+spec:
+  replicas: 3 # #pods
+  selector:
+    matchLabels:
+      app: deployLbl1
+  strategy:
+    type: RollingUpdate / Recreate
+    # RollUpdate: run thru a cycle of updating pods. 
+    # pod-0 del and replaced, and then pod-1, and so on 
+    # Recreate: all exist pods killed before new ones created
+    rollingUpdate:
+      maxSurge: 1 # allow additional #pod 
+      maxUnavailable: 0 # max #pods can be unavail. during update
+      
+  template: # define pod info, incl. labels and containers to run
+    metadata:
+      labels:
+        app: deployLbl1
+    spec:
+      containers:
+      - name: my-pod
+        image: dockerUsr/repos
+        ports:
+        - containerPort: 5000
+
+        envFrom:
+        - secretRef:
+            name: secret1 # from secret.yml metadata.name
+
+        # vide Horizontal Pod Autoscaler (horizPodAutoscale.yml)
+        resources:
+          requests:
+            cpu: 100m # milliCPU, 0.1 CPU
