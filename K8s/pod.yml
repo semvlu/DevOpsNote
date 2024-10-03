@@ -1,5 +1,5 @@
+# Pod: able to share storage and network btwn containers within. 
 apiVersion: v1
-
 kind: Pod
 metadata:
   name: my-pod
@@ -72,5 +72,5 @@ spec:
 
 # Copy pod def, from metadata to spec, under to ReplicaSet / Deployment.spec.template
 
-Deployment (rolling updates & rollbacks) > ReplicaSet (self-heal & scalablity ) > Pod > Container
-Node > Pod
+# Deployment (rolling updates & rollbacks) > ReplicaSet (self-heal & scalablity ) > Pod > Container
+# Node > Pod
