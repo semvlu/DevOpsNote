@@ -1,0 +1,66 @@
+# Agentless: no need to install on every machine, just the control one
+
+# Play: which hosts, user, and tasks to exec
+  # Tasks: module seq
+    # Module: spec task
+      # arg
+- name: play for webserver # play name
+- hosts: webserver # where to exec
+  remote_user: root # who exec
+
+  vars:
+    servername: nginx
+
+
+  tasks: # A Config
+    - name: create dir for {{ servername }} # task describe
+      file: # module
+        path: /path/{{ servername }}/dir # arg
+        state: directory
+
+    - name: install latest ver
+      yum:
+        name: {{ servername }}
+        state: latest
+
+    - name: start {{ servername }}
+      service:
+        name: {{ servername }}
+        state: started
+
+
+
+# Ansible can do what dockerfile do, 
+# Not only on docker container
+# but also vagrant, cloud instance, and other env, etc.
+
+- name: play for docker
+# get from inventory list
+- hosts: webserver 
+  remote_user: root
+
+  tasks:
+    - name: create container
+      docker_container:
+        name: container1
+        image: busybox
+        volumes:
+         - /data
+    
+    - name: start w/ cmd
+      docker_container:
+        name: sleepy
+        image: ubuntu:14.04
+        command: ["sleep", "infinity"]
+
+    - name: apply config add container to networks
+      docker_container:
+      name: sleepy
+      networks:
+        - name: net1
+          ipv4_address: 127.0.0.1
+          links:
+            - sleeper
+        - name: net1
+          ipv4_address: 127.0.1.1
+
