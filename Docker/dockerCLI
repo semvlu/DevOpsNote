@@ -3,7 +3,7 @@ docker run -d -p 8080:80 --name webserver nginx
 # docker container run [OPTIONS] IMAGE [COMMAND] [ARG...]
 
 docker container exec -it webserver bash
-# attach prog (bash) to the container (webserver)
+# attach prog (e.g. bash) to the container (e.g. webserver)
 docker stop webserver 
 docker rm webserver # remove container from mem
 docker rmi nginx # remove img
@@ -26,7 +26,7 @@ docker-compose up -d
 
 
 # alias, optional
-# bind to local host
+# bind to localhost
 alias composer="docker run -it --rm -v $(pwd):/<dirInContainer>"
 :'
  $(pwd): current working dir
@@ -37,7 +37,6 @@ alias composer="docker run -it --rm -v $(pwd):/<dirInContainer>"
 # Volume
 docker volume create myvol
 docker run -d --name cont4VolTest -v myvol:./app # containerName = cont4VolTest
-
 
 
 # On docker client, copy CA cert
