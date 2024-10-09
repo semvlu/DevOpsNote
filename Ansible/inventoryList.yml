@@ -13,3 +13,11 @@ databases:
   hosts:
     10.0.1.2
     10.0.1.3
+
+atlanta:
+  hosts:
+    host1:
+    host2:
+  vars:
+    ntp_server: ntp.atlanta.example.com
+    proxy: proxy.atlanta.example.com
