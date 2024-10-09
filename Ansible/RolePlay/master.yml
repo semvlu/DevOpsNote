@@ -1,0 +1,50 @@
+- name: config webservers
+  hosts: webservers
+  roles: 
+    - users
+  
+  vars:
+    list1: [33,44,55]
+    # Dict / Map
+    map1: # map1.cat / map1['cat']
+      person: 
+        birth: 1999
+        sex: male 
+      cat: Tom
+      dog: Dodge
+
+    
+    listOfMap:
+      - a: 1
+      - b: 2
+      - c: 3 # listOfMap[1].b: 2
+
+    mapOfList:
+      a: [1,2,3,4]
+      b: [5,6,7,8]
+      c: [9,10,11,12] # map2.c[2]: 11
+  
+  tasks:
+    - name: Install Nginx
+      package:
+        name: nginx
+        state: present
+      tags:
+        - nginxSetup
+
+    - debug:
+        msg: "{{ mapOfList.c[2] }}"
+      when: map1.cat == "Tom" and listOfMap.a != 0
+      tags:
+        - Condition
+
+      # cond list 
+      when:
+        - cond1
+        - cond2
+
+    - debug:
+        msg: "Looping {{ item }}" # Dict: {{ item.key }} == {{ item.value }}
+      loop: "{{ list1 }}" # Dict: ""{{ map1|dict2items}}
+      tags:
+        - Looping

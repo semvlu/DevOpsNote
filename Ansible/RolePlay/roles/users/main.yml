@@ -1,0 +1,10 @@
+users:
+  - username: Alice
+    state: present
+
+  - username: Bob
+    state: absent
+
+  - username: Eve
+    state: present
+    
