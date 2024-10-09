@@ -1,50 +1,94 @@
-- name: config webservers
-  hosts: webservers
-  roles: 
+# Agentless: no need to install on every machine, just the control one
+
+# Play: which hosts, user, and tasks to exec
+  # Tasks: module seq
+    # Module: spec task
+      # arg
+
+- name: config webservers # play name
+  hosts: webservers # where to exec
+  remote_user: root # who exec
+
+  roles: # auto load ansible artifacts
     - users
   
   vars:
     list1: [33,44,55]
     # Dict / Map
     map1: # map1.cat / map1['cat']
-      person: 
+      person: # nested map
         birth: 1999
         sex: male 
       cat: Tom
       dog: Dodge
 
     
-    listOfMap:
+    listOfMap: # listOfMap[1].b: 2
       - a: 1
       - b: 2
-      - c: 3 # listOfMap[1].b: 2
+      - c: 3
 
-    mapOfList:
+    mapOfList: # mapOfList.c[2]: 11
       a: [1,2,3,4]
       b: [5,6,7,8]
-      c: [9,10,11,12] # map2.c[2]: 11
-  
-  tasks:
+      c: [9,10,11,12] 
+
+        
+  tasks: # A Config
     - name: Install Nginx
       package:
         name: nginx
         state: present
-      tags:
+      tags: # tags: command will exec/skip spec tasks w/ tags
         - nginxSetup
 
     - debug:
         msg: "{{ mapOfList.c[2] }}"
-      when: map1.cat == "Tom" and listOfMap.a != 0
-      tags:
-        - Condition
-
-      # cond list 
+      when: map1.cat == "Tom" and listOfMap.a != 0 # cond stmt
+      # cond list: cond1 and cond2 
       when:
         - cond1
         - cond2
+      tags:
+        - Condition
 
     - debug:
-        msg: "Looping {{ item }}" # Dict: {{ item.key }} == {{ item.value }}
-      loop: "{{ list1 }}" # Dict: ""{{ map1|dict2items}}
+        msg: "Looping {{ item }}" # For Dict: {{ item.key }} == {{ item.value }}
+      loop: "{{ list1 }}" # For Dict: ""{{ map1|dict2items}}
       tags:
         - Looping
+
+
+# Ansible can do what dockerfile do, 
+# Not only on docker container
+# but also vagrant, cloud instance, and other env, etc.
+
+- name: play for docker
+# get from inventory list
+- hosts: webserver 
+  remote_user: root
+
+  tasks:
+    - name: create container
+      docker_container:
+        name: container1
+        image: busybox
+        volumes:
+         - /data
+    
+    - name: start w/ cmd
+      docker_container:
+        name: sleepy
+        image: ubuntu:18.04
+        command: ["sleep", "infinity"]
+
+    - name: apply config add container to networks
+      docker_container:
+      name: sleepy
+      networks:
+        - name: net1
+          ipv4_address: 127.0.0.1
+          links:
+            - sleeper
+        - name: net1
+          ipv4_address: 127.0.1.1
