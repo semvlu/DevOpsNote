@@ -9,7 +9,10 @@
   hosts: webservers # where to exec
   remote_user: root # who exec
 
-  roles: # auto load ansible artifacts
+  # Roles: auto load ansible artifacts
+  # When using Roles, tasks, vars, etc. are in dir: roles/<tasks> 
+  # Only: name, hosts, remote_user, roles in the playbook
+  roles: 
     - users
   
   vars:
