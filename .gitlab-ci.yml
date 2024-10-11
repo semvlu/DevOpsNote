@@ -1,0 +1,58 @@
+stages:
+  - test
+  - build
+  - deploy
+
+variables:
+    IMAGE_NAME: dockerUser/repos
+    IMAGE_TAG: latest
+
+run_tests: # stg 1
+  stage: test
+  image: python:3.9-slim-buster # search from docker hub
+
+  before_script: # cmds that should run before script
+    - apt-get update && apt-get install make
+  script:
+    - make test
+  after_script: # def cmds that run after each job, incl. failed
+
+build_image: # stg 2
+  stage: build
+  image: docker:20.10.16 # docker container needs docker image 
+  services: # job relies on services
+  # e.g. python relies on mySQL, 
+  # docker in docker: docker client relies on docker daemon
+    - docker:20.20.16-dind # dind: docker in docker
+  variables: # var can be def @ top lvl 
+    DOCKER_TLS_CERTDIR: "/certs"
+  before_script:
+    - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD
+  script:
+    - docker build -t $IMAGE_NAME:$IMAGE_TAG .
+    # -t: tag, docker image in <name:tag>
+    - docker push $IMAGE_NAME:$IMAGE_TAG
+
+# Tokens, Passwords: Gitlab->Settings->CI/CD->Variables
+# Masked: contain secrets
+# Proj var: stored outside git repos, i.e. not in .gitlab-ci.yml
+# In casu: 
+  # Docker: REGISTRY_USER, REGISTRY_PASSWORD
+  # Server: SSH_PRIVATE_KEY
+
+
+deploy: # stg 3
+  stage: deploy    
+  # Server TBDeployed: DigitalOcean, AWS, etc.
+  before:script:
+    - chmod 400 $SSH_PRIVATE_KEY
+    # 400: Owner:r--, Group:---, Others:---
+  script:
+    - ssh -o StrictHostKeyChecking=no -i $SSH_PRIVATE_KEY root@<serverIP> "
+        docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD &&
+        docker ps -aq | xargs docker stop | xargs docker rm && 
+        docker run -d -p 5000:5000 $IMAGE_NAME:$IMAGE_TAG"
+        # Docker ps -aq...
+        # remove container before a new deploy 
+        # -aq: -a: show all containers, -q: container ID only
+    # On shell: -i ~/.ssh/<privateKeyName>
