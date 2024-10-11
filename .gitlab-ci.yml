@@ -33,7 +33,7 @@ build_image: # stg 2
     # -t: tag, docker image in <name:tag>
     - docker push $IMAGE_NAME:$IMAGE_TAG
 
-# Tokens, Passwords: Gitlab->Settings->CI/CD->Variables
+# Password / Tokens: Gitlab->Settings->CI/CD->Variables
 # Masked: contain secrets
 # Proj var: stored outside git repos, i.e. not in .gitlab-ci.yml
 # In casu: 
