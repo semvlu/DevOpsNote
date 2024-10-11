@@ -2,7 +2,7 @@
 
 Linux commands
 ```
-ls - l # view usr, group, others permission
+ls -l # view User, Group, Others permission
 ps # process status
 echo "string" > file
 echo "$( < file)"
