@@ -1,4 +1,4 @@
-Some other notes
+# Some other notes
 
 Linux commands
 ```
@@ -8,5 +8,5 @@ echo "string" > file
 echo "$( < file)"
 ```
 
-Stateless app: any state wouldn't change the data returned, par excellence for web app
+Stateless app: any state would NOT change the data returned. Par excellence for web app
 
