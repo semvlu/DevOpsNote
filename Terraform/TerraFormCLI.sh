@@ -6,7 +6,7 @@ terraform plan
 # exec the plan
 terraform apply
 
-terraform apply -var "instance_name=appServer1"
+terraform apply -var="instance_name=appServer1" -var="short_var=foo"
 # Or
 -var-file="secret.tfvars"
 
