@@ -16,10 +16,13 @@ Alt: Dev -> Staging -> Prod
 
 ## Some other notes
 
-Linux commands
+Shell Commands
 ```
-ls -l # view User, Group, Others permission
-ps # process status
+# View User, Group, Others permission
+ls -l
+# Process Status
+ps
+
 echo "string" > file
 echo "$( < file)"
 ```
