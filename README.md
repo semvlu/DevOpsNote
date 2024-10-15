@@ -1,4 +1,9 @@
-# Some other notes
+# CI/CD
+Gitlab
+Dev -> Staging -> Prod
+
+
+## Some other notes
 
 Linux commands
 ```
