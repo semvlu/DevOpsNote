@@ -1,6 +1,16 @@
 # CI/CD
 Gitlab
-Dev -> Staging -> Prod
+Test -> Build -> Deploy
+
+Alt: Dev -> Staging -> Prod
+
+# Docker
+
+# Kubernetes
+
+# Ansible
+
+# Terraform
 
 
 ## Some other notes
