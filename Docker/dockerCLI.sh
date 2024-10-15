@@ -9,8 +9,8 @@ docker rm webserver # remove container from mem
 docker rmi nginx # remove img
 
 #---------------------------------------------------------
-docker build .  // build 
-docker tag <tagID> usr/repos:tagName // tagID is gen from build cmd, tagName = verName
+docker build .  # build 
+docker tag <tagID> usr/repos:tagName # tagID is gen from build cmd, tagName = verName
 docker push usr/repos:tagName
 #---------------------------------------------------------
 
