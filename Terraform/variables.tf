@@ -19,7 +19,7 @@ variable "db_password" {
 
 
 # Combine var w/ local val
-# Vide main.locals
+# Vide vpc.locals
 variable "resource_tags" {
   description = "Tags to set for all resources"
   type = map(string)
@@ -34,4 +34,16 @@ variable "project_name" {
 variable "environment" {
   type = string
   default = "dev"
+}
+
+
+
+# Static checking: cutsom validation rule
+variable "short_var" {
+  type = string
+  
+  validation {
+    condition = length(var.short_var) < 10
+    error_message = "Variable: \"short_var\" must be less than 10 characters!"
+  }
 }

@@ -18,3 +18,42 @@ terraform refresh
 # a.k.a. terraform apply -refresh-only -auto-approve
 
 terraform destroy
+
+
+:'
+Multi ENV MGNT: Dev, Staging, Prod
+
+Terraform workspace:
++
+    easy
+    use: terraform workspace cmd
+    min code dup
+-
+    prone to human error
+    state stored w/in same backend
+    codebase not showing deploy config unambiguous
+
+File structure:
++
+    backend isolation
+        security
+        human error decr
+    codebase fully represents deploy state
+-
+    duplicated codes
+    require many terraform apply 
+'
+# Terraform workspace (cf. File Structure method)
+terraform init
+terraform workspace list 
+terraform workspace new <workspaceName>
+terraform workspace select <workspaceName>
+
+
+
+# Static checking
+terraform fmt # check format & apply changes
+terraform fmt -check # check format only
+
+
+

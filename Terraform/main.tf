@@ -1,16 +1,15 @@
-locals {
-  required_tags = {
-    project = var.project_name
-    environment = var.environment
-  }
-  tags = merge(var.resource_tags, local.required_tags)
-}
-
-locals {
-  name_suffix = "${var.project_name}-${var.environment}"
-}
 
 terraform {
+
+  backend "s3" {
+    bucket         = ""
+    key            = "./<name>.tfstate"
+    region         = "us-west-2"
+    dynamodb_table = "terraform-state-locking"
+    encrypt        = true
+  }
+  
+  # Apply when using HCP terraform
   cloud {
       organization = "orgName"
       workspaces {
@@ -31,29 +30,5 @@ terraform {
 provider "aws" {
   region = "us-west-2"
   version =  "~> 2.0"
-}
-
-# resource <type> <name>. Single infra config
-resource "aws_vpc" "example" {
-  cidr_block = "10.0.0.0/16"
-}
-
-resource "aws_instance" "app_server" {
-  ami           = "ami-0c94855ba95c71c99" # Amz Machine Img
-  instance_type = "t2.micro"
-
-  tags = {
-    Name = "var.instance_name"
-  }
-}
-
-# Module: Multi resource config
-module "vpc" {
-  source = "terraform-aws-modules/vpc/aws"
-  version = "2.66.0"
-
-  # vide locals
-  name = "vpc-${local.name_suffix}" 
-  tags = local.tags
 }
 
