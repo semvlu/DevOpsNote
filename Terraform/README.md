@@ -7,7 +7,6 @@
 `secret.tfvars`: store secret variables, e.g. username, password. (vide variables.db_username / password).
 ```
 terraform apply  -var-file="secret.tfvars"
-
 ```
 Will not adopt normally, secrets are put in during runtime, e.g.
 ```
