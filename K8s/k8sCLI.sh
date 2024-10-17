@@ -57,8 +57,8 @@ incl. kube-controller-manager
       kube-scheduler: watch new pods which not yet assigned to a node
       select a node to run on
 
-etcd store cluster state
-kube-apiserver interact w/ etcd (datastore)
+      etcd: store cluster state 
+      kube-apiserver interact w/ etcd (datastore)
 
 Worker node
 incl. kubelet: run containers on the node
