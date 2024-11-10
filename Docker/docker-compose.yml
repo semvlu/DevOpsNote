@@ -3,7 +3,7 @@ version: "3.8"
 services: # define serv, init multi containers
 
   frontend: # frontend is a container
-    image: node:14
+    image: node:22
     container_name: frontend
     volumes:
       - ./frontend:/app
