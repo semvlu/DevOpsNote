@@ -1,7 +1,9 @@
 # CI/CD
 Gitlab
 
-Test -> Build -> Deploy
+Build -> Test -> Deploy
+
+sometimes: Test -> Build -> Deploy
 
 Alt: Dev -> Staging -> Prod
 
