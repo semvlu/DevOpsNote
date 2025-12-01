@@ -77,7 +77,10 @@ kubectl get ep <serviceName> # service endpoint, from service metadata.name
 kubectl port-forward <kind>/<name> 8080:80
 
 
-kubectl exec -it <podName> -c <containerName> -- <CMD> # e.g. CMD: /bin/sh
+kubectl exec -it <podName> -c <containerName> -- <CMD> # e.g. CMD: /bin/sh 
+# left of --: args for kubectl
+# right of --: cmd for container
+
 exit 
 # exit prog
 
@@ -89,3 +92,4 @@ kubectl delete pvc www-nginx-sts-2
 
 # Rollback to prev ver of deployment
 kubectl rollout undo deployment <deploymentName> --to-revision=<revisionNumber>
+
