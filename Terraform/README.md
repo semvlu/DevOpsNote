@@ -2,7 +2,7 @@
 
 `resource.tf`: resource block, for_each
 
-`variables.tf`: variable, sensitive, combine var w/ local val (vide vpc.locals), static checking: custom validation rule
+`variables.tf`: Def variable, sensitive. Combine var w/ local val (vide `vpc.locals`), static checking: custom validation rule
 
 `secret.tfvars`: store secret variables, e.g. username, password. (vide variables.db_username / password).
 ```
