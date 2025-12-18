@@ -8,6 +8,8 @@ docker stop webserver
 docker rm webserver # remove container from mem
 docker rmi nginx # remove img
 
+docker logs <container>
+
 #---------------------------------------------------------
 docker build .  # build 
 docker tag <tagID> usr/repos:tagName # tagID is gen from build cmd, tagName = verName
@@ -51,3 +53,4 @@ docker pull <registry-domain>:5000/<image>
 # <image> := usr/repos:tagName
 
 # -------------------------------------------------------------------
+
