@@ -52,5 +52,9 @@ docker push <registry-domain>:5000/<image>
 docker pull <registry-domain>:5000/<image>
 # <image> := usr/repos:tagName
 
+# Load image: when machine is not conn. to internet
+docker load -i <image>.tar.gz
+
 # -------------------------------------------------------------------
+
 
