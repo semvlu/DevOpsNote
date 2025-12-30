@@ -1,3 +1,5 @@
+ansible <target_ip> -m ping # return "pong"
+
 ansible -i inventory.ini -u root -m ping <group> 
 # <group> e.g. all, webservers, databases
 # -u root: login to root
@@ -13,3 +15,6 @@ ansible-playbook playbook.yml -i inventory.ini -u root
 ansible-playbook playbook.yml -i inventory.ini -u root --tags=<tagname>
 --tags=<tagname>
 --skip-tags=<tagname>
+
+# `sshpass` for VM as commander
+sudo apt install sshpass
