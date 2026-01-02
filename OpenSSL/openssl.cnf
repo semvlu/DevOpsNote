@@ -1,0 +1,45 @@
+[ ca ]
+default_ca = CA_default
+
+[ CA_default ]
+dir               = ./demoCA           # Where all CA files live (index.txt, serial, crlnumber)
+database          = $dir/index.txt     # The index file
+new_certs_dir     = $dir/newcerts      # Where new certs are stored
+certificate       = $dir/ca.crt        # The CA certificate
+private_key       = $dir/ca.key        # The CA private key
+serial            = $dir/serial        # The serial number file, ver# of next cert
+crlnumber         = $dir/crlnumber     # The CRL number file (must create manually), ver# of next CRL
+crl               = $dir/crl.crl       # The output CRL file
+x509_extensions   = usr_cert           # Default extensions
+name_opt          = ca_default         # Subject name options
+cert_opt          = ca_default         # Certificate output options
+default_days      = 365                # How long till the cert expires
+default_crl_days  = 30                 # How long till the CRL expires
+default_md        = sha256             # Use SHA-256 by default
+
+policy            = policy_match
+
+[ policy_match ]
+countryName             = match
+stateOrProvinceName     = match
+organizationName        = match
+organizationalUnitName  = optional
+commonName              = supplied
+emailAddress            = optional
+
+[ req ]
+# ... (standard req settings for CSR generation, omitted for brevity) ...
+
+[ usr_cert ]
+# Define standard extensions here
+authorityKeyIdentifier=keyid,issuer
+basicConstraints=CA:FALSE
+keyUsage = digitalSignature, nonRepudiation, keyEncipherment
+subjectAltName = @alt_names
+crlDistributionPoints=URI:your.webserver.com
+
+[ alt_names ]
+DNS.1 = localhost
+DNS.2 = server
+IP.1 = 127.0.0.1
+IP.2 = 192.168.100.101
