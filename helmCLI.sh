@@ -1,3 +1,13 @@
+# Basics
+# Template k8s manifests
+# `values.yml`
+deployment:
+  images: 2
+# `deploy.yml`
+replicas: {{Values.deployment.replicas}}
+
+helm install/upgrade/rollback app1
+
 # Chk rendered val
 helm get values <release_name> -n <namespace>
 
