@@ -8,7 +8,7 @@ sudo su - # or: sudo su - root
 
 # 3. Edit sudoers file
 nano /etc/sudoers
-<usernmae> ALL=(ALL)  ALL
+<username> ALL=(ALL)  ALL
 
 # save and exit
 Ctrl+X
@@ -19,3 +19,4 @@ kernel.dmesg_restrict = 0
 
 # dmesg
 dmesg | grep -i error
+
