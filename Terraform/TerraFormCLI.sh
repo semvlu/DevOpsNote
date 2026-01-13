@@ -1,5 +1,8 @@
 terraform init
 
+# check config syntax & internal consistency
+terraform validate
+
 # preview changes 
 terraform plan
 
@@ -54,6 +57,7 @@ terraform workspace select <workspaceName>
 # Static checking
 terraform fmt # check format & apply changes
 terraform fmt -check # check format only
+
 
 
 
