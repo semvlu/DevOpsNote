@@ -12,9 +12,10 @@ ansible -i inventory.ini -u root <module> -a  "name=john state=present" -a
 ansible-playbook playbook.yml -i inventory.ini -u root
 
 # Run tasks with spec tags
-ansible-playbook playbook.yml -i inventory.ini -u root --tags=<tagname>
---tags=<tagname>
---skip-tags=<tagname>
+ansible-playbook playbook.yml -i inventory.ini -u root --tags="<tagname>"
+--tags="<tagname>"
+--skip-tags="<tagname>"
 
 # `sshpass` for VM as commander
 sudo apt install sshpass
+
