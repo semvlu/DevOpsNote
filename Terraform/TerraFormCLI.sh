@@ -17,8 +17,7 @@ terraform output
 
 # get cur state & update
 # update state w/o making changes to infra 
-terraform refresh 
-# a.k.a. terraform apply -refresh-only -auto-approve
+terraform apply -refresh-only
 
 terraform destroy
 
@@ -62,6 +61,7 @@ terraform workspace select <workspaceName>
 # Static checking
 terraform fmt # check format & apply changes
 terraform fmt -check # check format only
+
 
 
 
