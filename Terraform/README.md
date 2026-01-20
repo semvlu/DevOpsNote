@@ -17,3 +17,25 @@ terraform apply -var="db_username=username" -var="db_password=password"
 `vpc.tf`: module, local (merge variables)
 
 `S3onEC2.tf`: Run S3 on EC2 instance. Lifecycle, depends_on
+
+
+## Multi Env Mgmt: Dev, Staging, Prod
+
+### Terraform workspace
+Pros: 
+- easy, use: `terraform workspace` cmd
+- min code dup
+
+Cons:
+- prone to human error
+- state stored w/in same backend
+- codebase not showing deploy config unambiguous
+
+### File structure
+Pros:
+- backend isolation: security, human error decr
+- codebase fully represents deploy state
+
+Cons:
+- duplicated codes
+- require many `terraform apply`
