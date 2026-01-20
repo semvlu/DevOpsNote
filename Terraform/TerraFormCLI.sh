@@ -22,6 +22,11 @@ terraform refresh
 
 terraform destroy
 
+terraform state list # list deployment
+terraform show # detail
+# moves resources from one state file to another
+terraform state mv -state-out=<statefile>.tfstate <resource-type>.<resource-label>
+
 
 :'
 Multi ENV MGNT: Dev, Staging, Prod
@@ -57,6 +62,7 @@ terraform workspace select <workspaceName>
 # Static checking
 terraform fmt # check format & apply changes
 terraform fmt -check # check format only
+
 
 
 
