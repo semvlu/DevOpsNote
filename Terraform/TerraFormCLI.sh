@@ -3,7 +3,7 @@ terraform init
 # check config syntax & internal consistency
 terraform validate
 
-# Static checking
+# Static checking, and rectify to terraform coding style
 terraform fmt # check format & apply changes
 terraform fmt -check # check format only
 
@@ -34,3 +34,4 @@ terraform init
 terraform workspace list 
 terraform workspace new <workspaceName>
 terraform workspace select <workspaceName>
+
