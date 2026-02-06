@@ -6,7 +6,7 @@
 
 `terraform.tfvars`: Store secret variables, e.g. username, password. (vide variables.db_username / password).
 > [!CAUTION]
-> Do NOT upload this file to Github or VCS! 
+> Do NOT upload `.tfvars` file to Github or VCS! 
 
 ```
 terraform apply  -var-file="terraform.tfvars"
