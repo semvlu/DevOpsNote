@@ -1,0 +1,48 @@
+# Project: logical app grouping
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: proj-1 
+spec:
+  sourceRepos:
+  # do NOT use 'argoproj/test', all gitlab repo under 'group'
+  - '!ssh://git@github.com:argproj/test'
+  - '!https://gitlab.com/group/**'
+  # all else fine
+  - '*'
+  destinations:
+  # do NOT deploy on kube-system
+  - namespace: '!kube-system'
+    server: '*'
+  # do NOT deploy on clusters w/ URL: `team1-*`
+  - namespace: '*'
+    server: '!https://team1-*'
+  - namespace: '*'
+    server: '*'
+  clusterResourceWhitelist:
+  # Allow ns w/ prefix `team1-`
+  - group: ''
+    kind: Namespace
+    name: 'team1-*'
+  clusterResourceBlacklist:
+  - group: ''
+    kind: Namespace
+    name: 'kube-*'
+  namespaceResourceBlacklist:
+  - group: ''
+    kind: ''
+
+  roles:
+  - name: 'role-1'
+    description: 'role-1 applied to `tester` group.'
+    groups:
+    - 'tester'
+    policies:
+    # Syntax: p, <proj-name>:<role-name>,, <resource>, <action>, <object>, <effect>
+    - 'p, proj:proj-1:role-1, applications, *, *, allow'
+  - name: 'read-only'
+    description: 'Read-only to all app in the proj'
+    policies:
+    - 'p, proj:proj-1:read-only, applications, get, proj-1/*, allow'
+    groups:
+    - 'oidc-group-read-only'
