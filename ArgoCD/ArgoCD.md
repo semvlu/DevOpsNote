@@ -38,7 +38,8 @@ spec:
       valueFiles:
       - values-production-2.yaml
       - values-production-1.yaml
-      
+      # If dup occur in 2 value files, latter will overwrite the former, in casu 1 over 2.
+
       parameters:
       - name: "service.type"
         value: LoadBalancer
@@ -76,7 +77,7 @@ General: params, valuesObject, values, valueFiles
 W/in each: last file/param... listed has Hi precedence, 
 - e.g. in `helm-guestbook.yml` file: `values-production-1.yaml`
 
-### Hooks: TBD
+### Hooks
 Argo CD does not know if it is running first-time `install` or `upgrade`, all treated as `sync`. ca veut dire, app w/ `pre-install` and `pre-upgrade` will have those hooks run at the same time.
 
 - Make Hooks idempotent.
@@ -254,7 +255,6 @@ Server-Side Apply in dryrun mode for each resource of the app.
 
 Dryrun resp compared w/ live state, and provide diff results. 
 
-
 Diff results cached, and new Server-Side Apply requests to Kube API are only triggered when:
 - Refresh request
 - New revision
@@ -348,7 +348,7 @@ Deletion:
 - `argocd.argoproj.io/sync-wave` annotation: Default: 0, asc order, negative allowed.
 - `ARGOCD_SYNC_WAVE_DELAY`: env var, delay inter-sync wave, default: 2s, give time for controllers to react.
 
-Precedence: phase -> sync wave -> kind (ns -> k8s resources -> CRD) -> name
+### Precedence: phase -> sync wave -> kind (ns -> k8s resources -> CRD) -> name
 
 ```
 metadata:
