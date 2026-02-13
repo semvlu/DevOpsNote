@@ -15,6 +15,7 @@ Alt: Dev -> Staging -> Prod
 
 # Terraform
 
+# Argo CD
 
 ## Some other notes
 
