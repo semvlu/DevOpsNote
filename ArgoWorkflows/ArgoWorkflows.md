@@ -211,7 +211,7 @@ spec:
 
 ### `ClusterWorkflowTemplates`
 - Cluster wide WrokflowTemplate
-- Mgmt: `argo cluster-template create <cluster-wftmpl.yml>
+- Mgmt: `argo cluster-template create <cluster-wftmpl.yml>`
 
 ## `data` Template: Data Sourcing & Transformation
 ```
@@ -244,7 +244,7 @@ argo submit --serviceaccount <argo-workflow>
 ```
 
 ### RBAC
-Pods in WF run w/ the service account, spec.in `workflow.spec.serviceAccountName`
+Pods in WF run w/ the service account, spec. in `workflow.spec.serviceAccountName`
 
 ## Artifact
 ### Input
@@ -252,9 +252,9 @@ Pods in WF run w/ the service account, spec.in `workflow.spec.serviceAccountName
 - `template` def inputs, provided by template callers: `steps`, `dag`, `workflow`
 
 `inputs.yml`
-WF input: `spec.arguments.parameters` list
-DAG input: `dag.tasks.<task>.arguments.parameters`, incl. `name`, `value`. DAG has a list of tasks
-Template input: `inputs.parameters` list
+- WF input: `spec.arguments.parameters` list
+- DAG input: `dag.tasks.<task>.arguments.parameters`, incl. `name`, `value`. DAG has a list of tasks. 
+- Template input: `inputs.parameters` list
 ```
 kind: Workflow
 sepc:
@@ -310,15 +310,15 @@ dag:
     arguments:
       parameters:
       - name: template-param-2
-        value: "{{tasks.step-A.outputs.parameters.output-param-1}}" # parameters use value
+        value: "{{tasks.step-A.outputs.parameters.output-param-1}}" # parameters use `value`
       artifacts:
       - name: input-artifact-1
-        from: "{{tasks.step-A.outputs.artifacts.output-artifact-1}}" # artifacts use from
+        from: "{{tasks.step-A.outputs.artifacts.output-artifact-1}}" # artifacts use `from`
 ```
 
 ### Key-only Artifact
-- only spec the key for I/O artifact, omitting bucket, secrets etc.
-- default from v3.0
+- Only spec the key for I/O artifact, omitting bucket, secrets etc.
+- Default from v3.0
 
 ```
 outputs:
@@ -343,12 +343,14 @@ inputs:
 ```
 kind: ConfigMap
 metadata:
-  # name: "artifact-repositories" for default ConfigMap.
-  # Ref ConfigMap/Artifact Repo: `artifactRepositoryRef.configMap`
   name: custom-artifact-repository
+    # name: "artifact-repositories" for default ConfigMap.
+    # Ref ConfigMap/Artifact Repo: `artifactRepositoryRef.configMap` field in WF
+
   annotations:
     # Put the key into annotation for spec. key
     workflows.argoproj.io/default-artifact-repository: default-v1-s3-artifact-repository
+
 data:
   default-v1-s3-artifact-repository: |
     s3:
@@ -425,7 +427,8 @@ templates:
 - Workflow or template lvl
 - Exit handler w/ cond.
 > Exit handler qua template, will exec no matter the outcome
-> Ref: spec.onExit
+>
+> Ref: `spec.onExit`
 
 Workflow lvl
 ```
