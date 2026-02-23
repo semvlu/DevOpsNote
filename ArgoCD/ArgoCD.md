@@ -2,7 +2,7 @@
 Decl. GitOps CD tools for K8s
 
 ## Core Concepts
-- Application: group of K8s resources qua manifest, CRD.
+- Application: group of K8s resources qua manifest / CRD.
 - Sync status: check live state matches target state. 
 - Sync: sync live state to target state.
 
@@ -73,12 +73,12 @@ metadata:
 ```
 
 #### Precedence (Hi->Lo)
-General: params, valuesObject, values, valueFiles
-W/in each: last file/param... listed has Hi precedence, 
-- e.g. in `helm-guestbook.yml` file: `values-production-1.yaml`
+General: params -> valuesObject -> values -> valueFiles
+
+W/in each: last file/param listed has Hi precedence, e.g. `helm-guestbook.yml`: `values-production-1.yaml`
 
 ### Hooks
-Argo CD does not know if it is running first-time `install` or `upgrade`, all treated as `sync`. ca veut dire, app w/ `pre-install` and `pre-upgrade` will have those hooks run at the same time.
+Argo CD does not know if it's first-time running `install` or `upgrade`, all treated as `sync`. viz. app w/ `pre-install` and `pre-upgrade` will have those hooks run at the same time.
 
 - Make Hooks idempotent.
 - Annotate `pre-install`, `post-install` w/ `hook-weight: "-1"`: Ensure it runs till success before upgrade hooks.
@@ -117,11 +117,8 @@ spec:
       include: '*.yml'
 ```
 
-Skip YAML files which are not manifests
-`values.yaml`
-```
-# +argocd:skip-file-rendering
-```
+
+`# +argocd:skip-file-rendering`: Add the line to Skip YAML files which are not manifests, e.g. `values.yaml`
 
 ## Tool Detection
 Default: Directory
@@ -133,7 +130,7 @@ Implicit detect:
 ## Project
 Logical app grouping for teams.
 
-default proj: all perms, can be mod, but not deleted
+`default` proj: all perms, can be mod, but not deleted
 
 Control: 
 Deployment
@@ -155,17 +152,17 @@ Policy Syntax: `p, <role/user/group>, <resource>, <action>, <object>, <effect>`
 
 Detailed Syntax: `p, proj:<proj-name>:<role-name>, <resource>, <action>, <object>, <effect>`
 
-`p`: p for policy
-`resource`: applications, applicationsets, clusters, projects, repositories, accountes, certificates, gpgkeys, logs, exec, extensions.
-`action`: get, create, update, delete, sync, action, override, invoke.
-`effect`: allow, deny
+- `p`: p for policy
+- `resource`: applications, applicationsets, clusters, projects, repositories, accountes, certificates, gpgkeys, logs, exec, extensions.
+- `action`: get, create, update, delete, sync, action, override, invoke.
+- `effect`: allow, deny
 
 [RBAC](https://argo-cd.readthedocs.io/en/stable/operator-manual/rbac/#rbac-model-structure)
 
 #### JWT Tk
 Auth to a role.
 
-Tk asso. to a role's policies, any change to the poclcies will take effect for the JWT tk.
+Tk asso. to a role's policies, any change to the policies will take effect for the JWT tk.
 
 Pass tk by `--auth-token` flag, or env var `ARGOCD_AUTH_TOKEN`
 
@@ -192,9 +189,9 @@ UI:
 Settings/Repositories -> Connect Repo using HTTPS
 
 Alt: Access tk
-[GitHub Access tk](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
+([GitHub Access tk](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens))
 
-TLS certificates are configured on a per-server, not on a per-repository basis. If you connect multiple repositories from the same server, you only have to configure the certificates once for this server.
+TLS certs are config-ed per-server, not per-repo. If you connect multiple repos from the same server, you only have to config certs once for this server.
 
 
 ### Cert Mgmt
@@ -222,7 +219,7 @@ spec:
     automated: {}
 ```
 
-- Auto Prune: auto sync by default will NOT delete resources no longer in Git.
+- Auto Prune: delete resources no longer in Git for auto sync by default will NOT delete.
 - Auto Self-heal: auto sync when live cluster state deviates from Git defined state.
 - Auto Retry Refresh: Refresh on new revisions: `git commit`, `git push`, when the cur sync is retrying.
 
@@ -263,7 +260,7 @@ Diff results cached, and new Server-Side Apply requests to Kube API are only tri
 
 Enable lvl: Argo CD Controller (all apps), app
 
-Argo CD Controller (all apps) lvl:
+- Argo CD Controller (all apps) lvl:
 ```
 apiVersion: v1
 kind: ConfigMap
@@ -274,7 +271,7 @@ data:
 ```
 *N.B.* restart `argocd-application-controller` after applying this configuration.
 
-App lvl:
+- App lvl:
 ```
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -291,7 +288,7 @@ metadata:
 - Safe to set it by default.
 
 ## Orphaned Resource Monitoring
-Top-lvl namespaced resoruce, does not belong to any Argo CD app.
+Top-lvl namespaced resource, does not belong to any Argo CD app.
 ```
 kind: AppProject
 spec: 
@@ -329,7 +326,7 @@ Phases & Hooks def when resources are applied pre/post sync.
 
 `PostSync`:	post-Sync, all resources in Healthy state.
 
-`SyncFail`: Ex vi termini.
+`SyncFail`: ex vi termini.
 
 ---
 
@@ -344,7 +341,7 @@ Deletion:
 `kubectl delete <application>`, `argocd app delete` trigger `PreDelete` & `PostDelete`.
 
 ### Sync Waves
-- Sync order w/in each phase.
+- Sync order w/in each phase (PreSync, SyncFail...).
 - `argocd.argoproj.io/sync-wave` annotation: Default: 0, asc order, negative allowed.
 - `ARGOCD_SYNC_WAVE_DELAY`: env var, delay inter-sync wave, default: 2s, give time for controllers to react.
 
@@ -362,7 +359,7 @@ Examples: Slack notification post-sync, DB migration pre-sync. [Hooks, Sync Phas
 #### Mapping to Helm Hooks
 PreSync -> helm.sh/hook: [pre-install|pre-upgrade]
 
-PostSync -> helm.sh/hook: [post-upgrade|post-install]
+PostSync -> helm.sh/hook: [post-install|post-upgrade]
 
 PreDelete -> helm.sh/hook: pre-delete
 
@@ -416,8 +413,8 @@ operation:
   sync:
     prune: true # prune pre-apply, for idempotency
     syncStrategy:
-      hook: {}
       apply: {}
+      hook: {}
 ```
 
 ## ApplicationSet
