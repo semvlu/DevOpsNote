@@ -1,8 +1,8 @@
 kind: ConfigMap
 metadata:
-  # name: "artifact-repositories" for default ConfigMap.
-  # Ref ConfigMap/Artifact Repo: `artifactRepositoryRef.configMap`
   name: custom-artifact-repository
+    # name: "artifact-repositories" for default ConfigMap.
+    # Ref ConfigMap/Artifact Repo: `artifactRepositoryRef.configMap` field in WF
   annotations:
     # Put the key into annotation for spec. key
     workflows.argoproj.io/default-artifact-repository: default-v1-s3-artifact-repository
