@@ -1,0 +1,27 @@
+kind: ConfigMap
+metadata:
+  # name: "artifact-repositories" for default ConfigMap.
+  # Ref ConfigMap/Artifact Repo: `artifactRepositoryRef.configMap`
+  name: custom-artifact-repository
+  annotations:
+    # Put the key into annotation for spec. key
+    workflows.argoproj.io/default-artifact-repository: default-v1-s3-artifact-repository
+data:
+  default-v1-s3-artifact-repository: |
+    s3:
+      bucket: my-bucket
+      endpoint: minio:9000
+      insecure: true
+      accessKeySecret:
+        name: my-minio-cred
+        key: accesskey
+      secretKeySecret:
+        name: my-minio-cred
+        key: secretkey
+
+---
+kind: Workflow
+spec:
+  artifactRepositoryRef:
+    configMap: custom-artifact-repository # default: artifact-repositories
+    key: default-v1-s3-artifact-repository

@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: wftmpl-1
+spec:
+  templates:
+    - name: tmpl-1
+      container:
+        image: busybox
+        command: [echo]
+        args: ["{{workflow.parameters.global-parameter}}"]
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: wf-global-arg-
+spec:
+  entrypoint: print-message
+  arguments:
+    parameters:
+      - name: global-parameter
+        value: hello
+  templates:
+    - name: print-message
+      steps:
+        - - name: hello-world
+            templateRef:
+              name: wftmpl-1  # ref to WorkflowTemplate
+              template: tmpl-1 # ref to template

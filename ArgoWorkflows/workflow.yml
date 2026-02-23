@@ -1,0 +1,31 @@
+kind: Workflow
+spec:
+  templates:
+  - name: main
+    steps:
+    - - name: add
+        template: call-template
+        arguments: ...
+
+  - name: call-template # call func
+    templateRef:
+      name: wftmpl-1
+      template: tmpl-1
+
+---
+
+# CronWorkflow
+kind: CronWorkflow
+metadata:
+  name: test-cron-wf
+spec:
+  schedules:
+    - "* * * * *"
+  timezone: Europe/Amsterdam
+  concurrencyPolicy: "Replace"
+  startingDeadlineSeconds: 0
+  workflowSpec:
+    entrypoint: date
+    templates:
+    - name: date
+      container: ...

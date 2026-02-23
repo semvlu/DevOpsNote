@@ -440,6 +440,17 @@ spec:
 ```
 [Diffing Customization](https://argo-cd.readthedocs.io/en/stable/user-guide/diffing/)
 
+- Manifest sync as Annotation.
+```
+kind: <k8s-kind>
+metadata:
+  name: my-service
+  annotations:
+    argocd.argoproj.io/sync-options: Prune=false
+    argocd.argoproj.io/sync-wave: "5"
+    argocd.argoproj.io/hook: PostSync
+```
+
 ## References
 [Argo CD Annotations & Labels](https://argo-cd.readthedocs.io/en/stable/user-guide/annotations-and-labels/)
 
