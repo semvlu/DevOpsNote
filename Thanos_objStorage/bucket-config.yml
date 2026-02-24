@@ -1,0 +1,7 @@
+# thanos.yml in cluster
+type: AZURE
+config:
+  storage_account: "account_name"
+  storage_account_key: "account_key"
+  container: "metrics"  # blob container name
+  endpoint: "blob.core.windows.net" # Endpoint Suffix
