@@ -1,6 +1,6 @@
 # PromQL
 - Data type atm (ts): float or native histogram
-- Native histogram incl.: count, sum, buckets
+- Native histogram: incl. count, sum, buckets
 
 ## Metric Types
 - Counter: single mono incr. counter.
