@@ -1,4 +1,8 @@
 # MinIO
+
+## Arch
+Admin / App -> MinIO Tenants (each incl. Console & Obj storage) -> MinIO Operator -> Kubernetes
+
 ## Blob: Binary Larage Obj
 - Independent of any hierarchy for acc. or avail.
 - Rich metadata for context
