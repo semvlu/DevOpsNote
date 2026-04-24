@@ -91,7 +91,7 @@ Rules of behaviours of S3 API
     ```
     will see new obj immediately
 - Key-based adr: bucket + key
-- Metadata: content tpye, lifecycle, caching, tagging
+- Metadata: content type, lifecycle, caching, tagging
 
 [Install](https://docs.min.io/enterprise/aistor-object-store/installation/linux/install/deploy-aistor-on-ubuntu-server/)
 
