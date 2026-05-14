@@ -51,3 +51,8 @@ argocd app create guestbook \
 argocd app get guestbook
 # Sync (deploy)
 argocd app sync guestbook # works like kubectl apply
+
+
+# Delete expired repo GitHub PAT
+kubectl get secrets -n argocd 
+kubectl delete secret <repo-secret-name> -n argocd
