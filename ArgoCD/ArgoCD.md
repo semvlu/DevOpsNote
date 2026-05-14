@@ -38,7 +38,7 @@ spec:
       valueFiles:
       - values-production-2.yaml
       - values-production-1.yaml
-      # If dup occur in 2 value files, latter will overwrite the former, in casu 1 over 2.
+      # If dup occur in 2 value files, latter will overwrite former, in casu 1 over 2.
 
       parameters:
       - name: "service.type"
