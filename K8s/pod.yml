@@ -1,4 +1,4 @@
-# Pod: able to share storage and network btwn containers within. 
+# Pod: share storage & network (IP) b/w containers within. 
 apiVersion: v1
 kind: Pod
 metadata:
