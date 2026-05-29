@@ -10,7 +10,7 @@
 cd ./demoCA
 # Gen CA Key & Cert
 openssl genrsa -aes256 -out ca.key 4096
-openssl req -x509 -new -nodes -key ca.key -sha256 -days 3650 -out ca.crt
+openssl req -x509 -new -noenc -key ca.key -sha256 -days 3650 -out ca.crt
 
 # Gen server Key & Cert
 openssl genrsa -aes256 -out prod.key 4096
