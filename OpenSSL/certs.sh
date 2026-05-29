@@ -2,6 +2,8 @@
 openssl genrsa -aes256 -out ca.key 4096
 # Sign root CA private key
 openssl req -x509 -new -noenc -key ca.key -sha256 -days 3650 -out ca.crt
+# -x509: This option outputs a certificate instead of a certificate request.
+#        This is typically used to generate test certificates. It is implied by the -CA option.
 
 # Private key for prod
 openssl genrsa -aes256 -out prod.key 4096
