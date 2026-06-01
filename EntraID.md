@@ -11,5 +11,5 @@
     - Source attribute: Group ID
   4. Back to SAML-based Sign-on: SAML Certificates: App Federation Metadata Url
 3. Assign Enterprise Apps to Security Group
-  1. `<Enterprise application>` | User and groups -> Add user/group
+   - `<Enterprise application>` | User and groups -> Add user/group
 
