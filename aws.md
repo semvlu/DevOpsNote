@@ -23,12 +23,12 @@ aws configure sso
 - NAT GW
 
 $$
-\begin{leftaligned}
+\begin{aligned}
 X: subnet \ set, x \in X \\
 Y: AZ \ set, y\in Y \\
 F: X \rightarrow Y \\
 y = f(x)
-\end{leftaligned}
+\end{aligned}
 $$
 
 ### Security Group
