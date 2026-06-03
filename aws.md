@@ -25,7 +25,7 @@ aws configure sso
 $$
 X: subnet \ set, x \in X \\
 Y: AZ \ set, y\in Y \\
-F: X \rarr Y \\
+F: X \rarrow Y \\
 y = f(x)
 $$
 
