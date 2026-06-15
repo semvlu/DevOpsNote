@@ -65,6 +65,7 @@ spec:
   - name: _2nd-init
     image: busybox:1.28
     command: ['sh', '-c', "until nslookup "] 
+    restartPolicy: Always # Sidecar container config
 
   # run the pod on the node that fits the condition
   nodeSelector:
