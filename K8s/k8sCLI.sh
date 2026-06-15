@@ -1,11 +1,12 @@
 kubectl create -f k8s.yml
-kubectl get [all, rc, po,...]  # rc: replication controller
+kubectl get [all, po,...]  # rc: replication controller
 
 # Get #resources
 kubectl get all --no-headers | wc -l
 
 # Gen template yml
 kubectl run <pod-name> --image=busybox -n <ns> --dry-run=client -o yaml > pod.yml
+
 kubectl create deployment <deploy-name> \
 --image=nginx \
 --replicas=3 \
@@ -25,10 +26,7 @@ kubectl api-resources
 kubectl explain <resource-kind> --recursive # Align w/ yaml fields
 kubectl explain pod.spec.containers
 
-kubectl delete rc <replication-controller-name> --cascade=false
-# Pods will still work after controller deleted
-# Most use replicaSet/Deployment over replication-controller
-
+# Deployment
 kubectl set image deploy <deploy-name> \
 <pod-name>:<img-path>:<version> # e.g. <img-path>: dockerUsr/repos
 # update image of a pod in a deployment
@@ -41,8 +39,6 @@ kubectl expose deploy <deploy-name> \
 
 minikube service <service-name> --url # get service url
 
-
-# Deployment
 kubectl scale deploymenmt --replicas=1 <container> <container>...
 # Scale down
 --replicas=0
@@ -51,10 +47,9 @@ kubectl scale deploymenmt --replicas=1 <container> <container>...
 # HPA
 kubectl autoscale deploy <deploy-name> --min=2 --max=5
 
-
-# apply config (declarative)
+# Apply config (declarative)
 kubectl apply -f <filepath> # pod/service/deployment/ingress etc. .yml
-# delete config
+# Delete config
 kubectl delete -f <filepath>
 
 # Secret 
@@ -66,27 +61,27 @@ kubectl create secret generic <secret> \
 
 kubectl get secret <secret> -o yaml
 
-
+# Taint
 kubectl taint nodes <node> <key>=<val>:<taint-effect>
 # <taint-effect>: NoSchedule, PreferNoSchedule, NoExecute (Existing pods will be evicted if intolerable to the taint)
 
-# change ns to default
+# Kubeconfig
+kubectl config view
+kubectl config --kubeconfig=/path/to/kubeconfig use-context <user>@<cluster>
+# Change ns to default
 kubectl config set-context --current -n default
 
-
-
-
+# Networking
 kubectl get po -o wide # pod IP adr
 kubectl get endpointslice <service-name> # service endpoint, from service metadata.name
 kubectl port-forward <kind>/<name> 8080:80
 
 
-kubectl exec -it <podName> -c <containerName> -- <CMD> # e.g. CMD: /bin/sh 
+kubectl exec -it <pod-name> -c <container-name> -- <CMD> # e.g. CMD: /bin/sh 
 # left of --: args for kubectl
 # right of --: cmd for container
 
-exit 
-# exit prog
+exit # exit pod/container
 
 # StatefulState
 kubectl delete -f statefulset.yaml
@@ -94,6 +89,5 @@ kubectl delete pvc www-nginx-sts-0
 kubectl delete pvc www-nginx-sts-1
 kubectl delete pvc www-nginx-sts-2
 
-# Rollback to prev ver of deployment
+# Rollback deployment to prev ver
 kubectl rollout undo deploy <deplo-name> --to-revision=<revisionNumber>
-
