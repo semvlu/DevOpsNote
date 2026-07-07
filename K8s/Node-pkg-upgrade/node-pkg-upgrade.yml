@@ -1,0 +1,65 @@
+# If delegate_to: localhost, need `pip install kubernetes` on localhost
+- name: Rolling OS Package Upgrade for Kubernetes Nodes
+  hosts: "*"
+  become: true
+  serial: 1 # 1 node at a time
+  order: inventory # Follow inventory order (master -> workers)
+
+  tasks:
+  - name: Hold kubernetes packages
+    dpkg_selections:
+      name: "{{ item }}"
+      selection: hold
+    loop:
+    - kubelet
+    - kubeadm
+    - kubectl
+
+  - name: Drain node
+    kubernetes.core.k8s_drain:
+      state: drain
+      name: "{{ inventory_hostname }}"
+      delete_options:
+        ignore_daemonsets: true
+        delete_emptydir_data: true
+    delegate_to: localhost
+    become: false
+    vars:
+      ansible_python_interpreter: /usr/local/bin/python3
+
+  - name: Update all packages
+    apt:
+      name: "*"
+      state: latest
+      update_cache: true
+
+  - name: Check if reboot required
+    stat:
+      path: /var/run/reboot-required
+    register: reboot_required_file
+
+  - name: Reboot node if required
+    reboot:
+      msg: "Rebooting node post-OS package upgrade"
+      connect_timeout: 5
+      post_reboot_delay: 30
+    when: reboot_required_file.stat.exists
+
+  - name: Wait for Kube API server post-reboot
+    command: kubectl get nodes
+    delegate_to: localhost
+    become: false
+    register: api_status
+    until: api_status.rc == 0
+    retries: 15
+    delay: 10 # Wait 10s b/w checks
+    when: reboot_required_file.stat.exists and inventory_hostname in groups['masters']
+
+  - name: Uncordon node
+    kubernetes.core.k8s_drain:
+      state: uncordon
+      name: "{{ inventory_hostname }}"
+    delegate_to: localhost
+    become: false
+    vars:
+      ansible_python_interpreter: /usr/local/bin/python3
