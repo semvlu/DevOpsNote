@@ -3,6 +3,7 @@
 [Playbook Keywords (cheat sheet)](https://docs.ansible.com/projects/ansible/latest/reference_appendices/playbooks_keywords.html)
 ## Global
 `forks`: Global Parallelism, Max SSH connections. `ansible-playbook -f 30 playbook.yml`
+
 `ansible.cfg`
 ```
 [defaults]
