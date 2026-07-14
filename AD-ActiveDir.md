@@ -31,6 +31,12 @@ Service Account DN & User Search Base
 
 - Check Remote Desktop: AD Users and Computers -> User -> Attribute editor -> distinguishedName
 
+`dsquery`
+```
+dsquery [user | group | ou | *] -name <name>
+```
+
+
 `ldapsearch`
 
 ```
