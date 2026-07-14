@@ -16,7 +16,10 @@ Global Catalog: distributed data store, contains partial replica of all obj in A
 
 # Rancher AD Config
 
-Create new AD user qua service account for Rancher. 
+Create 2 AD users for Rancher. 
+- service account
+- Test and Enable Authentication (as admin)
+
 
 - Perm: LDAP search, read attr of Users and Groups under AD domain.
 
