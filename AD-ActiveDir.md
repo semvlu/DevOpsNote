@@ -17,8 +17,8 @@ Global Catalog: distributed data store, contains partial replica of all obj in A
 # Rancher AD Config
 
 Create 2 AD users for Rancher. 
-- service account
-- Test and Enable Authentication (as admin)
+1. Service account
+2. Test admin: for Test and Enable Authentication
 
 
 - Perm: LDAP search, read attr of Users and Groups under AD domain.
