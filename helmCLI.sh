@@ -2,7 +2,7 @@
 # Template k8s manifests
 # `values.yml`
 deployment:
-  images: 2
+  replicas: 2
 # `deploy.yml`
 replicas: {{Values.deployment.replicas}}
 
