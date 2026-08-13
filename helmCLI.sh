@@ -1,10 +1,9 @@
 # Basics
 # Template k8s manifests
 # `values.yml`
-deployment:
-  replicas: 2
+replicaCount: 3
 # `deploy.yml`
-replicas: {{Values.deployment.replicas}}
+replicas: {{Values.replicaCount}}
 
 helm install/upgrade/rollback app1
 
@@ -12,7 +11,7 @@ helm install/upgrade/rollback app1
 helm get values <release_name> -n <namespace>
 
 # Chart ver
-helm list -n <ns>
+helm ls -n <ns>
 helm history <release_name> -n <ns>
 
 # Upgrade custom values
