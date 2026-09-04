@@ -1553,7 +1553,7 @@ helm uninstall <release>
 
 
 ### Project Structure
-
+```
 .
 ├── base
 │   ├── deploy.yml
@@ -1575,6 +1575,7 @@ helm uninstall <release>
     └── stage
         ├── kustomization.yaml
         └── svc-nodeport.yml
+```
 
 ```sh
 kubectl [apply, delete] -k ./
