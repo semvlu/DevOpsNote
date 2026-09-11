@@ -1,4 +1,4 @@
-ansible <target_ip> -m ping # return "pong"
+ansible -m ping <target_ip> # return "pong"
 
 ansible -i inventory.ini -u root -m ping <group> 
 # <group> e.g. all, webservers, databases
