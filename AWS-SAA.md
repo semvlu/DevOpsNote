@@ -108,10 +108,10 @@ IAM Entity for AWS services to perform actions on your behalf w/ Roles, e.g. EC2
 
 - IAM policy applied to OU/Accounts: restrict users and roles
 - No effect on Management Account
-- Explicit allow from root, thru each OU, to Account
+- *Explicit allow* from root, thru each OU, to Account
 - SCP at higher lvl has priority over lower
 - `FullAWSAccess` (default)
-- Trace bottom-up
+- Top-down tracing
 - OU (Root) [FullAWSAccess] > OU (Dev) [FullAWSAccess] > Account D [Allow EC2]: Account D acc: EC2
 
 
