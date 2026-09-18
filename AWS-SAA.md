@@ -130,8 +130,8 @@ IAM Entity for AWS services to perform actions on your behalf w/ Roles, e.g. EC2
 ## IAM Permission Boundary
 
 - Support: User, Role, not Group
-- Set Max per (boundary)
-- Real perm = Org SCP ∩ Identity-based pol (User, Group, Role) ∩ Permission boundary
+- Set Max perm (boundary)
+- Actual perm = Org SCP ∩ Identity-based pol (User, Group, Role) ∩ Permission boundary
 
 
 
