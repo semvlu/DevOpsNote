@@ -163,7 +163,7 @@ Deny (explicit Deny) -> Org SCP -> Resource-based -> Identity-based -> IAM Permi
 - Setup & Govern multi-account AWS env
 - Util AWS Organizations to create accounts
 - Preventive Guardrail: util SCP, e.g. restrict regions for all accounts
-- Detective Guardrail: Util AWS Config, e.g. identify untagged resources
+- Detective Guardrail: util AWS Config, e.g. identify untagged resources
 
 
 
@@ -225,74 +225,84 @@ Requirements:
 
 ## Purchasing Options
 
-- On-demand: Linux / Win: billing per sec. Highest $.
-- Reserved (1-3 yr): Hotel analogy: VIP discount
-  - Reserved Instances: 
-  - Reserve:
-    1. Inst attr: Inst type, Region, Tenancy, OS
-    2. Scope: regional or zonal (AZ)
-  - Scenario: steady-state app, e.g. DB
-  - Buy and sell in the Reserved Inst Marketplace
-- Convertible Reserved Instances: Reserve options changable (inst type, tenancy, OS, scope)
-- Saving Plan (1-3 yr)
-  - Get a discount based on long-term usage
-  - Commitment to an amount of usage
-  - Usage beyond saving plans -> billed on-demand
-  - Locked to: inst fam, region
-  - Flexible: inst size, OS, tenancy
-  - Hotel analogy: VIP discount, pay lower per hr for 1-3 yr, and stay in any room type.
-- Spot Instance
-  - Can lose at any time, unreliable
-  - Most cost-efficient
-  - Spot price changes per hr
-  - Scenario: batch, data analysis, image proc, distb. workloads
-  - Spot Instance Request
-    - Max spot price: if cur <= max -> provision, if cur > max -> stop | teminate.
-    - #inst
-    - Spec
-    - Type: one-time | persistent
-    - Valid from 
-    - Valid until
-    - Only cancel requests that are open, active, disabled. Cancel a request does not terminate inst.
-  - Spot Fleet
-    - Set of spot inst + on-demand inst
-    - Def multi launch pools: inst type, OS, AZ
-    - SF chooses b/w launch pools
-    - Stop launching when hitting capacity or max cost
-    - Strategies:
-      - lowestPrice
-      - diversified: distb across all pools (availability, long workload)
-      - capacityOptimized: pool w/ optm capacity for #inst
-      - priceCapacityOptimized (recom): pools w/ highest capacity avail, select the one w/ lowest price.
-- Dedicated Host
-  - Book entire phys server, control inst placement
-  - Scenario: compliance, server-bound software licenses
-  - On-demand or reserved
-- Dedicated Inst
-  - Host can be different, but always dedicated to you.
-  - No control over inst placement, i.e. phys server
-- Capacity Reservation
-  - Reserve capacity in a spec. AZ for any duration.
-  - No time commitment
-  - Combine w/ regional Reserved Inst and Saving Plans to benefit from billing discounts
-  - $: at on-demand rate whether running instances or not
-  - Hotel analogy: book a room for a period w/ full price, even not staying
+### On-demand
+- $: per sec, Highest $.
+
+### Reserved Instance (RI, 1-3 yr): Hotel analogy: VIP discount
+- Reserve:
+  1. Inst attr: Inst type, Region, Tenancy, OS
+  2. Scope: regional or zonal (AZ)
+- Scenario: steady-state app, e.g. DB
+- Buy & sell in RI Marketplace
+
+### Convertible Reserved Instance
+- Reserve options changable (inst type, tenancy, OS, scope)
+
+
+### Savings Plan (1-3 yr)
+- Discount for long-term usage
+- Commitment to an amount of usage
+- Usage over SP -> billed on-demand
+- Fixed: inst fam, region
+- Flexible: inst size, OS, tenancy
+- Hotel analogy: VIP discount, pay lower per hr for 1-3 yr, and stay in any room type.
+
+### Spot Instance
+- Can lose at any time, unreliable
+- Most cost-efficient
+- $: change per hr
+- Scenario: batch, data analysis, image proc, dstb workloads
+#### Spot Instance Request
+- Max spot price: if cur <= max -> provision, if cur > max -> stop | teminate.
+- #Inst
+- Spec
+- Type: one-time | persistent
+- Valid from 
+- Valid until
+- Only cancel requests that are open, active, disabled. Cancel a request does not terminate inst.
+
+### Spot Fleet
+- Set: { spot inst, on-demand inst }
+- Def multi launch pools: inst type, OS, AZ
+- SF chooses b/w launch pools
+- Stop launching when hitting capacity or max cost
+- Strategy:
+  - Lowest price
+  - Diversified: dstb across all pools (availability, long workload)
+  - Capacity optimized: pool w/ optm capacity for #inst
+  - Price capacity optimized (recom): pools w/ highest capacity avail, select the one w/ lowest price.
+  
+### Dedicated Host
+- Book entire phys server (host), control inst placement
+- Scenario: compliance, server-bound software licenses (BYOL)
+- On-demand | Reserved
+
+### Dedicated Inst
+- Host can be diff, but always dedicated to customer.
+- No control over inst placement, i.e. host
+
+### Capacity Reservation
+- Reserve capacity in a spec. AZ for any duration.
+- No time commitment
+- Combine w/ regional RI & Savings Plan to discount-max
+- $: On-demand rate whether running inst or not
+- Hotel analogy: book a room for a period w/ full price, even not staying
 
 
 
 ## Placement Group
 
-- Cluster: inst. in a lo-latency group in an AZ. Good network, prone to failure.
-- Spread: inst across underlying HW, max 7 inst per AZ for a group. 
+- Cluster: inst in a lo-latency group in an AZ. Good network, prone to failure.
+- Spread: inst across underlying HW, Max 7 inst per AZ per group. 
 - Partition: inst across diff partitions (racks) in an AZ, Max 100 EC2, 7 parti per AZ. Scenario: HDFS, Cassandra, Kafka.
-- Practice: launch EC2 inst, spec Placement Group.
+- Practice: launch EC2 -> select Placement Group.
 
 
 
 ## EIP: Elastic IP
 
 - Static public IP
-- Avoid EIP, it often reflects poor arch decision, use LB or register DNS name.
+- ⚠️ Avoid EIP: often reflects poor arch decision. Use LB or register DNS name.
 
 
 
@@ -307,9 +317,8 @@ Attr:
 - 1 EIP per private IPv4 | 1 Public IPv4
 - 1+ SG
 - MAC adr
-- Create ENI independently and attach / detach on the fly for EC2 inst failover
-- ENI resides in a subnet in a VPC -> EC2 inst w/ multi-ENI is in multi subnets inside a VPC.
-
+- EC2 inst failover: create ENI independently, attach / detach on failure
+- ENI ∈ Subnet ∈ VPC: EC2 w/ multi-ENI is in multi subnets inside a VPC.
 
 
 ## AMI: Amazon Machine Image
@@ -322,9 +331,9 @@ Attr:
 # EBS: Elastic Block Storage
 
 - Network drive to attach to EC2 inst.
-- Supports multi-attach
+- Support: multi-attach
 - Bound to AZ
-- Take snapshot to move across AZ or Regions.
+- Move across AZ or Region: take snapshot
 
 
 
@@ -332,19 +341,21 @@ Attr:
 
 - Archive: 75% cheaper, takes 24-72 hrs for restore.
 - Recycle bin: setup rules to retain deleted snapshots.
-- Fast snapshot restore (FSR): full init of snapshot w/ 0 latency on the first use, pricey.
+- Fast snapshot restore (FSR): full init of snapshot w/ 0 latency on the first use, Hi $.
 
 
 
 ## EBS Volume Types
 
-- Characterised in Size, Thruput, IOPS
-- HDD cannot be boot volumes
-- General SSD: gp2 / gp3
-- Provisioned IOPS (PIOPS) SSD: io1 / io2 Block Express: Hi-perf, > 16,000 IOPS
+- Character: Size, Thruput, IOPS
+- ❌ HDD be boot volumes
+- General SSD: `gp2` / `gp3`
+- Provisioned IOPS (PIOPS) SSD: 
+  - `io1`: 64,000 IOPS
+  - `io2 Block Express`: 256,000 IOPS
 - HDD: 
-  - st1 (HDD): low $, freq acc, thruput intensive
-  - sc1 (HDD): lowest $
+  - `sc1`: lowest $
+  - `st1`: lo $, freq acc, thruput optm
 
 
 
@@ -352,24 +363,22 @@ Attr:
 
 - Attach an EBS Max *16* EC2 inst in 1 AZ.
 - Must use cluster-aware FS (not XFS, ext4)
-- Supported: io1 / io2
+- Support: `io1`, `io2 Block Express`
 
 
 
 ## EBS Encryption
 
-- Leverage keys from KMS (AES-256)
+- Util KMS keys (AES-256)
 
 Enc an unencrypted EBS volume: 
 
-1. Create an EBS snapshot of the unencrypted EBS volume.
-2. Select snapshot > Actions > Create volume from snapshot > [x] Encrypt, select KMS key.
-
-
+1. Create EBS snapshot of the unencrypted EBS.
+2. Select snapshot > Actions > Create volume from snapshot > ✅ Encrypt, select KMS key.
 
 # EC2 Instance Store
 
-- Hi-perf hard disk, directly on the phys server the EC2 inst is provisoned.
+- Hi-perf hard disk, directly on phys server the EC2 inst is provisoned.
 - ~`emptyDir` in Kubernetes volume, Direct Attached Storage (DAS) / Local Datastore in trad infra.
 - Lose storage if stopped
 - Scenario: buffer, cache, scratch data, tmp data
@@ -378,20 +387,20 @@ Enc an unencrypted EBS volume:
 
 # EFS: Elastic File System
 
-- NFS that can be mounted on many EC2 across multi-AZ
+- NFS mounted on multi EC2, multi-AZ
 - Scenario: content mgmt, web serving, data sharing.
 - SG to control acc to EFS
 - Marche only w/ Linux based AMI
-- Enc at rest w/ KMS
+- Enc at-rest w/ KMS
 
 
 
 ## Modes
 
 - Performance: 
-  - General: lo latency
-  - Max I/O: hi latency, parallelism
-- Thruput
+  - General: lo-latency
+  - Max I/O: hi-latency, for parallelism
+- Thruput:
   - Elastic: auto scale thruput
   - Provisioned: set thruput regardlesss of storage size
   - Bursting
@@ -401,7 +410,7 @@ Enc an unencrypted EBS volume:
 ## Storage Class
 
 - Move file after N days.
-- Imple lifecycle policies to move files b/w storage tiers.
+- Lifecycle policy: move files b/w storage tiers.
 
 
 
@@ -416,7 +425,7 @@ Enc an unencrypted EBS volume:
 ### Availability & Durability
 
 - Standard: Multi-AZ
-- One Zone: 1 AZ, default
+- One Zone: 1 AZ
 
 
 
@@ -465,18 +474,18 @@ Enc an unencrypted EBS volume:
 
 
 
-## Cross Zone Load Balancing
+## Cross-Zone Load Balancing
 
 - #EC2 across AZ are not uniformly distributed, with Cross Zone LB, LBs consider the distribution to achieve true LB.
-- ALB: enabled default, disable at Target group level, no $ for inter AZ data.
-- NLB: disabled default, $ for inter AZ data
-- ELB > Attributes
-
+- ALB: enabled (always), disable at Target group level, no $ for inter AZ data.
+- NLB: disabled (default), $ for inter AZ data
+- LB lvl: ELB > Attributes
+- Target group lvl: Target Group > Attributes
 
 
 ## SSL/TLS Cert
 
-- Mng certs: AWS Certificate manager (ACM)
+- Mng certs: AWS Certificate Manager (ACM)
 - Clients spec. Server Name Indication (SNI) w/ hostname, solves multi TLS certs in 1 web srever. Marche: ALB, NLB, CloudFront.
 - ELB > Listeners > Add listener > Secure listener settings
 
@@ -484,7 +493,7 @@ Enc an unencrypted EBS volume:
 
 ## Deregistration Delay
 
-- Time to complete in-flight requests while EC2 is de-registering or unhealthy
+- Time to complete in-transit requests while EC2 is de-registering or unhealthy
 - Stops sending new req to the de-registering EC2
 - 0-3600s, default: 300s
 
@@ -494,9 +503,9 @@ Enc an unencrypted EBS volume:
 
 - Scale out/in (+/-) EC2
 - Recreate EC2 in case current one is terminated
-- Free
+- No $
 - Launch template: AMI, Inst type, EC2 user data, EBS volumes, SG, SSH key pair, IAM roles, VPC, Subnet, LB
-- Step 3 - Integrate with other services: [x] Turn on ELB health checks
+- ASG+ELB: Step 3: Integrate with other services > Health checks > ✅ ELB health checks
 
 
 
@@ -507,14 +516,14 @@ Enc an unencrypted EBS volume:
 ### Dynamic
 
 - Target Tracking: avg ASG CPU @40%
-- Simple / Step: CloudWatch alarm trigger -> scale out/in
+- Simple / Step: CloudWatch Alarm -> scale out/in
 - Metrics: CPUUtilization, RequestCountPerTarget, Average Network I/O
 
 
 
 ### Scheduled
 
-Scale out min capacity to 10 at 17:00 on Fri.
+Scale out min capacity: 10, 17:00, Fri.
 
 ### Predictive
 
@@ -524,32 +533,31 @@ ASG auto forecast and schedule scaling
 
 - Cooldown period (default 300s) post-scaling.
 - During cooldown ASG will not launch / terminate EC2.
-- Use ready-to-use AMI to reduce cooldown period.
+- Cooldown period-: ready-to-use AMI
 
 
 
-# Aurora and RDS: Relational Database Service
+# Aurora & RDS: Relational Database Service
 
 - Support: Postgres, MySQL, MariaDB, Oracle, MS SQL, IBM DB2, Aurora
 - Continuous backup and restore to spec timestamp (PITR)
-- Multi AZ for DR
+- DR: Multi-AZ 
 - Not accessible via SSH
 
 
 
 ## Storage Auto Scaling
-
-- Set Maximum Storage Threshold
+- Storage > Additional storage configuration > Maximum Storage Threshold
 
 
 
 ## Read Replicas
 
-- Max 15 read replicas
-- Intra, inter AZ, cross region 
+- Max 15
+- Intra, inter AZ, cross-region 
 - Async replication: reads are consistent
-- Replicas can be promoted to indepedent DB
-- App updates conn. string to leverage read replicas
+- Can be promoted to indep DB
+- App updates conn. string to util RR
 - `SELECT` SQL only
 - DB > Actions > Create read replica
 
@@ -558,44 +566,43 @@ ASG auto forecast and schedule scaling
 ### Data Replication
 
 - Same region RR: free
-- corss-region RR: $
+- Cross-region RR: $
 
 
 
-## RDS Multi AZ (DR)
+## [RDS Multi-AZ (DR)](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.Migrating.html)
 
-- Sync replication
+- Sync block-lvl (EBS) replication
 - 1 DNS name: active-standby failover
 - Not for scaling
-- Single -> Multi AZ
+- Single -> Multi-AZ
   - 0 downtime
-  - click "modify" for the DB: Take snapshot -> Restore on Standby -> Sync established.
-
-
+  - RDS > Actions > Convert to Multi-AZ deployment
+  - BTS: Snapshot -> Restore on Standby -> Sync b/w primary & standby vol
 
 ## RDS Custom
 
-- Managed Oracle and MS SQL w/ OS & DB customisation
-- Acc. underlying EC2 inst via SSH or SSM Session Manager
+- Oracle or MS SQL w/ OS & DB customisation
+- Acc. underlying EC2 via SSH or SSM Session Manager
 - De-activate automation mode, take DB snapshot pre-customisation
 
 
 
-## Aurora
+# Aurora
 
-- Supported: Postgres, MySQL
+- Support: Postgres, MySQL
 - AWS cloud optm: 5x performance vs. MySQL, 3x vs. Postgres (on RDS)
 - Auto storage incr: 10GB, Max 256TB
 - Max 15 replicas, <10ms replica lag
 - $: +20% vs. RDS
 
-### Aurora DSQL
-- Serverless, Dstb RDBM
-- Active-active HA: single / multi region
+## Aurora DSQL
+- Serverless, Dstb RDBMS
+- Active-active HA: single/multi region
 - Postgres compatible
 
 
-### HA
+## HA
 
 - 6 replicas across 3 AZ, each AZ holds 2
   - 4/6 quorum for writes
@@ -609,15 +616,14 @@ ASG auto forecast and schedule scaling
 
 
 
-### Custom Endpoint
-
+## Custom Endpoint
 - Diff RR inst type for diff usage
-- Set up a custom endpoint for a group of RR, another for another group. 
+- 1:1 Mapping Custom Endpt - RR group 
 - Reader Endpt generally discarded
 
 
 
-### Aurora Serverless
+## Aurora Serverless
 
 - Auto DB instantiation & auto-scaling
 - Infreqeent, intermittent, unpredictable workloads
@@ -626,34 +632,32 @@ ASG auto forecast and schedule scaling
 
 
 
-### Global Aurora
+## Global Aurora
 
 - 1 primary region (R/W)
 - Max 10 secondary regions (read-only), replication lag <1s.
 - Max 10 RR / secondary region
-- Promote another region as primary (DR): Recovery Time Objective (RTO) <1min.
+- Promote another region as primary (DR): RTO <1min.
 
 
 
-### Aurora ML
+## Aurora ML
 
-- Supported: SageMaker, Comprehend (sentiment analysis)
+- Support: SageMaker, Comprehend (sentiment analysis)
 - App -> Aurora -> ML -> Aurora -> App
 
 
 
-### Babelfish for Aurora PostgreSQL
+## Babelfish for Aurora PostgreSQL
 
 - MS SQL server migrate to Aurora PostgreSQL
 - T-SQL -> Babelfish -> PL/pgSQL
 
 
 
-## Backup & Restore
+# Backup & Restore
 
-
-
-### RDS
+## RDS
 
 - Daily auto full backup
 - Transation logs backup every 5min: PITR
@@ -663,70 +667,64 @@ ASG auto forecast and schedule scaling
 
 
 
-### Aurora
-
-- Retention: 1-35 days
-- PITR in the timeframe
-
-
-
-### Restore
-
-- Backup to S3
-- On-prem -> Aurora restore: Percona XtraBackup -> backup to S3
-
-
+## Aurora
+- Retention: 1-35 days, PITR
 
 ### Aurora DB Cloning
 
-- Faster than backup + restore
-- Copy-on-write protocol
+- Faster than backup & restore
+- Copy-on-write:
   - New DB uses same volume as orig.
   - Update: allo additional storage, data copied & separated
 
 
+## Restore
 
-## Security
+- Backup to S3
+- On-prem -> Aurora: Percona XtraBackup -> S3
 
-- At-rest Enc
+
+# Security
+
+- Enc at-rest
   - Def at launch w/ AWS KMS
   - Master un-encrypted, RR cannot be encrypted
-  - Enc post-launch: snapshot & restore
+  - Enc post-launch: backup & restore
 - IAM auth: IAM roles conn to DB
 - SG
 - No SSH, except RDS custom
 
 
 
-## RDS Proxy
+# RDS Proxy
 
 - Reduce DB CPU & RAM
-- Serverless, HA (multi AZ)
-- Reduce RDS & Aurora failover time by max 66%
+- Serverless, HA (multi-AZ)
+- RDS & Aurora failover time-: max 66%
 - Enforce IAM auth 
-- Not public accessible, acc from VPC
+- Acc from VPC only
 
 
 
-## ElastiCache
+# ElastiCache
 
-- Redis or Memcached
+- Redis, Memcached
 - ElastiCache as DB cache: reduce load for DB
-- App write data into ElastiCache: help the app being stateless.
+- App write data into ElastiCache: Stateless-ise app
 - Require code change
 
 
 
-### Redis
+## Redis
 
-- Multi AZ w/ auto-failover
-- Data durability using AOF persistence 
+- Multi-AZ w/ auto failover
+- Data durability w/ AOF persistence 
 - Backup & restore
-- Sorted sets: guarantee uniqueness & elem ordering, i.e. real time ranking.
+- Sorted sets: guarantee uniqueness & elem ordering, e.g. real-time ranking.
 
 
 
-### Memcached
+## Memcached
 
 - Multi-node for data partitioning (sharding)
 - No HA
@@ -736,16 +734,16 @@ ASG auto forecast and schedule scaling
 
 
 
-### Security
+## Security
 
-- IAM auth for Redis
-- IAM policies on ElasticCache only for AWS API-level sec
-- Redis AUTH: set "password/token", support SSL in flight enc
+- IAM auth: Redis only
+- IAM policy on ElastiCache only for AWS API-level sec
+- Redis AUTH: set "password/token", support TLS in-transit enc
 - Memchched supports SASL based auth
 
 
 
-### Patterns
+## Patterns
 
 - Lazy loading: all the read data is cached, can become stale
 - Write through: Add/update data in cache when written to a DB, no stale data
@@ -938,8 +936,8 @@ Alias
 
 - ELB sticky session
 - Stateless app: Web clients store cookies OR ElastiCache OR DynamoDB
-- ElastiCache: store sessions, RDS data cache, Multi AZ
-- RDS: RR for scaling reads, Multi AZ for DR
+- ElastiCache: store sessions, RDS data cache, Multi-AZ
+- RDS: RR for scaling reads, Multi-AZ for DR
 - SG: 
   - HTTP/HTTPS 0.0.0.0 -> ELB
   - HTTP ELB -> EC2
@@ -1225,7 +1223,7 @@ Delete obj behaviour: **Show versions** switch
 
 Encrypted files upload to S3
 
-### Encryption in Transit (SSL/TLS)
+### Encryption in-Transit (SSL/TLS)
 
 - HTTPS endpoint
 - Force w/ Policy: Deny s3:GetObject SecureTransport: "false"
@@ -1567,7 +1565,7 @@ Deployment Opt:
 - Duplicate msgs: at least once delivery
 - Best-effort msg ordering
 - Producer [`SendMessage` API] -> SQS <-> [`DeleteMessage` API] Consumer
-- In-flight enc: HTTPS, At-rest enc: KMS
+- In-transit enc: HTTPS, At-rest enc: KMS
 - SQS API acc control: IAM policy
 
 
@@ -1897,7 +1895,7 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 
 # DynamoDB
 
-- NoSQL DB, HA across multi AZ
+- NoSQL DB, HA across multi-AZ
 - Transaction support
 - Dstb DB
 - Millions req/sec, Trillions rows, Hundreds TB storage
@@ -2172,7 +2170,7 @@ Challenges
 # Keyspaces
 
 - Cassandra NoSQL dstb DB
-- Tables replicated 3 times across multi AZ
+- Tables replicated 3 times across multi-AZ
 - Cassandra Query Language (CQL)
 - <10ms latency, thousands req/sec
 - Capacity: Provisioned mode + autoscaling or On-demand
@@ -2247,7 +2245,7 @@ LOCATION 's3://target-bucket/prefix/';
 
 ## Snapshot & DR
 
-- Multi AZ mode for some clusters
+- Multi-AZ mode for some clusters
 - PITR from S3
 - Incremental backup
 - Restore to new cluster
@@ -2391,7 +2389,7 @@ Components:
 
 - Alt to Kinesis
 - MSK: mng Kafka Broker & Zookeeper nodes, auto recovery
-- MSK cluster in VPC, multi AZ
+- MSK cluster in VPC, multi-AZ
 - Data in EBS
 - MSK Serverless: MSK mng capacity, provision resource, autoscaling
 
@@ -3193,7 +3191,7 @@ Advanced:
 - Cannot used by EC2 w/in its Subnet, only from other subnets
 - Private Subnet -> NATGW -> IGW
 - BW: 5-100 Gbps
-- Multi NATGW in multi AZ for fault-tolerance, no cross-AZ failover
+- Multi NATGW in multi-AZ for fault-tolerance, no cross-AZ failover
 
 
 
@@ -3256,7 +3254,7 @@ Advanced:
 
 ## VPC Peering
 
-- Conn 2 VPC w/ AWS network, cross region & account
+- Conn 2 VPC w/ AWS network, cross-region & account
 - No CIDR overlap
 - Non-transitive: VPC: A, B, C; Peering: A-B, B-C. A cannot go to C, must setup A-C.
 - Update Route Tables in every subnet of VPC on both sides
@@ -3761,7 +3759,7 @@ Hosted Connection: 50 Mbps - 25 Gbps
 ## Service Role
 
 - IAM Role for CloudFormation to CRUD resources
-- Give ability to users w/o perm to work w/ stack resources: `iam:PassRole`
+- Give user ability w/o perm to control stack resources: `iam:PassRole`
 
 
 
