@@ -5,7 +5,7 @@
 - Root account should not be used or shared.
 - Create users & groups.
 - A user can be in multi groups.
-- Groups contains users only.
+- Group contains users only.
 
 ## Policy
 
@@ -14,10 +14,10 @@
 - JSON file qua policy imposed on Users or Groups
 - Def perm
 
-```jsonc
+```json
 {
-  "Version": "2012-10-17" // Standard policy version, always 2012-10-17
-  "Id": "optional-001"
+  "Version": "2012-10-17", // Standard policy version, always 2012-10-17
+  "Id": "optional-001",
   "Statement": [
       {
           "Sid": "Statement id, optional",
@@ -48,7 +48,7 @@
           "aws:SourceIp": ["192.168.2.0/24"]
         },
         "StringEquals": {
-          // Restrict regioon
+          // Restrict region
           "aws:RequestedRegion": ["ec-central-1", "eu-west-1"],
           // Tags
           "ec2:ResourceTag/Project": "Analytics",
@@ -70,8 +70,8 @@
 
 ### S3 Bucket & Object Lvl Perm
 
-`"s3:ListBucket"`, `"arn:aws:s3:::test"`
-`s3:[Get, Put, Delete]Object`, `"arn:aws:s3:::test/*"`
+- Bucket: `"s3:ListBucket"`, `"arn:aws:s3:::test"`
+- Obj: `"s3:[Get, Put, Delete]Object"`, `"arn:aws:s3:::test/*"`
 
 ## IAM Role vs. Resource-Based Policy
 
