@@ -1145,7 +1145,7 @@ Delete obj behaviour: **Show versions** switch
 
 - 3,500 PUT/COPY/POST/DELETE, 5,500 GET/HEAD req per sec per prefix in a bucket.
 - Multi-part upload: recom file >100MB, upload parallelism
-- Transfer acceleration: Src S3 -> AWS edge FW -> target S3 in another region.
+- Transfer acceleration: Src S3 -> AWS edge FW -> Target S3 in another region.
 
 
 
@@ -1882,13 +1882,12 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 
 # DynamoDB
 
-- NoSQL DB, HA across multi-AZ
+- NoSQL, dstb DB, HA across multi-AZ
 - Transaction support
-- Dstb DB
 - Millions req/sec, Trillions rows, Hundreds TB storage
 - <10ms performance
 - Serverless: no maintenance, patching
-- Table Class: Standard or IA
+- Table Class: Standard | IA
 
 
 
@@ -1913,13 +1912,13 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 - Set: #R/W per sec
 - Plan capacity beforehand
 - $: provisioned Read/Write Capacity Unit (RCU, WCU)
-- Add autoscaling mode fro RCU & WCU
+- Add autoscaling mode for RCU & WCU
 
 
 
 ### On-Demand Mode
 
-- More $
+- $+
 - Scenario: unpredictable workloads, sudden spikes
 
 
@@ -1983,7 +1982,7 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 
 
 
-### DynamoDB - S3 Integration
+### DynamoDB - S3
 
 Export to S3
 
@@ -2006,8 +2005,8 @@ Import from S3
 - *Cache*
 - API + Lambda: serverless
 - Practice: 
-  - API Gateway > Develop > Routes > add Route & API method
-  - API Gateway > Develop > Integrations > Select integration target (Lambda, HTTP URI, SQS)
+  - API > Resources > Create method
+  - API > Deploy API
 
 
 
@@ -2022,7 +2021,7 @@ Import from S3
 
 ### Edge-Optimized (default)
 
-- Request routed thru Cloudfront edge loc
+- Request routed thru CloudFront edge loc
 - API Gateway still in 1 region
 
 
@@ -2036,8 +2035,8 @@ Import from S3
 
 ### Private
 
-- Acc from VPC w/ interface VPC endpoint (ENI)
-- Reosource policy: def acc
+- Acc from VPC w/ VPC Interdace Endpoint (ENI)
+- Resource policy: def acc
 
 
 
@@ -2052,7 +2051,7 @@ Import from S3
 - Integration: AWS Certificate Manager (ACM)
 - Setup CNAME or A-alias in Route 53
 
-Cert loc:
+Cert Loc:
 
 - Edge-Optimized endpoint: `us-east-1`
 - Regional endpoint: API Gateway region
@@ -2061,16 +2060,15 @@ Cert loc:
 
 # Step Functions
 
-- Serverless visual worflow 
+- Serverless visual workflow 
 - Orchestrate Lambda, EC2, ECS, on-prem, API Gateway, SQS, etc.
-- Seq, parallelism, cond, timeout, error handling
-- Can imple Human approval
+- Seq, Parallelism, Cond, Timeout, Error handling, Human approval
 
 
 
 # Cognito
 
-- For non-AWS users (web/mobile app, SAML)
+- Non-AWS user auth (web/mobile app, SAML)
 
 
 
@@ -2087,13 +2085,11 @@ Cert loc:
 
 - Provide temp AWS cred to users to acc AWS resources
 - User source: CUP, 3e party
-- Web/mobile app login ->  Identity provider / CUP (token) -> Web/mobile app -> Identity Pool (AWS cred + IAM policy) -> Web/mobile app -> AWS resources
+- Web/mobile app login ->  IdP / CUP (token) -> Web/mobile app -> Identity Pool (AWS cred + IAM policy) -> Web/mobile app -> AWS resources
 
 
 
 # Serverless Arch
-
-
 
 ## Micro-service
 
@@ -2102,7 +2098,7 @@ Services:
 - ELB -> ECS -> DynamoDB
 - API Gateway -> Lambda -> ElastiCache
 - ELB -> EC2 ASG -> RDS
-- Sync: pattern: API Gateway, ELB
+- Sync: API Gateway, ELB
 - Async: SQS, SNS, Kinesis, Lambda trig S3
 
 Challenges
@@ -2120,7 +2116,7 @@ Challenges
 # Databases
 
 - RDBMS (SQL/OLTP): RDS, Aurora, for `JOIN`
-- NoSQL: DynamoDB (JSON), ElastiCache (kv-pair), Neptune (graph), DocumentDB (MangoDB), Ketspaces (Cassandra)
+- NoSQL: DynamoDB (JSON), ElastiCache (kv-pair), Neptune (graph), DocumentDB (MangoDB), Keyspaces (Cassandra)
 - Object store: S3, Glacier
 - Data warehouse (SQL Analytics / BI): Athena, EMR, Redshift (OLAP)
 - Search: OpenSearch (JSON): free text, unstructured search
@@ -2145,7 +2141,7 @@ Challenges
 
 ## Neptune Streams
 
-- Real-time ordered seq of changes to Neptune
+- Real-time ordered change seq
 - HA: 3 AZ, 15 RR
 - No duplicates, strict order
 - REST API acc
@@ -2157,10 +2153,10 @@ Challenges
 # Keyspaces
 
 - Cassandra NoSQL dstb DB
-- Tables replicated 3 times across multi-AZ
+- Tables replicated 3 times, multi-AZ
 - Cassandra Query Language (CQL)
 - <10ms latency, thousands req/sec
-- Capacity: Provisioned mode + autoscaling or On-demand
+- Capacity: Provisioned mode + autoscaling | On-demand
 - PITR: Max 35 days
 
 
@@ -2179,13 +2175,17 @@ Challenges
 # Athena
 
 - Serverless query service
-- Data source: S3
+- Source: S3
 - Support: CSV, JSON, ORC, Avro, Parquet
 - $: $5 per TB data scanned
 - Combine w/ QuickSight for dashboard
 - Scenario: BI, analytics, logs analysis (VPC Flow, ELB), CloudTrail trails
 
-
+```SQL
+CREATE EXTERNAL TABLE ...
+ROW FORMAT ...
+LOCATION 's3://target-bucket/prefix/';
+```
 
 ## Optimisation
 
@@ -2194,7 +2194,7 @@ Challenges
 - Compress data for small retrieval
 - Partition datasets in S3: easy query: `s3://my-bucket/pathToTable/<PARTITION_COLUMN_NAME>=<VALUE>/<PARTITION_COLUMN_NAME>=<VALUE>/...` 
 e.g. `s3://my-bucket/flight/year=2026/month=1/day=1/`
-- Larger file (> 128 MB): min overhead
+- Larger file (>128MB): minimise overhead
 
 
 
@@ -2204,18 +2204,10 @@ e.g. `s3://my-bucket/flight/year=2026/month=1/day=1/`
 - Lambda qua Data Source Connector to run query
 - Store results to S3
 
-```SQL
-CREATE EXTERNAL TABLE ...
-ROW FORMAT ...
-LOCATION 's3://target-bucket/prefix/';
-```
-
-
-
 # Redshift
 
 - OLAP, column store, based on Postgres
-- Provisioned or Serverless cluster
+- Cluster: Provisioned | Serverless 
 - SQL interface
 - Integration: BI, e.g. QuickSight, Tableau
 - Faster query, join, aggregation by indexes vs. Athena
@@ -2226,7 +2218,7 @@ LOCATION 's3://target-bucket/prefix/';
 
 - Leader node: query planning, aggregation
 - Compute node: perform query, send results to Leader
-- Provisioned mode: choose inst type, reserve inst
+- Provisioned mode: choose inst type, RI
 
 
 
@@ -2266,7 +2258,7 @@ iam_role 'arn:aws:iam::0123456789012:role/MyRedshiftRole';
 # OpenSearch
 
 - Search any field even partial match. Solve DynamoDB query by primary key or indexes
-- Cluster: Managed or Serverless
+- Cluster: Managed | Serverless
 - No native support for SQL, enable via plugin
 - Ingestion: Data Firehose, AWS IoT, CloudWatch Logs
 - Builtin Dashboard
@@ -2284,7 +2276,7 @@ Patterns
 - Create Hadoop cluster (100+ EC2) for *Big data proc & analysis*
 - Bundle w/ Spark, HBase, Flink, Presto
 - Takes care provision & config
-- Autoscaling and integrate w/ Spot inst
+- Autoscaling & integrate w/ Spot inst
 - Long-running or Transient (temp) cluster
 - Scenario: data proc, ML, web index, big data
 
@@ -2296,7 +2288,7 @@ Patterns
 - Core: run tasks and store data, long running
 - Task (opt): run tasks, Spot inst
 - EC2 purchase opt:
-  - On-demand & Reserved (min 1 yr): Master & Core nodes
+  - On-demand & RI (min 1 yr): Master & Core nodes
   - Spot: Task nodes
 
 
@@ -2304,7 +2296,7 @@ Patterns
 # QuickSight
 
 - Serverless ML-powered BI dashboard
-- SPICE enginer: in-mem comp if data import to QuickSight
+- SPICE engine: in-mem comp if using data import
 - Column-Level Security (CLS)(Enterprise ver): prevent some clmns disp to some users
 
 
@@ -2331,14 +2323,14 @@ Patterns
 # Glue
 
 - Serverless ETL 
-- Convert to Parquet: S3 Event Notification -> Lambda / EventBridge -> Glue (import data from S3) -> Output S3 -> Athena
+- Convert to Parquet: S3 Event Notification -> Lambda / EventBridge -> Glue (import data from S3) -> S3 out bucket -> Athena
 
 Components:
 
 - Job bookmark: prevent re-proc old data
 - Glue DataBrew: clean & normalise data w/ pre-built transformation
 - Studio: GUI to create, run, monitor ETL jobs
-- Streaming ETL: based on Spark Structured Streaming. Compatible w/ Kinesis, Kafka, MSK (managed Kafka)
+- Streaming ETL: based on Spark Structured Streaming. Compatibility: Kinesis, Kafka, MSK (managed Kafka)
 
 
 
