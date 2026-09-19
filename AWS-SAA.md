@@ -371,9 +371,9 @@ Attr:
 
 - Util KMS keys (AES-256)
 
-Enc an unencrypted EBS volume: 
+Enc un-encrypted EBS volume: 
 
-1. Create EBS snapshot of the unencrypted EBS.
+1. Create EBS snapshot of the un-encrypted EBS.
 2. Select snapshot > Actions > Create volume from snapshot > ✅ Encrypt, select KMS key.
 
 # EC2 Instance Store
@@ -477,7 +477,7 @@ Enc an unencrypted EBS volume:
 ## Cross-Zone Load Balancing
 
 - #EC2 across AZ are not uniformly distributed, with Cross Zone LB, LBs consider the distribution to achieve true LB.
-- ALB: enabled (always), disable at Target group level, no $ for inter AZ data.
+- ALB: enabled (always), disable at Target group level, $0 for inter AZ data.
 - NLB: disabled (default), $ for inter AZ data
 - LB lvl: ELB > Attributes
 - Target group lvl: Target Group > Attributes
@@ -503,7 +503,7 @@ Enc an unencrypted EBS volume:
 
 - Scale out/in (+/-) EC2
 - Recreate EC2 in case current one is terminated
-- No $
+- $0
 - Launch template: AMI, Inst type, EC2 user data, EBS volumes, SG, SSH key pair, IAM roles, VPC, Subnet, LB
 - ASG+ELB: Step 3: Integrate with other services > Health checks > ✅ ELB health checks
 
@@ -537,7 +537,7 @@ ASG auto forecast and schedule scaling
 
 
 
-# Aurora & RDS: Relational Database Service
+# Aurora & RDS: RDBMS
 
 - Support: Postgres, MySQL, MariaDB, Oracle, MS SQL, IBM DB2, Aurora
 - Continuous backup and restore to spec timestamp (PITR)
@@ -565,7 +565,7 @@ ASG auto forecast and schedule scaling
 
 ### Data Replication
 
-- Same region RR: free
+- Same region RR: $0
 - Cross-region RR: $
 
 
@@ -771,7 +771,7 @@ ASG auto forecast and schedule scaling
 
 ## Hosted Zone
 
-- A container of records, def how to route traffic
+- Container of records, def how to route traffic
 - Public: how to route on internet
 - Private: how to route w/in VPCs (private domains)
 - $0.5 per mo per hosted zone
@@ -785,14 +785,14 @@ CNAME: only for non-root domain
 Alias
 
 - Hostname to an AWS resource 
-- Marche: root/non-root domain
-- Free
+- Marche: root & non-root domain
+- $0
 - Native health check 
 - Auto recog resource IP change
 - A or AAAA
-- Targets: ELB, CloudFront distribution, API Gateway, Elastic Beanstalk, S3 website, VPC Interface $ndpoint, Global Accelerator, Route 53 record in the same hosted zone
+- Targets: ELB, CloudFront distribution, API Gateway, Elastic Beanstalk, S3 website, VPC Interface Endpoint, Global Accelerator, Route 53 record in the same hosted zone
 - No ALIAS for an EC2 DNS
-- Hosted zone (Domain Name) > Create record > A/AAAA, Route traffic to: [x] Alias, choose endpoint
+- Hosted zone (Domain Name) > Create record > A/AAAA, Route traffic to: ✅ Alias, choose endpoint
 
 
 
@@ -802,7 +802,7 @@ Alias
 
 ### Simple
 
-- Can spec multi values in a record
+- 1 record, multi val
 - If multi val -> one chosen by client randomly
 - If Alias: only 1 AWS resource
 
@@ -811,10 +811,10 @@ Alias
 ### Weighted
 
 - Control % of requests that go to each resource, like rolling a dice
-- DNS records must have the same name (app.example.com) and type (A/AAAA)
+- DNS records w/ the same name (app.example.com) and type (A/AAAA)
 - Scenario: LB across regions 
 - Weight: 0 to stop sending request to a resource
-- If all records with weight 0, records be returned equally.
+- If all records w/ weight 0, records be returned equally.
 
 
 
@@ -830,7 +830,7 @@ Alias
 
 ### Failover (Active-Passive)
 
-- Same record name, 2 records
+- 2 records, same name
 - Primary: mandatory health check
 - Secondary (DR): opt health check
 
@@ -838,8 +838,7 @@ Alias
 
 ### Geolocation
 
-- Routing based on client loc
-- Continent, country
+- Routing based on client loc by Continent, Country
 - Spec "Default" in case there's no match
 
 
@@ -847,8 +846,8 @@ Alias
 ### Geoproximity
 
 - Shift traffic from 1 region to another
-- Spec bias: expand [1, 99]/ shrink [-99, -1]
-- AWS resource, on-prem (latitude + longitude)
+- Bias: expand [1, 99]/ shrink [-99, -1]
+- AWS resource, on-prem (latitude, longitude)
 
 
 
@@ -862,11 +861,11 @@ Alias
 
 ### Multi-Value
 
-- Same record name, multi records for diff. values
+- Multi records, same name, diff. val
 - Routing to multi resources
-- Route 53 returns multi values / resources
+- Route 53 returns multi val / resources
 - Max 8 healthy records returned 
-- Multi-Value is NOT a substitute for an ELB
+- NOT a substitute for ELB
 
 
 
@@ -879,12 +878,12 @@ Alias
 ### Endpoint
 
 - ~15 global health checkers will check endpoint
-- (Un)Healthy threshold: 3 (default)
-- Interval: 30s (can be 10s, hi $)
+- (Un)Healthy threshold for an endpt: 3 (default)
+- Interval: 30s (can be 10s, Hi $)
 - HTTP, HTTPS, TCP
-- If >18% health checkers report healthy -> Healthy
+- If >18% health checkers pass -> Healthy
 - Healthy: 2xx, 3xx status codes, head 5120 bytes resp
-- Config router / firewall aloow incoming request from Route 53 health checkers
+- Config router / firewall: allow inbound request: Route 53 health checkers
 
 
 
@@ -912,7 +911,7 @@ Alias
 - DNS service: mng DNS records
 - Example: GoDaddy as Registrar & Route 53 as DNS service
   1. Route 53 public hosted zone: copy Name servers
-  2. Paste on Godaddy Nameservers
+  2. Paste on GoDaddy Nameservers
 
 
 
@@ -948,11 +947,8 @@ Alias
 
 # Elastic Beanstalk
 
-- Centralised deploy mgmt: EC2, ASG, ELB, RDS, etc.
+- $0, Centralised deploy mgmt: EC2, ASG, ELB, RDS, etc.
 - Developer only responsible for code
-- Beanstalk is free
-
-
 
 ## Components
 
@@ -971,8 +967,6 @@ Alias
 
 # S3
 
-
-
 ## Bucket
 
 - Contains objects
@@ -985,7 +979,7 @@ Alias
 
 ## Object (file)
 
-- Key (path): s3://my-bucket/folder/file.txt, prefix: folder, obj name: file.txt
+- Key (path): `s3://my-bucket/folder/file.txt`, prefix: `folder`, obj name: `file.txt`
 - Value: content, Max 50 TB, "multi-part upload" for obj > 5GB
 - Metadata: list of kv pairs
 - Tags: Max 10 kv pairs
@@ -996,8 +990,8 @@ Alias
 
 - IAM
 - Resource-based: bucket (allow cross account), obj ACL
-- Cond. IAM principal acc. S3 obj: (IAM perm OR Resource policy) AND !Explicit deny
-- Block public access: [x] as default for protection
+- Cond. IAM principal acc. S3 obj: (IAM policy OR Resource policy) AND !Explicit Deny
+- Block public access: ✅ (default for protection)
 
 
 
@@ -1008,8 +1002,8 @@ Alias
 - Suspend versioning does not delete prev ver
 
 Delete obj behaviour: **Show versions** switch 
-[x] On: permanent delete
-[] Off: add *Delete marker*
+- On: permanent delete
+- Off: add *Delete marker*
 
 ## Replication
 
@@ -1020,7 +1014,7 @@ Delete obj behaviour: **Show versions** switch
 - Async copy
 - IAM perm to S3
 - No chaining: bucket A -> bucket B, bucket B -> bucket C. Obj created in bucket A -> replica in bucket B, but not bucket C.
-- Practice: Src bucket > Management > Replication rules: Create replication rule
+- Practice: Src S3 > Management > Replication rules: Create replication rule
 
 
 
@@ -1111,7 +1105,7 @@ Delete obj behaviour: **Show versions** switch
 ### Intelligent Tiering
 
 - $: Monthly monitoring & auto-tiering
-- No $ for retrieval
+- $0: retrieval
 
 
 
@@ -1119,7 +1113,7 @@ Delete obj behaviour: **Show versions** switch
 
 - 1 AZ
 - Directory bucket: directory hierarchical stru for Hi performance
-- 100,000s requests, < 10 ms latency
+- 100,000s requests, < 10ms latency
 - 99.95% Avail
 
 
@@ -1141,9 +1135,9 @@ Delete obj behaviour: **Show versions** switch
 
 ## Event Notification
 
-- S3:Object[Created, Removed, Restore], S3:Replication, etc.
-- Obj name filtering (*.jpg)
-- Send event to SNS, SQS, Lambda or EventBridge. Def. Access policy on dest, i.e. SNS, SQS (`sqs:SendMessage`), Lambda
+- `s3:Object[Created, Removed, Restore]`, `s3:Replication`, etc.
+- Obj name filtering, e.g. `*.jpg`
+- Send event to SNS, SQS, Lambda or EventBridge. Def. acc policy on dest, i.e. SNS, SQS (`sqs:SendMessage`), Lambda
 
 
 
@@ -1151,7 +1145,7 @@ Delete obj behaviour: **Show versions** switch
 
 - 3,500 PUT/COPY/POST/DELETE, 5,500 GET/HEAD req per sec per prefix in a bucket.
 - Multi-part upload: recom file >100MB, upload parallelism
-- Transfer acceleation: transfer file to an AWS edge, AWS edge will FW the file to target S3 bucket in another region.
+- Transfer acceleration: Src S3 -> AWS edge FW -> target S3 in another region.
 
 
 
@@ -1169,7 +1163,7 @@ Delete obj behaviour: **Show versions** switch
 - Copy obj b/w buckets
 - Restore from Glacier
 - Invoke Lambda to perform custom action on each obj
-- Def: []Obj, action, param
+- Def: list of Obj, Action, Param
 - Batch mng retry, progress, completion notification, gen report
 - S3 Inventory: get obj list, Athena: query & filtre obj
 
@@ -1179,7 +1173,7 @@ Delete obj behaviour: **Show versions** switch
 
 - Dashboard: default or custom
 - Config: Org, Accounts, Regions, Buckets
-- Aggeregate
+- Aggeregation
 
 
 
@@ -1199,7 +1193,7 @@ Delete obj behaviour: **Show versions** switch
 
 ## Encryption
 
-- Set @ per bucket or obj (override)
+- Set per bucket or obj (override)
 
 
 
@@ -1223,12 +1217,7 @@ Delete obj behaviour: **Show versions** switch
 
 Encrypted files upload to S3
 
-### Encryption in-Transit (SSL/TLS)
-
-- HTTPS endpoint
-- Force w/ Policy: Deny s3:GetObject SecureTransport: "false"
-
-
+### Encryption in-Transit (SSL/TLS): HTTPS
 
 ### Enforce Encryption w/ Policy
 
@@ -1301,12 +1290,10 @@ CORS Headers: `Access-Control-Allow-Origin`, `Access-Control-Allow-Methods`
 - MFA required: permanent delete an obj ver, suspend versioning
 - Only Root account has perm to enable/disable MFA delete w/ AWS CLI
 
-
-
 ## Access Logs
 
 - S3 logs will be logged into another S3
-- logging bucket in the same region
+- Logging bucket in the same region
 - Do NOT set the monitored and logging bucket as the same
 - Practice: Bucket > Properties > Server access logging
 
@@ -1421,7 +1408,7 @@ SG Setup
 
 # Global Accelerator
 
-- Leverage AWS internal network to route to app
+- Util AWS internal network to route to app
 - 2 Anycast IP for the app
 - Endpoint Groups: add region
 - Endpoints: EIP, EC2, ALB, ELB (public & private)
@@ -1455,8 +1442,8 @@ SG Setup
 
 Deployment Opt:
 
-- Scratch: temp storage, data not replicated, Hi burst
-- Persistent: long-term, data replication in the same AZ
+- Scratch: temp storage, data not replicated, Hi-burst
+- Persistent: long-term, data replication intra AZ
 
 
 
@@ -1562,7 +1549,7 @@ Deployment Opt:
 - Retention: 4 days (default), Max 14 days
 - Lo-latency: <10ms on publish and recv
 - Msg Max size: 1024 KB
-- Duplicate msgs: at least once delivery
+- Duplicate msgs: at-least-once delivery
 - Best-effort msg ordering
 - Producer [`SendMessage` API] -> SQS <-> [`DeleteMessage` API] Consumer
 - In-transit enc: HTTPS, At-rest enc: KMS
@@ -1589,7 +1576,7 @@ Deployment Opt:
 
 ## FIFO Queue
 
-- Deduplication ID: exactly-once send capability, remove duplicates
+- Deduplication ID: exactly-once processing, remove duplicates
 - Order by Message Group ID
 - Thruput: 300 msg/s w/o batch, 3000 msg/s w/ batch
 
@@ -1673,8 +1660,8 @@ On-demand:
 # ECS
 
 - ECR: Elastic Container Registry
-- Docker container on AWS = ECS task
-- Task Role: IAM role for containers in a task to make API requests to AWS services, def in *Task definition*
+- Group of Docker container on AWS = ECS task
+- Task Role: IAM role for a task to make API requests to AWS services, def in *Task definition*
 - Integration: ALB (recom), NLB
 - Volumes: EFS
 
@@ -1700,7 +1687,7 @@ On-demand:
 
 ## Autoscaling
 
-- ECS Auto Scaling leverages AWS Application Auto Scaling
+- ECS Auto Scaling util AWS Application Auto Scaling
 - Target tracking: CloudWatch metric target val
 - Step scaling: CloudWatch alarm
 - Scheduled: date/time
@@ -1711,7 +1698,7 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 ### Autoscaling for EC2 Launch Type
 
 - ASG
-- ✅ ECS Cluster Capacity Provider: paired w/ ASG, better opt
+- ✅ ECS Cluster Capacity Provider: paired w/ ASG
 
 
 
@@ -1742,7 +1729,7 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 ### Self-Managed Node
 
 - User create & register Nodes to EKS, ASG mng Nodes
-- Util pre-built AMI or EKS Optmized AMI
+- Util pre-built AMI or EKS optm AMI
 - Support: on-demand, spot EC2 inst
 
 
@@ -1757,7 +1744,7 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 
 - Setup `StorageClass`, util CSI
 - EBS, EFS, FSx Lustre, FSx NetApp ONTAP
-- *Fargate only marche w/ EFS*
+- *Fargate only w/ EFS*
 
 
 
@@ -1787,7 +1774,7 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 
 
 
-## Limits per Region
+## Limits
 
 
 
@@ -1797,7 +1784,7 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 - Exec time: 900s (15min)
 - Env var: 4 KB
 - Function container disk (`/tmp`): 512 MB - 10 GB
-- Concurrency: 1000
+- Concurrency: 1000 per region
 
 
 
@@ -1830,7 +1817,7 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 
 ## SnapStart
 
-- Improve Lambda perf Max 10x, no $ for Python, Java, .NET
+- Improve Lambda perf Max 10x, $0 for Python, Java, .NET
 - Function invoked from pre-init state, no init 
 - Normal: Init -> Invoke -> Shutdown; SnapStart: Invoke -> Shutdown
 - New version publish -> Lambda init func -> Take snapshot of mem & disk state of init-ed func -> Snapshot cached for lo-latency
@@ -1840,7 +1827,7 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 ## Lambda - VPC
 
 - Lambda in VPC: def VPC ID, Subnet, SG. Lambda creates ENI
-- Lambda -> RDS Proxy -> RDS DB, all w/in VPC
+- Lambda -> RDS Proxy -> RDS, all w/in VPC
 
 
 
@@ -1862,7 +1849,7 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 
 
 
-# CloudFront Function & Lambda@Edge (CloudFront)
+# CloudFront Function & Lambda@Edge
 
 - Edge function: code on CloudFront to run close to users
 - Global deploy
@@ -1890,7 +1877,7 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 - Adjustable CPU & mem
 - Network acc for external service
 - FS, Request body acc
-
+- Deploy to CloudFront edge
 
 
 # DynamoDB
@@ -2877,7 +2864,7 @@ cat FileDec.base64 | base64 -d > FileDec.txt
 
 ## S3 Replication Encryption
 
-- Unencrypted and SSE-S3 obj replicated (default)
+- Un-encrypted and SSE-S3 obj replicated (default)
 - SSE-KMS obj:
   - Spec key in target bucket
   - Key policy for target key
@@ -2955,7 +2942,7 @@ aws ssm get-parameters-by-path --path /path/to/param --recursive
 # ACM: AWS Certificate Manager
 
 - TLS cert mgmt
-- No $: public cert
+- $0: public cert
 - Auto cert renewal
 - Integration: ELB, CloudFront, APIs on API Gateway
 
@@ -3033,7 +3020,7 @@ Against DDoS
 
 Standard:
 
-- Free for all customers
+- $0 for all customers
 - Protect from SYN/UDP floods, reflection attacks, other Layer 3,4 attacks
 
 Advanced:
@@ -3285,7 +3272,7 @@ Advanced:
 - Support S3 & DynamoDB
 - Set as Target in Route Table
 - No SG
-- No $
+- $0
 
 
 
@@ -3465,8 +3452,8 @@ Hosted Connection: 50 Mbps - 25 Gbps
 
 # AWS Networking Costs
 
-- Ingress to EC2: Free
-- Inter-EC2 w/ Private IP w/in AZ: Free
+- Ingress to EC2: $0
+- Inter-EC2 w/ Private IP w/in AZ: $0
 - Inter-EC2 w/ Private IP cross-AZ: $0.01 per GB
 - Inter-EC2 w/ Public IP/EIP cross-AZ: $0.02 per GB
 - Inter-EC2 cross-region: $0.02 per GB
@@ -3482,10 +3469,10 @@ Hosted Connection: 50 Mbps - 25 Gbps
 
 ## S3 Data Transfer (US)
 
-- S3 Ingress: Free
+- S3 Ingress: $0
 - S3 -> Internet: $0.09 per GB
 - S3 Transfer Acceleration: Additional cost $0.04-0.08 per GB
-- S3 -> CloudFront -> Internet: Free, $0.085 per GB
+- S3 -> CloudFront -> Internet: $0, $0.085 per GB
 - S3 Cross-Region Replication: $0.02 per GB
 
 
