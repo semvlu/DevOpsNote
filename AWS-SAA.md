@@ -76,9 +76,10 @@
 ## IAM Role vs. Resource-Based Policy
 
 - IAM Role: Role perm over original perm
-- Resourced-based policy: principal does not have to give up perm
+- Resource-based policy: principal does not have to give up perm
+- Resource-based support: S3, Lambda, KMS, SNS, SQS, API Gateway, DynamoDB
 - EventBridge Rule perm on target
-  - Resource-based: S3, Lambda, SQS, SNS, API Gateway
+  - Resource-based: S3, Lambda, SNS, SQS, API Gateway
   - IAM Role: Kinesis, EC2 ASG, ECS
 
 
@@ -930,7 +931,7 @@ Alias
 
 
 # RAM: Resource Access Manager
-- Share resources across AWS accounts/Organizations, e.g. TGW, Subnet, License Manager, Route 53 Profiles
+- Share resources across AWS accounts/Organizations, e.g. Subnet, TGW, License Manager, Route 53 Profile
 
 # Case Study: E-commerce
 
@@ -990,8 +991,10 @@ Alias
 ## Policy
 
 - IAM
-- Resource-based: bucket (allow cross account), obj ACL
-- Cond. IAM principal acc. S3 obj: (IAM policy OR Resource policy) AND !Explicit Deny
+- Resource-based: bucket (allow cross-account), obj ACL
+- A: IAM principal can acc. S3 obj; I: IAM policy; R: Resource-based policy; D: Explicit Deny
+- (I ∨ R) ∧ ¬D → A
+- IAM principal acc. S3 obj: (IAM policy OR Resource policy) AND !Explicit Deny
 - Block public access: ✅ (default for protection)
 
 
