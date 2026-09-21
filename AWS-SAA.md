@@ -487,7 +487,7 @@ Enc un-encrypted EBS volume:
 ## SSL/TLS Cert
 
 - Mng certs: AWS Certificate Manager (ACM)
-- Clients spec. Server Name Indication (SNI) w/ hostname, solves multi TLS certs in 1 web srever. Marche: ALB, NLB, CloudFront.
+- Clients spec. *Server Name Indication (SNI)*, i.e. hostname, solves 1+ TLS certs in 1 web server. Marche: ALB, NLB, CloudFront.
 - ELB > Listeners > Add listener > Secure listener settings
 
 
@@ -1059,7 +1059,7 @@ Delete obj behaviour: **Show versions** switch
 ### Standard
 
 - 99.99% Avail
-- Lo latency, Hi thruput
+- Lo-latency, Hi-thruput
 - Sustain 2 concurrent facility failures
 
 
