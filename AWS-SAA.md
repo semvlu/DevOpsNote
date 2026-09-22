@@ -155,7 +155,7 @@ Deny (explicit Deny) -> Org SCP -> Resource-based -> Identity-based -> IAM Permi
 - AWS Managed Microsoft AD: estab *trust* conn w/ on-prem AD to share directories, MFA support 
 - AD Connector: directory GW (proxy), redir to on-prem AD, MFA support
 - Simple AD: Cannot join on-prem AD
-- Integration: IAM Identity Center
+- Integration: IAM Identity Center (2-way trust)
 
 
 
@@ -1643,7 +1643,7 @@ On-demand:
 
 # Data Firehose
 
-- Batch write to S3, RedShift, AWS OpenSearch, 3e party, custom HTTP endpoint
+- Batch write to S3, Redshift, AWS OpenSearch, 3e party, custom HTTP endpoint
 - Set: Buffer size (MiB) & interval (sec)
 - Autoscale, serverless
 - ~ Real-time
@@ -3397,7 +3397,8 @@ Hosted Connection: 50 Mbps - 25 Gbps
 ## Traffic Mirroring
 
 - Capture & inspect VPC traffic
-- Send To security appliances
+- Read-only, cannot block & filtre
+- Send to Security Appliance
 - From (Source): ENI, To (Target): ENI / NLB
 - Capture all or interested pkt
 - Source & Target: same VPC or VPC Peering
@@ -3886,7 +3887,7 @@ Hosted Connection: 50 Mbps - 25 Gbps
 
 - AWS Well-Architected Tool: review arch against 6 pillars
 
-# Trust Advisor
+# Trusted Advisor
 - Analyse AWS account on 6 categories: Operational excellence, Security, Fault tolerance, Performance, Cost optm, Service limits
 
 # Ref
