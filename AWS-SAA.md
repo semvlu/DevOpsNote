@@ -389,7 +389,7 @@ Enc un-encrypted EBS volume:
 
 # EFS: Elastic File System
 
-- NFS mounted on multi EC2, multi-AZ
+- NFS mounted on multi EC2 in diff. AZ
 - Scenario: content mgmt, web serving, data sharing.
 - SG to control acc to EFS
 - Marche only w/ Linux based AMI
@@ -453,7 +453,7 @@ Enc un-encrypted EBS volume:
 
 - *1 Static IP per AZ*
 - Target group: EC2 inst, private IP, ALB
-- Health check support: TCP, HTTP, HTTPS
+- Health check: TCP, HTTP, HTTPS
 - EC2 SG: add NLB SG (HTTP, TCP, 80. NLB SG)
 
 
@@ -507,7 +507,7 @@ Enc un-encrypted EBS volume:
 - Recreate EC2 in case current one is terminated
 - $0
 - Launch template: AMI, Inst type, EC2 user data, EBS volumes, SG, SSH key pair, IAM roles, VPC, Subnet, LB
-- ASG+ELB: Step 3: Integrate with other services > Health checks > ✅ ELB health checks
+- ASG + ELB: Step 3: Integrate with other services > Health checks > ✅ ELB health checks
 
 
 
@@ -665,7 +665,7 @@ ASG auto forecast and schedule scaling
 - Transation logs backup every 5min: PITR
 - Retention: 1-35 days, 0: disable auto backup
 - Manual: retention as user desires
-- Hack: If not using RDS for a long time -> backup + restore
+- Hack: If not using RDS for a long time -> backup & restore
 
 
 
@@ -702,7 +702,7 @@ ASG auto forecast and schedule scaling
 
 - Reduce DB CPU & RAM
 - Serverless, HA (multi-AZ)
-- RDS & Aurora failover time-: max 66%
+- RDS & Aurora failover time -: max 66%
 - Enforce IAM auth 
 - Acc from VPC only
 
@@ -1886,7 +1886,7 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 
 # DynamoDB
 
-- NoSQL, dstb DB, HA across multi-AZ
+- NoSQL, dstb DB, HA (multi-AZ)
 - Transaction support
 - Millions req/sec, Trillions rows, Hundreds TB storage
 - <10ms performance
@@ -1922,7 +1922,6 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 
 ### On-Demand Mode
 
-- $+
 - Scenario: unpredictable workloads, sudden spikes
 
 
@@ -3174,7 +3173,7 @@ Advanced:
 - Cannot used by EC2 w/in its Subnet, only from other subnets
 - Private Subnet -> NATGW -> IGW
 - BW: 5-100 Gbps
-- Multi NATGW in multi-AZ for fault-tolerance, no cross-AZ failover
+- Multi NATGW in diff. AZ for fault-tolerance, no cross-AZ failover
 
 
 
@@ -3195,7 +3194,7 @@ Advanced:
 - Attach EIP 
 - Route Table: 0.0.0.0/0 -> NAT inst
 - AMI avail
-- Not HA -> create ASG in multi-AZ, resilient user-data
+- Not HA -> create ASG in diff. AZ, resilient user-data
 - SG:
   - Inbound: HTTP/HTTPS, Source: Private Subnets
   - Inbound: ICMP, Source: Private Subnets
