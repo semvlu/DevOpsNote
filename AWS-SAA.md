@@ -333,7 +333,6 @@ Attr:
 # EBS: Elastic Block Storage
 
 - Network drive to attach to EC2 inst.
-- Support: multi-attach
 - Bound to AZ
 - Move across AZ or Region: take snapshot
 
@@ -345,6 +344,8 @@ Attr:
 - Recycle bin: setup rules to retain deleted snapshots.
 - Fast snapshot restore (FSR): full init of snapshot w/ 0 latency on the first use, Hi $.
 
+## DLM: Data Lifecycle Manager
+- Automate creation, retention, deletion of EBS snapshots and EBS-backed AMI.
 
 
 ## EBS Volume Types
@@ -355,6 +356,7 @@ Attr:
 - Provisioned IOPS (PIOPS) SSD: 
   - `io1`: 64,000 IOPS
   - `io2 Block Express`: 256,000 IOPS
+  - Multi-attach
 - HDD: 
   - `sc1`: lowest $
   - `st1`: lo $, freq acc, thruput optm
@@ -588,7 +590,8 @@ ASG auto forecast and schedule scaling
 - Acc. underlying EC2 via SSH or SSM Session Manager
 - De-activate automation mode, take DB snapshot pre-customisation
 
-
+## Enhanced Monitoring
+- RDS - CloudWatch Logs
 
 # Aurora
 
@@ -1693,7 +1696,7 @@ On-demand:
 
 - ECS Auto Scaling util AWS Application Auto Scaling
 - Target tracking: CloudWatch metric target val
-- Step scaling: CloudWatch alarm
+- Step scaling: CloudWatch Alarm
 - Scheduled: date/time
 cf. Auto Scaling Group (ASG) > Scaling Policy
 
@@ -1892,7 +1895,7 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 - <10ms performance
 - Serverless: no maintenance, patching
 - Table Class: Standard | IA
-
+- Hi-cardinality partition key: for evenly distributed I/O
 
 
 ## Basics
@@ -2653,21 +2656,20 @@ Log Management > Log Group > Start tailing
 - Run CloudWatch Agent in EC2/on-prem to send logs 
 - IAM role: EC2 -> CloudWatch Logs
 - Logs Agent: only send to CloudWatch Logs, older
-
+- [Built-in Metrics](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/viewing_metrics_with_cloudwatch.html?utm_source=gemini): ❌ Mem util, Disk swap, Page file util, Log collection
 
 
 #### Unified Agent
 
 - Collect system lvl metrics, e.g. RAM, proc
 - Centralised config: SSM Parameter Store
-- Granular metrics
-  - CPU: active, idle ,system, user
+- Granular metrics:
+  - CPU: active, idle, system, user
   - Disk: free, used, total; Disk IO: bytes, iops
   - RAM: free, inactive
   - Netstat: TCP, UDP
   - Process
-  - Swap space:
-
+  - Swap space
 
 
 ## CloudWatch Alarm
@@ -3583,7 +3585,7 @@ Hosted Connection: 50 Mbps - 25 Gbps
 - Support: EC2, EBS, EFS, FSx (Lustre, Win) S3, RDS, Aurora, DynamoDB, DocumentDB, Neptune, Storage GW
 - Cross-Region & Account backup
 - PITR (supported services)
-- On-demand / Schedu;e
+- On-demand / Schedule
 - Tag-based backup 
 - Backup Plan: freq, window, transition to Cold Storage, retention
 - Backup Vault Lock: enforce WORM, defend against inadvertent/malicious delete, updates qui shorten/alter retention. Root user cannot delete backups
