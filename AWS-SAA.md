@@ -350,7 +350,7 @@ Attr:
 
 ## EBS Volume Types
 
-- Character: Size, Thruput, IOPS
+- Feat by: Size, Thruput, IOPS
 - ❌ HDD be boot volumes
 - General SSD: `gp2` / `gp3`
 - Provisioned IOPS (PIOPS) SSD: 
@@ -569,7 +569,7 @@ ASG auto forecast and schedule scaling
 
 ### Data Replication
 
-- Same region RR: $0
+- Same-region RR: $0
 - Cross-region RR: $
 
 
@@ -695,7 +695,7 @@ ASG auto forecast and schedule scaling
   - Def at launch w/ AWS KMS
   - Master un-encrypted, RR cannot be encrypted
   - Enc post-launch: backup & restore
-- IAM auth: IAM roles conn to DB
+- IAM database authentication: IAM roles conn to DB
 - SG
 - ❌ SSH, except RDS custom
 
@@ -1313,7 +1313,7 @@ CORS Headers: `Access-Control-Allow-Origin`, `Access-Control-Allow-Methods`
   - S3 Console: 1-720min
   - CLI: param `--expires-in` sec, default: 3600, max 604800s (168hr)
   `aws s3 presign s3://<bucket>/<obj>  --expires-in <sec> --region <region>`
-- Practice: obj > Object actions > Share with a presigned URL
+- Practice: obj > Object actions > Share with a pre-signed URL
 
 
 
@@ -1365,7 +1365,7 @@ CORS Headers: `Access-Control-Allow-Origin`, `Access-Control-Allow-Methods`
 
 Origin:
 
-- S3: Origin Access Control (OAC) Policy: allow CloudFront get S3 obj 
+- S3: Origin Access Control (OAC) Policy: allow CloudFront acc S3 obj 
 - VPC: private ALB, NLB, EC2
 - Custom: S3 website, public HTTP backend
 
@@ -1577,7 +1577,7 @@ Deployment Opt:
 - Consumer waits for msg if SQS is empty
 - API calls -, Latency -
 - Wait time: 1-20s
-- Enable at queue or API (`WaitTimeSeconds`) lvl
+- Enable at queue (`ReceiveMessageWaitTimeSeconds`) or API (`WaitTimeSeconds` param of `ReceiveMessage` req) lvl
 
 
 
@@ -1619,7 +1619,7 @@ Deployment Opt:
 
 
 
-# Kinesis
+# Kinesis Data Streams
 
 - Retention Max 365 days
 - Data Max 10 MiB
@@ -1807,7 +1807,7 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 
 - Max: 1000, *Support Ticket* for higher limit
 - Set Reserved concurrency @ function lvl
-- Invocation over concurrency limit trig. Throttle
+- Invocation > Concurrency Limit: trig. Throttle
 - Throttle: sync invoc: `ThrottleError 429`, async invoc: retry then go to DLQ
 - Throttling error (429) & System error (5xx) events: enqueue event -> retry Max: 6hr
 - Retry interval: exp. incr, 1s - 5min
@@ -2349,10 +2349,9 @@ Components:
 
 # Lake Formation
 
-- Data lake
+- Data lake: store structured & unstructured data
 - Discover, cleanse, transform, ingest data
 - Automate complex manual steps: collecting, cleansing, moving, cataloging, deduplicate
-- Combine structured & unstructured data in data lake
 - Blueprint: migration to Lake Formation, e.g. S3, RDS, RDBMS, NoSQL
 - ***Row & Clmn lvl*** *Fine-grained acc control* for apps (Athena, Redshift, EMR, Spark): centralised perm control
 - Data stored in S3
@@ -2387,10 +2386,10 @@ Components:
 | ------------- | -------------------------------------------------------- | -------------------------------- |
 | Msg Max Size  | 1MB                                                      | 1MB (default, config for higher) |
 | Data Seq Unit | Shard                                                    | Topic w/ Partition (mapping)     |
-| Data Seq Op   | Split / Merge                                            | Add Partition only               |
+| Data Seq Op   | Split (Hot) / Merge (Cold)                               | Add Partition only               |
 | Security      | TLS                                                      | PLAINTEXT / TLS                  |
 | KMS Enc       | ✅                                                        | ✅                                |
-| Consumer      | Managed Apache Flink, Glue, Lambda, app on EC2, ECS, EKS |                                  |
+| Consumer      | Managed Apache Flink, Glue, Lambda, EC2, ECS, EKS        |                                  |
 
 
 
@@ -2787,7 +2786,7 @@ Status check:
 - Non-Compliant Remediation: trig SSM Automation Document
 - Notification: EventBridge, SNS
 
-
+# Security
 
 # KMS: Key Management Service
 
@@ -2863,7 +2862,7 @@ cat FileDec.base64 | base64 -d > FileDec.txt
   - Key policy for target key
   - IAM Role: `kms:Decrypt` source KMS key, `kms:Encrypt` target KMS key
 - Might get KMS throttling error, ask incr Service Quotas
-- Can use Multi-region key, but S3 treats them as indepedent keys
+- Can use Multi-region key, but S3 treats them as indep keys
 
 
 ## Share Encrypted AMI
@@ -3219,7 +3218,7 @@ Advanced:
 
 ### Ephemeral Port
 
-- Client send request with an ephemeral port in a defined range (IANA & Win10: 49152-65535; Linux: 32768-60999), Server NACL must define outbound w/ ephemeral port range
+- Client send request w/ an ephemeral port in a def range (IANA & Win10: 49152-65535; Linux: 32768-60999), Server NACL must def outbound w/ ephemeral port range
 
 
 
@@ -3241,7 +3240,7 @@ Advanced:
 - ❌ CIDR overlap
 - Non-transitive: VPC: A, B, C; Peering: A-B, B-C. A cannot go to C, must setup A-C.
 - Update Route Tables in every subnet of VPC on both sides
-- *SG rule: ref a peer VPC SG marche for diff accounts, but same region*
+- *SG rule: ref peer VPC SG marche for diff accounts, but same region*
 
 
 
@@ -3560,7 +3559,7 @@ Hosted Connection: 50 Mbps - 25 Gbps
 
 - RDS -> Aurora
   - Snapshot
-  - Aurora RR, once replication lag = 0, promote as indepedent DB cluster
+  - Aurora RR, once replication lag = 0, promote as indep DB cluster
 - External -> Aurora
   - MySQL: Percona XtraBackup -> S3 -> Restore from S3
   - MySQL (alt): Create Aurora MySQL -> `mysqldump` to Aurora
@@ -3830,6 +3829,7 @@ Hosted Connection: 50 Mbps - 25 Gbps
 - Hybrid cloud: server racks qui offer same AWS infra, services, APIs, tools
 - AWS setup & mng Outposts racks w/in on-prem
 - Customer responsible for phys sec
+- Local Gateway (LGW): conn. Outposts & On-prem
 
 ## AWS Batch
 
@@ -3850,7 +3850,7 @@ Hosted Connection: 50 Mbps - 25 Gbps
 |              | EC2                  | Serverless    |
 
 ## AppFlow
-- Integrate AWS & SaaS
+- Integrate AWS & SaaS for data transfer
 - Source: Salesforce, SAP, Zendesk, Slack
 - Dest: AWS services, other SaaS
 - Freq: schedule, event, on-demand
@@ -3860,6 +3860,13 @@ Hosted Connection: 50 Mbps - 25 Gbps
 - Tools & Lib to build on AWS
 - Backend: AWS services
 - Frontend: React, Angular, Flutter, Android, etc.
+
+
+## AWS X-Ray
+- Analyse & debug dstb app
+- Traced req to app
+- Req, Resp, App -> downstream calls (DB, web API, AWS resources)
+
 
 ## Instance Scheduler
 - Sol, not Service, deployed thru CloudFormation
