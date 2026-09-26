@@ -481,7 +481,7 @@ Enc un-encrypted EBS volume:
 ## Cross-Zone Load Balancing
 
 - #EC2 across AZ are not uniformly distributed, with Cross Zone LB, LBs consider the distribution to achieve true LB.
-- ALB: enabled (always), disable at Target group level, $0 for inter AZ data.
+- ALB: enabled (always), disable @ Target group level, $0 for inter AZ data.
 - NLB: disabled (default), $ for inter AZ data
 - LB lvl: ELB > Attributes
 - Target group lvl: Target Group > Attributes
@@ -660,7 +660,7 @@ ASG auto forecast and schedule scaling
 
 
 
-# Backup & Restore
+# DB Backup & Restore
 
 ## RDS
 
@@ -689,7 +689,7 @@ ASG auto forecast and schedule scaling
 - On-prem -> Aurora: Percona XtraBackup -> S3
 
 
-# Security
+# DB Security
 
 - Enc at-rest
   - Def at launch w/ AWS KMS
@@ -1111,7 +1111,7 @@ Delete obj behaviour: **Show versions** switch
 
 ### Intelligent Tiering
 
-- $: Monthly monitoring & auto-tiering
+- $: Monitoring & auto-tiering per mo
 - $0: retrieval
 
 
@@ -1361,7 +1361,7 @@ CORS Headers: `Access-Control-Allow-Origin`, `Access-Control-Allow-Methods`
 
 # CloudFront: CDN
 
-- Content cached at edge
+- Content cached @ edge
 
 Origin:
 
@@ -1577,7 +1577,7 @@ Deployment Opt:
 - Consumer waits for msg if SQS is empty
 - API calls -, Latency -
 - Wait time: 1-20s
-- Enable at queue (`ReceiveMessageWaitTimeSeconds`) or API (`WaitTimeSeconds` param of `ReceiveMessage` req) lvl
+- Enable @ queue (`ReceiveMessageWaitTimeSeconds`) or API (`WaitTimeSeconds` param of `ReceiveMessage` req) lvl
 
 
 
@@ -1624,7 +1624,7 @@ Deployment Opt:
 - Retention Max 365 days
 - Data Max 10 MiB
 - Partition key: ordering
-- Ability: Replay (reprocess) data by consumer
+- Can Replay (reprocess) data by consumer
 - Kinesis Producer Library (KPL): write producer app, Kinesis Client Library (KCL): write consumer app
 
 
@@ -1861,7 +1861,7 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 - Edge function: code on CloudFront to run close to users
 - Global deploy
 - $: pay only for what you use
-- Scenario: custom CDN content, website sec & privacy, dynamic web app, SEO, bot mitigation at edge, user auth, user prioritisation
+- Scenario: custom CDN content, website sec & privacy, dynamic web app, SEO, bot mitigation @ edge, user auth, user prioritisation
 
 
 
@@ -1891,7 +1891,7 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 
 - NoSQL, dstb DB, HA (multi-AZ)
 - Transaction support
-- Millions req/sec, Trillions rows, Hundreds TB storage
+- 1M+ req/sec, 1T+ rows, 100+ TB storage
 - <10ms performance
 - Serverless: no maintenance, patching
 - Table Class: Standard | IA
@@ -2161,7 +2161,7 @@ Challenges
 - Cassandra NoSQL dstb DB
 - Tables replicated 3 times, multi-AZ
 - Cassandra Query Language (CQL)
-- <10ms latency, thousands req/sec
+- <10ms latency, 1000+ req/sec
 - Capacity: Provisioned mode + autoscaling | On-demand
 - PITR: Max 35 days
 
@@ -2256,8 +2256,8 @@ iam_role 'arn:aws:iam::0123456789012:role/MyRedshiftRole';
 
 ## Spectrum
 
-- Query data already in S3 w/o loading
-- Query submit to thousands Redshift Spectrum nodes
+- Query data in *S3* w/o loading
+- Query submit to 1000+ Redshift Spectrum nodes
 
 
 
@@ -2917,7 +2917,7 @@ aws ssm get-parameters-by-path --path /path/to/param --recursive
 # Secrets Manager
 
 - Secret store
-- Capability to force secret rotation every X days
+- Can force secret rotation every X days
 - Automate secret gen on rotation w/ Lambda
 - Integration: RDS
 
@@ -2926,7 +2926,7 @@ aws ssm get-parameters-by-path --path /path/to/param --recursive
 ## Multi-Region Secret
 
 - Keep RR in sync w/ primary
-- Able to promote RR to standalone
+- Can promote RR to standalone
 
 
 
@@ -2945,7 +2945,7 @@ aws ssm get-parameters-by-path --path /path/to/param --recursive
 2. Validation method:
   - DNS: for automation, util CNAME to DNS config
   - Email: send email to contact adr in WHOIS DB
-3. Public cert auto renewal: 60 days bofore expiry
+3. Public cert auto renewal: 60 days before expiry
 
 
 
@@ -2980,7 +2980,7 @@ aws ssm get-parameters-by-path --path /path/to/param --recursive
 # WAF: Web Application Firewall
 
 - *Layer 7* (HTTP) protection
-- Deploy on: ALB, API Gateway CloudFront, AppSync GrpahQL API, Cognito User Pool
+- Deploy on: ALB, API Gateway, CloudFront, AppSync GrpahQL API, Cognito User Pool
 - ❌ NLB
 - IP Set: Max 10,000 IP adr, multi rules for more IP
 - Rule Group: reusable set of rules to add to ACL
@@ -2999,7 +2999,7 @@ aws ssm get-parameters-by-path --path /path/to/param --recursive
 
 ## WAF + ALB + Global Accelerator
 
-- ALB does not have fixed IP
+- ALB no static IP
 - WAF does NOT support NLB
 - Global Accelerator for fixed IP
 
@@ -3007,15 +3007,13 @@ aws ssm get-parameters-by-path --path /path/to/param --recursive
 
 # Shield
 
-Against DDoS
+Counter DDoS
 
 Standard:
-
-- $0 for all customers
+- $0
 - Protect from SYN/UDP floods, reflection attacks, other Layer 3, 4 attacks
 
 Advanced:
-
 - Opt DDoS mitigation service: $3,000 per mo per organization
 - Protect from more sophisticated attack on EC2, ELB, CloudFront, Global Accelerator, Route 53
 - 24/7 to AWS DDoS response team (DRP)
@@ -3026,8 +3024,8 @@ Advanced:
 
 # Firewall Manager
 
-- Rules in an Org mgmt
-- WAF rules, Shield advanced, SG for EC2 & ALB, ENI in VPC, Network Firewall (VPC), Route 53 resolver DNS firewall, Policies at region lvl
+- Mng Rules in an Org
+- WAF rules, Shield advanced, SG for EC2 & ALB, ENI in VPC, Network Firewall (VPC), Route 53 resolver DNS firewall, Policies @ region lvl
 - Rules applied to new resources across Org
 
 
@@ -3038,11 +3036,11 @@ Advanced:
 
 ## Edge Services
 
-- CloudFront: app delivery at edge
+- CloudFront: app delivery @ edge
 - Global Accelerator: acc app from edge, i.e. AWS internal network proxy, Integration: AWS Shield
 
 ### Route 53
-- Domain name resolution at edge
+- Domain name resolution @ edge
 - NXDOMAIN (Non-Existent Domain) DDoS: A/Alias wildcard record 
   - Explicit A/Alias records precede wildcard
   - Wildcard: A/Alias: `*.example.com` to AWS resources, query not be charged 
@@ -3077,7 +3075,7 @@ Advanced:
 
 ## SG + NACL (VPC)
 
-- Filtre traffic from IP at subnet, ENI
+- Filtre traffic from IP @ subnet, ENI
 - EIP protected by Shield Advanced
 - SG: Inbound: IP `0.0.0.0/0`, Port `80`, `443`; Outbound: IP `0.0.0.0/0`, Port: `*`. SG becomes stateless, rely on NACL & WAF
 
@@ -3094,7 +3092,7 @@ Advanced:
 # GuardDuty
 
 - Intelligent threat discovery w/ ML, 3e party data, anomaly detection, crypto attack
-- Inputs: CloudTrail Event logs, VPC Flow logs, DNS logs, etc. NO CloudWatch
+- Input: CloudTrail Event logs, VPC Flow logs, DNS logs, etc. NO CloudWatch
 - Logs -> GuardDuty -> EventBridge -> Lambda / SNS
 
 
@@ -3206,7 +3204,7 @@ Advanced:
 
 ## NACL: Network ACL
 
-- Firewall policy at Subnet lvl
+- Firewall policy @ Subnet lvl
 - 1 NACL per Subnet
 - Stateless vs. Stateful (SG): return traffic must be explicitly set w/ allow rules; while Stateful auto allow return traffic
 - Rule
@@ -3328,7 +3326,7 @@ Setup:
   - Private VIF: on-prem -> VGW
 - Acc public (S3) & private resources (EC2) w/ DX 
 - AWS | Customer/Partner Cage in DX Location
-- *>1 month to estab a conn*
+- *>1 mo to estab a conn*
 - If encrypted traffic desired: VPN b/w on-prem & DX
 
 Scenario:
@@ -3539,7 +3537,7 @@ Hosted Connection: 50 Mbps - 25 Gbps
 
 # DMS: Database Migration Service
 
-- Soruce DB remain avail during migration
+- Soruce DB: 0 downtime during migration
 - Cont. data replication w/ CDC
 - EC2: running DMS, perform replication tasks
 - Source: on-prem & EC2 DB, Azure SQL, RDS, Aurora, S3, DocumentDB
