@@ -374,7 +374,7 @@ Attr:
 ## EBS Encryption
 
 - Util KMS keys (AES-256)
-
+- At-rest & In-transit b/w EC2 & attached EBS vol & snapshots.
 Enc un-encrypted EBS volume: 
 
 1. Create EBS snapshot of the un-encrypted EBS.
@@ -1442,7 +1442,7 @@ SG Setup
   - Snowball Edge: 210 TB SSD
 - Scenario: data migration, edge computing
 - Snowball -> S3 -> Glacier
-
+- EOL: Go for DataSync (online) or Data Transfer Terminal (offline)
 
 
 # FSx
@@ -1475,9 +1475,9 @@ Deployment Opt:
 
 ## NetApp ONTAP
 
-- Hi OS compatibility
-- Compatible: NFS, SMB, iSCSI
-- Marche w/ Linux, Win, MacOS, VMware Cloud on AWS, EC2, ECS, EKS
+- OS support: Linux, Win, MacOS
+- Protocols: NFS, SMB, iSCSI (block storage)
+- Marche w/ VMware Cloud on AWS, EC2, ECS, EKS
 - PIT instantaneous cloning
 - Data deduplication
 
@@ -1500,7 +1500,7 @@ Deployment Opt:
 
 ## S3 File GW
 
-- NFS or SMB
+- NFS / SMB
 - Most recently used data cached in GW
 - Support: Standard, Standatd-IA, One Zone-IA, Intelligent Tiering
 - ❌ Support: Express One Zone, Glacier
@@ -1542,6 +1542,7 @@ Deployment Opt:
 - AWS <-> AWS: no agent, *b/w diff. storage services*
 - S3 (all storage classes), EFS, FSX
 - Sechdule: hr, day, week
+- Data migration
 - *Preserve file perm & metadata* (NFS, POSIX, SMB)
 - NFS/SMB server <-> DataSync Agent <-> TLS <-> DataSync <-> AWS Storage Services (S3, EFS, FSx)
 - DataSync (S3 service) vs. Stored Volume GW: Move files vs. blocks (RDBMS)
@@ -1555,7 +1556,7 @@ Deployment Opt:
 - Msg persistence: consumer deletes msg or retention
 - Retention: 4 days (default), Max 14 days
 - Lo-latency: <10ms on publish and recv
-- Msg Max size: 1024 KB
+- Msg Max size: 1 MiB
 - Duplicate msgs: at-least-once delivery
 - Best-effort msg ordering
 - Producer [`SendMessage` API] -> SQS <-> [`DeleteMessage` API] Consumer
@@ -1566,7 +1567,8 @@ Deployment Opt:
 
 ## Message Visibility Timeout
 
-- Invisible to other consumers Post-consumer polling, 30s default
+- Invisible to other consumers Post-consumer polling
+- 30s default
 - Consumer calls `ChangeMessageVisibility` API to get more time
 - After visibility timeout, msg visible in SQS
 
