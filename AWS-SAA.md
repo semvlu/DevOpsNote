@@ -619,7 +619,8 @@ ASG auto forecast and schedule scaling
   - Client - Writer Endpt - Master
   - Client - Reader Endpt (LB) - RR
 
-
+## Aurora Auto Scaling
+- Autoscale RR
 
 ## Custom Endpoint
 - Diff RR inst type for diff usage
@@ -1144,7 +1145,7 @@ Delete obj behaviour: **Show versions** switch
 
 - `s3:Object[Created, Removed, Restore]`, `s3:Replication`, etc.
 - Obj name filtering, e.g. `*.jpg`
-- Send event to SNS, SQS, Lambda or EventBridge. Def. acc policy on dest, i.e. SNS, SQS (`sqs:SendMessage`), Lambda
+- Send event to SNS, SQS, Lambda, EventBridge. Def. acc policy on dest, i.e. SNS, SQS (`sqs:SendMessage`), Lambda
 
 
 
@@ -1495,6 +1496,7 @@ Deployment Opt:
 
 - GW b/w on-prem & AWS cloud for hybrid storage
 - On-prem VM as GW (ESXi, Hyper-V, KVM), or EC2 (less frequent)
+- Cache
 
 
 
@@ -3031,7 +3033,6 @@ Advanced:
 - Rules applied to new resources across Org
 
 
-
 # DDoS Best Practices
 
 
@@ -3121,6 +3122,9 @@ Advanced:
 - Assess AWS resources against security standards, e.g. FSBP, CIS, PCI DSS, NIST
 - Backend: AWS Config
 
+# AWS Artifact
+- Sec & compliance report
+
 # VPC
 
 - Max 5 VPC per region (default)
@@ -3164,7 +3168,7 @@ Advanced:
 ## NAT Gateway
 
 - Allow Private EC2 to Internet
-- HA, no admin
+- *HA*, no admin
 - $: per hr for usage & BW
 - Zonal: provisioned in an AZ 
 - NATGW in Public Subnet
