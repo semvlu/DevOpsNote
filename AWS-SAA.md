@@ -77,7 +77,7 @@
 
 - IAM Role: Role perm over original perm
 - Resource-based policy: principal does not have to give up perm
-- Resource-based support: S3, Lambda, KMS, SNS, SQS, API Gateway, DynamoDB
+  - Support: S3, Lambda, KMS, SNS, SQS, API Gateway, DynamoDB
 - EventBridge Rule perm on target
   - Resource-based: S3, Lambda, SNS, SQS, API Gateway
   - IAM Role: Kinesis, EC2 ASG, ECS
@@ -85,8 +85,7 @@
 
 
 ## Role
-
-IAM Entity for AWS services to perform actions on your behalf w/ Roles, e.g. EC2 Inst Role, Lambda Function Role
+- IAM Entity for AWS services to perform actions on your behalf, e.g. EC2 Inst Role, Lambda Function Role
 
 ## Organization
 
@@ -94,9 +93,7 @@ IAM Entity for AWS services to perform actions on your behalf w/ Roles, e.g. EC2
 - Account type: Management / Member
 - Member can only be in 1 Org
 - Consolidated billing across accounts, $ benefit from aggregated usage
-- Shared Reserved Inst, Saving Plans
-
-
+- Shared RI, Savings Plans
 
 ### OU: Organizational Unit
 
@@ -117,7 +114,7 @@ IAM Entity for AWS services to perform actions on your behalf w/ Roles, e.g. EC2
 
 
 
-## Tag Policy
+### Tag Policy
 
 - Attr-BAC
 - Standardise tags across resources
@@ -227,14 +224,15 @@ Requirements:
 ## Purchasing Options
 
 ### On-demand
-- $: per sec, Highest $.
+- $: per sec, Highest
 
-### Reserved Instance (RI, 1-3 yr): Hotel analogy: VIP discount
+### Reserved Instance (RI, 1-3 yr): 
 - Reserve:
   1. Inst attr: Inst type, Region, Tenancy, OS
   2. Scope: regional or zonal (AZ)
 - Scenario: steady-state app, e.g. DB
-- Buy & sell in RI Marketplace
+- Buy & Sell in RI Marketplace
+- Hotel analogy: VIP discount
 
 ### Convertible Reserved Instance
 - Reserve options changable (inst type, tenancy, OS, scope)
