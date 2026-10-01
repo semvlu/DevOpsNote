@@ -338,7 +338,7 @@ Attr:
 
 ## Snapshots
 
-- Archive: 75% cheaper, takes 24-72 hrs for restore.
+- Archive: 75% cheaper, takes 24-72 hr for restore.
 - Recycle bin: setup rules to retain deleted snapshots.
 - Fast snapshot restore (FSR): full init of snapshot w/ 0 latency on the first use, Hi $.
 
@@ -349,7 +349,7 @@ Attr:
 ## EBS Volume Types
 
 - Feat by: Size, Thruput, IOPS
-- ❌ HDD be boot volumes
+- ❌ HDD be boot volume
 - General SSD: `gp2` / `gp3`
 - Provisioned IOPS (PIOPS) SSD: 
   - `io1`: 64,000 IOPS
@@ -364,7 +364,7 @@ Attr:
 ## EBS Multi-Attach
 
 - Attach an EBS Max *16* EC2 inst in 1 AZ.
-- Must use cluster-aware FS (not XFS, ext4)
+- Must use cluster-aware FS (❌ XFS, ext4)
 - Support: `io1`, `io2 Block Express`
 
 
@@ -373,8 +373,8 @@ Attr:
 
 - Util KMS keys (AES-256)
 - At-rest & In-transit b/w EC2 & attached EBS vol & snapshots.
-Enc un-encrypted EBS volume: 
 
+Enc un-encrypted EBS volume: 
 1. Create EBS snapshot of the un-encrypted EBS.
 2. Select snapshot > Actions > Create volume from snapshot > ✅ Encrypt, select KMS key.
 
@@ -404,7 +404,7 @@ Enc un-encrypted EBS volume:
   - Max I/O: hi-latency, for parallelism
 - Thruput:
   - Elastic: auto scale thruput
-  - Provisioned: set thruput regardlesss of storage size
+  - Provisioned: set thruput regardless of storage size
   - Bursting
 
 
@@ -485,7 +485,7 @@ Enc un-encrypted EBS volume:
 - Target group lvl: Target Group > Attributes
 
 
-## SSL/TLS Cert
+## TLS Cert
 
 - Mng certs: AWS Certificate Manager (ACM)
 - Clients spec. *Server Name Indication (SNI)*, i.e. hostname, solves 1+ TLS certs in 1 web server. Marche: ALB, NLB, CloudFront.
@@ -535,14 +535,14 @@ ASG auto forecast and schedule scaling
 
 - Cooldown period (default 300s) post-scaling.
 - During cooldown ASG will not launch / terminate EC2.
-- Cooldown period-: ready-to-use AMI
+- Ready-to-use AMI: Cooldown period -
 
 
 
 # Aurora & RDS: RDBMS
 
 - Support: Postgres, MySQL, MariaDB, Oracle, MS SQL, IBM DB2, Aurora
-- Continuous backup and restore to spec timestamp (PITR)
+- Cont. backup and restore to spec timestamp (PITR)
 - DR: Multi-AZ 
 - Not accessible via SSH
 
@@ -594,7 +594,7 @@ ASG auto forecast and schedule scaling
 # Aurora
 
 - Support: Postgres, MySQL
-- AWS cloud optm: 5x performance vs. MySQL, 3x vs. Postgres (on RDS)
+- AWS cloud optm performance: 5x vs. MySQL, 3x vs. Postgres (on RDS)
 - Auto storage incr: 10GB, Max 256TB
 - Max 15 replicas, <10ms replica lag
 - $: +20% vs. RDS
@@ -640,7 +640,7 @@ ASG auto forecast and schedule scaling
 
 - 1 primary region (R/W)
 - Max 10 secondary regions (read-only), replication lag <1s.
-- Max 10 RR / secondary region
+- Max 10 RR per secondary region
 - Promote another region as primary (DR): RTO <1min.
 
 
@@ -654,7 +654,7 @@ ASG auto forecast and schedule scaling
 
 ## Babelfish for Aurora PostgreSQL
 
-- MS SQL server migrate to Aurora PostgreSQL
+- MS SQL -> Aurora PostgreSQL migration
 - T-SQL -> Babelfish -> PL/pgSQL
 
 
@@ -664,7 +664,7 @@ ASG auto forecast and schedule scaling
 ## RDS
 
 - Daily auto full backup
-- Transation logs backup every 5min: PITR
+- Transaction logs backup every 5min: PITR
 - Retention: 1-35 days, 0: disable auto backup
 - Manual: retention as user desires
 - Hack: If not using RDS for a long time -> backup & restore
@@ -692,7 +692,7 @@ ASG auto forecast and schedule scaling
 
 - Enc at-rest
   - Def at launch w/ AWS KMS
-  - Master un-encrypted, RR cannot be encrypted
+  - If Master un-encrypted, RR cannot be enc
   - Enc post-launch: backup & restore
 - IAM database authentication: IAM roles conn to DB
 - SG
@@ -704,7 +704,7 @@ ASG auto forecast and schedule scaling
 
 - Reduce DB CPU & RAM
 - Serverless, HA (multi-AZ)
-- RDS & Aurora failover time -: max 66%
+- RDS & Aurora failover time -, Max 66%
 - Enforce IAM auth 
 - Acc from VPC only
 
@@ -973,7 +973,7 @@ Alias
 
 ## Bucket
 
-- Contains objects
+- Store objects
 - Region lvl
 - Global unique name, No uppercase, underscore, IP. No 2 buckets in the world have the same name.
   - Global namespace: custom name
@@ -984,7 +984,7 @@ Alias
 ## Object (file)
 
 - Key (path): `s3://my-bucket/folder/file.txt`, prefix: `folder`, obj name: `file.txt`
-- Value: content, Max 50 TB, "multi-part upload" for obj > 5GB
+- Value: content, Max 50 TB, *multi-part upload* for obj > 5GB
 - Metadata: list of kv pairs
 - Tags: Max 10 kv pairs
 
@@ -996,7 +996,6 @@ Alias
 - Resource-based: bucket (allow cross-account), obj ACL
 - A: IAM principal can acc. S3 obj; I: IAM policy; R: Resource-based policy; D: Explicit Deny
 - (I ∨ R) ∧ ¬D → A
-- IAM principal acc. S3 obj: (IAM policy OR Resource policy) AND !Explicit Deny
 - Block public access: ✅ (default for protection)
 
 
@@ -1004,7 +1003,7 @@ Alias
 ## Versioning
 
 - Enable @ bucket lvl
-- File not versioned pre-enable: null
+- File not versioned pre-enable: `null`
 - Suspend versioning does not delete prev ver
 
 Delete obj behaviour: **Show versions** switch 
@@ -1041,19 +1040,19 @@ Delete obj behaviour: **Show versions** switch
 ## Storage Class
 
 
-| Storage Class                  | min Storage Duration | min Obj Size | Retrieval $              | 1e Byte Latency |
-| ------------------------------ | -------------------- | ------------ | ------------------------ | --------------- |
-| **Standard**                   | None                 | None         | None                     | ms              |
-| **Express One Zone**           | None                 | None         | None                     | <10 ms          |
-| **Intelligent-Tiering**        | None                 | None         | None                     | ms              |
-| **Standard-IA**                | 30 days              | 128 KB       | Per GB                   | ms              |
-| **One Zone-IA**                | 30 days              | 128 KB       | Per GB                   | ms              |
-| **Glacier Instant Retrieval**  | 90 days              | 128 KB       | Per GB                   | ms              |
-| **Glacier Flexible Retrieval** | 90 days              | 40 KB        | Per GB (varies by speed) | min-hr          |
-| **Glacier Deep Archive**       | 180 days             | 40 KB        | Per GB                   | 12-48 hr        |
+| Storage Class                  | min Storage ⏳ | min Obj Size | Retrieval $              | 1e Byte Latency |
+| ------------------------------ | ---------------| ------------ | ------------------------ | --------------- |
+| **Standard**                   | None           | None         | None                     | ms              |
+| **Express One Zone**           | None           | None         | None                     | <10 ms          |
+| **Intelligent-Tiering**        | None           | None         | None                     | ms              |
+| **Standard-IA**                | 30 D           | 128 KB       | Per GB                   | ms              |
+| **One Zone-IA**                | 30 D           | 128 KB       | Per GB                   | ms              |
+| **Glacier Instant Retrieval**  | 90 D           | 128 KB       | Per GB                   | ms              |
+| **Glacier Flexible Retrieval** | 90 D           | 40 KB        | Per GB (varies by speed) | min-hr          |
+| **Glacier Deep Archive**       | 180 D          | 40 KB        | Per GB                   | 12-48 hr        |
 
 
-- Durability: 99.999999999% (11 9's), loss of an obj per 10,000,000 obj per 10,000 yr.
+- Durability: 99.999999999% (11 9's), loss of 1 obj per 10,000,000 obj per 10,000 yr.
 - Availability: Standard: 99.99%, N/A 53 min per yr.
 - Practice: 
   - Obj > Actions > Edit storage class
@@ -1128,7 +1127,7 @@ Delete obj behaviour: **Show versions** switch
 
 - Per prefix or obj Tag
 - Transition action: obj to another storage class
-- Expiration action: obj to be deleted after some time
+- Expiration action: obj to be deleted
 
 
 
@@ -1294,11 +1293,11 @@ CORS Headers: `Access-Control-Allow-Origin`, `Access-Control-Allow-Methods`
 ## MFA Delete
 
 - MFA required: permanent delete an obj ver, suspend versioning
-- Only Root account has perm to enable/disable MFA delete w/ AWS CLI
+- Only Root account can enable/disable MFA delete w/ AWS CLI
 
 ## Access Logs
 
-- S3 logs will be logged into another S3
+- S3 logs stored in another S3
 - Logging bucket in the same region
 - Do NOT set the monitored and logging bucket as the same
 - Practice: Bucket > Properties > Server access logging
@@ -1307,11 +1306,11 @@ CORS Headers: `Access-Control-Allow-Origin`, `Access-Control-Allow-Methods`
 
 ## Pre-Signed URL
 
-- User w/ pre-signed URL inherit the perm of the user who gen URL 
+- Pre-signed URL inherit the perm of URL generator
 - URL expiration:
-  - S3 Console: 1-720min
+  - S3 Console: 1-720 min
   - CLI: param `--expires-in` sec, default: 3600, max 604800s (168hr)
-  `aws s3 presign s3://<bucket>/<obj>  --expires-in <sec> --region <region>`
+  - `aws s3 presign s3://<bucket>/<obj>  --expires-in <sec> --region <region>`
 - Practice: obj > Object actions > Share with a pre-signed URL
 
 
@@ -1330,11 +1329,9 @@ CORS Headers: `Access-Control-Allow-Origin`, `Access-Control-Allow-Methods`
 - Enable Versioning
 - Block an obj ver delete for a period
 - Retention mode:
-  - Compliance: nobody can change or delete the obj ver, mode not changable, retention cannot be shrotened.
+  - Compliance: nobody can change/delete obj ver, mode not changable, retention cannot be shortened.
   - Governance: Previlige users can change obj ver
 - Legal hold: protect obj ♾️⏱️, indep from retention period, add/remove  w/ `s3:PutObjectLegalHold` IAM policy.
-
-
 
 ## Access Point
 
@@ -1342,21 +1339,16 @@ CORS Headers: `Access-Control-Allow-Origin`, `Access-Control-Allow-Methods`
 - Policy: R/W, prefix (sub-dir) perm
 
 
-
 ### VPC Origin Access Point
 
 - AP only avail to VPC
 - Create VPC Endpoint to acc AP. Policy: AP, S3 bucket
 
-
-
 ## S3 Object Lambda
 
 - Lambda changes obj before retrieved by caller app
-- App - S3 Object Lambda AP - Lambda - S3 AP - S3
-- Scenario: redact personal data, convert data, resize & watermark image
-
-
+- App -> S3 Object Lambda AP -> Lambda -> S3 AP -> S3
+- Scenario: redact PII, convert data, resize & watermark image
 
 # CloudFront: CDN
 
@@ -1408,7 +1400,7 @@ SG Setup
 ## CloudFront Invalidation
 
 - Back-end origin update -> Invalidation (Cache refresh, bypass TTL) 
-- Spec path: `*`, `/images/*`
+- Spec. path: `*`, `/images/*`
 
 
 
@@ -1441,7 +1433,7 @@ SG Setup
   - Snowball Edge: 210 TB SSD
 - Scenario: data migration, edge computing
 - Snowball -> S3 -> Glacier
-- EOL: Go for DataSync (online) or Data Transfer Terminal (offline)
+- EOL: DataSync (online) or Data Transfer Terminal (offline) as alt
 
 
 # FSx
@@ -1457,8 +1449,7 @@ Deployment Opt:
 
 - SMB, Win NTFS
 - AD, ACL, user quotas
-- Mounted on Linux EC2
-- Support MS Distributed FS (DFS) namespaces
+- Support: MS Distributed FS (DFS) namespaces, Mounted on Linux EC2
 - Daily backup to S3
 
 
@@ -1476,7 +1467,7 @@ Deployment Opt:
 
 - OS support: Linux, Win, MacOS
 - Protocols: NFS, SMB, iSCSI (block storage)
-- Marche w/ VMware Cloud on AWS, EC2, ECS, EKS
+- Marche w/ EC2, ECS, EKS, VMware Cloud on AWS
 - PIT instantaneous cloning
 - Data deduplication
 
@@ -1485,7 +1476,7 @@ Deployment Opt:
 ## OpenZFS
 
 - Compatible: NFS
-- Marche w/ Linux, Win, MacOS, VMware Cloud on AWS, EC2, ECS, EKS
+- Marche w/ Linux, Win, MacOS, EC2, ECS, EKS, VMware Cloud on AWS
 - PIT instantaneous cloning
 
 
@@ -1515,10 +1506,10 @@ Deployment Opt:
 - Block storage, iSCSI protocol
 - EBS snapshots helps restore on-prem vol
 - On-prem app server -> iSCSI -> Volume GW -> HTTPS -> S3 -> EBS Snapshots
-- Cached: lo-latency acc to most recent data
-- Stored: entire dataset on-prem, scheduled backup to S3
 
-
+### Type
+- Cached Volume: lo-latency acc to most recent data
+- Stored Volume: on-prem -> S3 scheduled backup 
 
 ## Tape GW
 
@@ -1530,8 +1521,8 @@ Deployment Opt:
 
 - FTP transfer service from/to S3 & EFS w/ IAM role. HA
 - Protocols: FTP, FTPS, SFTP
-- $: per provisioned endpoint per hr, data transfer in GB
-- Authn: AD, LDAP, Okta AWS Cognito
+- $: per hr per provisioned endpoint, data transfer in GB
+- Authn: AD, LDAP, Okta, AWS Cognito
 
 
 
@@ -1541,7 +1532,7 @@ Deployment Opt:
 - On-prem/other cloud <-> AWS: agent
 - AWS <-> AWS: no agent, *b/w diff. storage services*
 - S3 (all storage classes), EFS, FSX
-- Sechdule: hr, day, week
+- Schedule: hr, day, week
 - Data migration
 - *Preserve file perm & metadata* (NFS, POSIX, SMB)
 - NFS/SMB server <-> DataSync Agent <-> TLS <-> DataSync <-> AWS Storage Services (S3, EFS, FSx)
@@ -1587,13 +1578,13 @@ Deployment Opt:
 
 - Deduplication ID: exactly-once processing, remove duplicates
 - Order by Message Group ID
-- Thruput: 300 msg/s w/o batch, 3000 msg/s w/ batch
+- Thruput: 300 msg/s (w/o batch), 3,000 msg/s (batch)
 
 
 
 ## SQS + ASG
 
-- Horizontal autoscale w/ CloudWatch Metric: Queue Length (ApproximateNumberOfMessages) -> CloudWatch Alarm -> ASG
+- Horizontal autoscale w/ CloudWatch Metric: Queue Length: `ApproximateNumberOfMessages` -> CloudWatch Alarm -> ASG
 - SQS qua buffer to DB write: When INSERT complete, delete msg in SQS. Enqueue ASG -> SQS -> Dequeue ASG -> DB
 
 
