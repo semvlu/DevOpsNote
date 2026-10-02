@@ -672,7 +672,7 @@ ASG auto forecast and schedule scaling
 
 
 ## Aurora
-- Retention: 1-35 days, PITR
+- PITR: Max 35 days
 
 ### Aurora DB Cloning
 
@@ -1052,7 +1052,7 @@ Delete obj behaviour: **Show versions** switch
 | **Glacier Deep Archive**       | 180 D          | 40 KB        | Per GB                   | 12-48 hr        |
 
 
-- Durability: 99.999999999% (11 9's), loss of 1 obj per 10,000,000 obj per 10,000 yr.
+- Durability: 99.999999999% (11 9's), loss of 1 obj per 10M obj per 10K yr.
 - Availability: Standard: 99.99%, N/A 53 min per yr.
 - Practice: 
   - Obj > Actions > Edit storage class
@@ -1118,7 +1118,7 @@ Delete obj behaviour: **Show versions** switch
 
 - 1 AZ
 - Directory bucket: directory hierarchical stru for Hi performance
-- 100,000s requests, < 10ms latency
+- 100K+ requests, <10ms latency
 - 99.95% Avail
 
 
@@ -1591,7 +1591,7 @@ Deployment Opt:
 
 # SNS: Simple Notification Service
 
-- Topic: queue, Max: 100,000
+- Topic: queue, Max: 100K per region
 - Subscriber: recvr, e.g. SQS, Lambda, Data Firehose, Email, SMS, HTTP(S) endpoint. Max: 12,500,000 per Topic.
 - Security: enc, Acc control, etc. same as SQS
 
@@ -1618,15 +1618,13 @@ Deployment Opt:
 - Data Max 10 MiB
 - Partition key: ordering
 - Can Replay (reprocess) data by consumer
-- Kinesis Producer Library (KPL): write producer app, Kinesis Client Library (KCL): write consumer app
-
-
+- Kinesis Producer Library (KPL): write producer app; Kinesis Client Library (KCL): write consumer app
 
 ## Mode
 
 Provisioned: 
 
-- Set #shards: total capacity for a stream
+- Set #shards: total capacity for a stream, ~ #water pipes, same topic
 - Shard: 1 MB/s write, 2 MB/s read
 - $: per shard provision per hr
 
@@ -1643,7 +1641,7 @@ On-demand:
 - Set: Buffer size (MiB) & interval (sec)
 - Autoscale, serverless
 - ~ Real-time
-- Support CSV, JSON, Parquet, Raw text, binary data
+- Support: CSV, JSON, Parquet, Raw text, Binary data
 - Convert to Parquet, ORC, Compression w/ gzip, snappy
 - ❌ Replay, storage
 
@@ -1660,10 +1658,10 @@ On-demand:
 # ECS
 
 - ECR: Elastic Container Registry
-- Group of Docker container on AWS = ECS task
-- Task Role: IAM role for a task to make API requests to AWS services, def in *Task definition*
+- Group of Docker container on AWS = ECS task, ~ K8s Pod
+- Task Role: IAM role to make API requests to AWS services, def in *Task definition*
 - Integration: ALB (recom), NLB
-- Volumes: EFS
+- Volume: EFS
 
 
 
@@ -1722,7 +1720,7 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 
 - AWS create & mng Nodes (EC2)
 - EKS mng Nodes in ASG
-- Support: on-demand, spot EC2 inst
+- Support: on-demand, spot inst
 
 
 
@@ -1730,7 +1728,7 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 
 - User create & register Nodes to EKS, ASG mng Nodes
 - Util pre-built AMI or EKS optm AMI
-- Support: on-demand, spot EC2 inst
+- Support: on-demand, spot inst
 
 
 
@@ -1744,7 +1742,7 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 
 - Setup `StorageClass`, util CSI
 - EBS, EFS, FSx Lustre, FSx NetApp ONTAP
-- *Fargate only w/ EFS*
+- *Fargate only w/ EFS & EBS*
 
 
 
@@ -1757,8 +1755,8 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 # Lambda
 
 - Virtual function, short exec, run on-demand, autoscaling
-- $: $0.2 per 1,000,000 request, $1 per 600,000 GB-sec compute time
-- Free tier: 1,000,000 Lambda requests, 400,000 GB-sec compute time
+- $: $0.2 per 1M request, $1 per 600K GB-sec compute time
+- Free tier: 1M Lambda requests, 400K GB-sec compute time
 - Max 10 GB RAM per function
 - Language support: node.js, python, C#, etc.
 - Scenario: Cronjob
@@ -1767,7 +1765,7 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 
 - API Gateway: REST API to invoke Lambda
 - Kinesis: util Lambda for data transform
-- DynamoDB: trigger Lambda on DB change
+- DynamoDB: trig. Lambda on DB change
 - CloudWatch: automation on code pipeline pipeline change
 - Cognito: whenever user login to DB
 - S3, etc.
@@ -1791,7 +1789,7 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 ### Deployment
 
 - Size: 50 MB (compressed .zip), 250 MB (uncompressed code + dep)
-- `/tmp` to load other files at startup
+- `/tmp` to load other files @ startup
 - Env var: 4 KB
 
 
@@ -1818,7 +1816,7 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 ## SnapStart
 
 - Improve Lambda perf Max 10x, $0 for Python, Java, .NET
-- Function invoked from pre-init state, no init 
+- Function invoked from preinit state, no init 
 - Normal: Init -> Invoke -> Shutdown; SnapStart: Invoke -> Shutdown
 - New version publish -> Lambda init func -> Take snapshot of mem & disk state of init-ed func -> Snapshot cached for lo-latency
 
@@ -1836,7 +1834,7 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 - Support: RDS Postgres, Aurora Postgres / MySQL
 - Proc *data events*
 - Allow outbound traffic: DB -> Lambda (Public, NATGW, VPC endpoint)
-- DB perm to invoke Lambda: Lambda resource-based policy, IAM policy
+- DB invoke Lambda perm: Lambda resource-based policy, IAM policy
 
 
 
@@ -1845,7 +1843,7 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 - DB info, no data
 - Subscribe: DB inst, DB snapshot, DB param group, DB SG, RDS Proxy, Custom engine ver
 - ~ Real-time
-- Send to SNS or EventBridge
+- RDS -> SNS / EventBridge -> Lambda
 
 
 
@@ -1853,7 +1851,7 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 
 - Edge function: code on CloudFront to run close to users
 - Global deploy
-- $: pay only for what you use
+- $ by usage
 - Scenario: custom CDN content, website sec & privacy, dynamic web app, SEO, bot mitigation @ edge, user auth, user prioritisation
 
 
@@ -1861,7 +1859,7 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 ## CloudFront Function
 
 - Func lang: JS
-- Millions req/sec
+- 1M+ req/sec
 - Change: Viewer Request, Viewer Response
 - Scenario: cache key normalisation (header, cookie, query string, URL), header manipulation, URL redirect, user auth (JWT)
 
@@ -1870,7 +1868,7 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 ## Lambda@Edge
 
 - Func lang: NodeJS, Python
-- Thousands req/sec
+- 1,000+ req/sec
 - Change: Viewer Request, Viewer Response, Origin Request, Origin Response
 - Publish func in 1 region, CloudFront replicates to its loc
 - Longer exec time
@@ -1969,7 +1967,7 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 
 ## Backup & DR
 
-- PITR: last 35 days
+- PITR: Max 35 days
 - DR creates new Table
 
 
@@ -1977,7 +1975,7 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 ### On-demand Backup
 
 - Full backup, explicit delete
-- Conf & mng in AWS Backup: cross-region copy
+- Cross-region copy: conf & mng in AWS Backup
 
 
 
@@ -2008,7 +2006,6 @@ Import from S3
   - API > Deploy API
 
 
-
 - Integration: Lambda (expose Lambda REST API), HTTP (on-prem HTTP API, ALB), AWS Service
 - Why integrate w/ HTTP & AWS Service? Rate limiting, caching, user auth
 
@@ -2021,8 +2018,7 @@ Import from S3
 ### Edge-Optimized (default)
 
 - Request routed thru CloudFront edge loc
-- API Gateway still in 1 region
-
+- API still in 1 region
 
 
 ### Regional
@@ -2034,10 +2030,8 @@ Import from S3
 
 ### Private
 
-- Acc from VPC w/ VPC Interdace Endpoint (ENI)
+- Acc from VPC w/ VPC Interface Endpoint (ENI)
 - Resource policy: def acc
-
-
 
 ## API Gateway Security
 
@@ -2059,7 +2053,7 @@ Cert Loc:
 
 # Step Functions
 
-- Serverless visual workflow 
+- Serverless visual workflow orchestration
 - Orchestrate Lambda, EC2, ECS, on-prem, API Gateway, SQS, etc.
 - Seq, Parallelism, Cond, Timeout, Error handling, Human approval
 
@@ -2083,7 +2077,7 @@ Cert Loc:
 ## Identity Pool
 
 - Provide temp AWS cred to users to acc AWS resources
-- User source: CUP, 3e party
+- IdP: CUP, 3e party
 - Web/mobile app login ->  IdP / CUP (token) -> Web/mobile app -> Identity Pool (AWS cred + IAM policy) -> Web/mobile app -> AWS resources
 
 
@@ -2100,11 +2094,11 @@ Services:
 - Sync: API Gateway, ELB
 - Async: SQS, SNS, Kinesis, Lambda trig S3
 
-Challenges
+Challenges:
 
-- Overhead: repeated creation of new micro service
+- Overhead: repeated creation of new micro-service
 - Optm server util
-- Complex: multi ver of micro service simultaneously
+- Complex: multi ver of micro-service simultaneously
 
 
 
@@ -2163,7 +2157,7 @@ Challenges
 # Timestream
 
 - Time series DB
-- 1000x faster & 1/10 cost of RDBMS
+- 1000x faster & 10% cost of RDBMS
 - Scheduled query, multi-measure records, SQL compatibility
 - Storage Tier: recent data: mem, historical data: cost-optm storage
 - Input: IoT, Kinesis, Prometheus
@@ -2188,20 +2182,20 @@ LOCATION 's3://target-bucket/prefix/';
 
 ## Optimisation
 
-- Columnar data: less scan, less cost -> Parquet or ORC
+- Columnar data: less scan, less $ -> Parquet or ORC
 - Glue: convert to Parquet, ORC
 - Compress data for small retrieval
 - Partition datasets in S3: easy query: `s3://my-bucket/pathToTable/<PARTITION_COLUMN_NAME>=<VALUE>/<PARTITION_COLUMN_NAME>=<VALUE>/...` 
 e.g. `s3://my-bucket/flight/year=2026/month=1/day=1/`
-- Larger file (>128MB): minimise overhead
+- Import Larger file (>128MB): minimise overhead
 
 
 
 ## Federated Query
 
-- Run SQL across relational, non-relational, custom data sources, both AWS and on-prem
+- Run SQL across relational, non-relational, custom data sources, both AWS & on-prem
 - Lambda qua Data Source Connector to run query
-- Store results to S3
+- Store to S3
 
 # Redshift
 
@@ -2287,7 +2281,7 @@ Patterns
 - Core: run tasks and store data, long running
 - Task (opt): run tasks, Spot inst
 - EC2 purchase opt:
-  - On-demand & RI (min 1 yr): Master & Core nodes
+  - On-demand & RI (min 1yr): Master & Core nodes
   - Spot: Task nodes
 
 
