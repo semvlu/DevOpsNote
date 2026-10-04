@@ -1353,6 +1353,7 @@ CORS Headers: `Access-Control-Allow-Origin`, `Access-Control-Allow-Methods`
 # CloudFront: CDN
 
 - Content cached @ edge
+- Response headers policy: spec HTTP headers qui CloudFront add/remove in resp to viewers
 
 Origin:
 
@@ -3393,14 +3394,13 @@ Hosted Connection: 50 Mbps - 25 Gbps
 
 
 ## IPv6
-
 - All IPv6 adr in AWS are public
-
+- Dual-stack VPC, IPv6 only Subnet: CIDR-maxxing, not limited by IPv4 CIDR
 
 
 ## Egress-Only Internet Gateway
 
-- IPv6 only Internet GW, ~ NATGW for IPv4
+- IPv6 only IGW, ~ NATGW for IPv4
 - Allow VPC outbound over IPv6, while preventing internet to init IPv6 conn to the inst
 - Private Subnet Route Table
 
