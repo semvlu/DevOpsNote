@@ -1,22 +1,13 @@
 # Ansible
 
-- Collections in EX294: builtin, redhat.rhel_system_roles, ansible.posix
-`dnf install rhel-system-roles ansible-core`
-- `command` over `shell`, `shell` only for I/O redir
-
-
-# Code Check
-
-```sh
-ansible-playbook --syntax-check playbook.yml
-ansible-playbook -C playbook.yml # dry-run (--check)
-```
+- Collections in EX294: builtin, redhat.rhel-system-roles, ansible.posix
+- `dnf install rhel-system-roles ansible-core`
+- `command` over `shell`, `shell` only for I/O redir (`>`, `>>`, `2>`, `|`)
 
 
 # Config File: `ansible.cfg`
  `ansible-config`
 ```sh
-ansible-config list
 ansible-config init > ansible.cfg
 ansible-config view path/to/ansible.cfg
 ```
@@ -90,6 +81,11 @@ databases
 - Exec playbook w/ abs path
 - No need to mod file perm
 
+## Code Check
+```sh
+ansible-playbook --syntax-check playbook.yml
+ansible-playbook -C playbook.yml # dry-run (--check)
+```
 
 
 # Service
@@ -100,34 +96,32 @@ databases
     name: "@Development Tools" # @: pkg group
     state: present
 
-- name: service module
-  hosts: all
-  tasks:
-  - name: install/uninstall apache
-    package:
-     name: httpd
-     state: present | absent
+- name: install/uninstall apache
+  package:
+   name: httpd
+   state: present | absent
 
-  - name: start httpd
-    service:
-     name: httpd
-     state: started | restarted | stopped | reloaded
-     enabled: true
+- name: start httpd
+  service:
+   name: httpd
+   state: started | restarted | stopped | reloaded
+   enabled: true
 ```
 
 
 
 # File Op
-
+`ansible.builtin.file` module
+- state: "touch", "file", "directory", "absent", "hard", "link"
 ```yml
 - name: File op
-  hosts: localhost
+  hosts: all
   tasks:
-  - name: create file
+  - name: Create file
     file:
       path: /tmp/file.txt
       state: touch
-  - name: append text
+  - name: Append text
     blockinfile: 
       path: /tmp/file.txt
       block: |
@@ -170,8 +164,8 @@ databases
       dest: '{{ item.dest }}'
       state: hard
     loop:
-      - { src: file1, dest: link1 }
-      - { src: file2, dest: link2 }
+    - { src: file1, dest: link1 }
+    - { src: file2, dest: link2 }
 ```
 
 
@@ -226,19 +220,19 @@ vars:
     dnf:
       name: httpd
       state: present
-  - name: start httpd
-    dnf:
+  - name: start & enable httpd
+    service:
       name: httpd
       state: started
+      enabled: true
+
   - name: Open firewall port 80
     firewalld:
       service: http
       permanent: true
+      immediate: true
       state: enabled
-  - name: reload firewalld
-    service: 
-      name: firewalld
-      state: reloaded
+
   - name: Redirect port 443 -> 8443 with Rich Rule
     firewalld:
       rich_rule: rule family=ipv4 forward-port port=443 protocol=tcp to-port=8443
@@ -246,6 +240,11 @@ vars:
       permanent: true
       immediate: true
       state: enabled
+
+  - name: reload firewalld
+    service: 
+      name: firewalld
+      state: reloaded
 ```
 
 
@@ -268,7 +267,7 @@ vars:
 # Cronjob
 
 ```yml
-- name: cronjob
+- name: Cronjob
   cron:
     name: This job is scheduled by Ansible
     minute: 0
@@ -372,17 +371,33 @@ ansible-playbook playbook.yml --extra-vars newpassword=password1234
 - name: Add repo in /etc/yum.repos.d
   yum_repository:
     name: epel
-    description: EPEL YUM repo
-    file: external_repos
+    description: EPEL yum repo
+    file: custom-repo
     baseurl: https://download.fedoraproject.org/pub/epel/$releasever/$basearch/
     gpgcheck: no
     enabled: true
 ```
 
+# ACL
+```yml
+- name: Set default ACL on file for user alice
+  ansible.posix.acl:
+  path: path/to/file
+  entity: alice
+  etype: user
+  permissions: rw
+  state: present
+  default: true
+- name: Get ACL info
+  acl:
+    path: path/to/file
+  register: file_acl_info
+
+```
 
 # Template
 `index.html.j2`
-```
+```yml
 FQDN: {{ ansible_facts['fqdn'] }}
 IP: {{ ansible_facts['default_ipv4']['address'] }}
 ```
@@ -431,8 +446,10 @@ ansible server1 -a "/sbin/reboot"
 
 ## Handler
 
-- Special form of a Task, exec only when notified by a prev task which resulted in a "changed" status, and all tasks w/in a play are finished.
-- `notify` & `name` of the handler must be the same.
+- Special form of a Task, exec only when (AND)
+  1. Notified by prev task which resulted in a "changed" status, 
+  2. All tasks in a play are finished.
+- `notify` & `name` of the handler be identical.
 
 ```yml
 tasks:
@@ -463,14 +480,10 @@ handlers:
 - Operator: `and`, `or`, `not`, `==`, `!=`, etc.
 - Type conversion: filter `|`
 ```yml
-- name: trigger task when cond met
+- name: trigger task when cond meet
   debug:
-    msg: "this is triggered when cond met"
+    msg: "this is triggered when cond meet"
   when: ansible_facts['os_family'] == 'RedHat' and ansible_facts['cpu_temperature'] | float > 80
-
-
-
-
 ```
 
 
@@ -498,7 +511,7 @@ handlers:
       bob: developers
 
   tasks:
-  - name: install pkg
+  - name: install pkg, since pkg allow multi args at once
     package:
       name: "{{ pkg }}"
       state: present
@@ -509,13 +522,13 @@ handlers:
       state: present
     loop: "{{ pkg }}"
     
-  - name: create users and assign their groups w/ list of dict
+  - name: create users & assign groups w/ list of dict
     user:
       name: "{{ item.name }}"
       group: "{{ item.group }}"
     with_items: "{{ users }}"
   
-  - name: create users and assign their groups w/ dict
+  - name: create users and assign groups w/ dict
     user:
       name: "{{ item.key }}"
       group: "{{ item.value }}"
@@ -582,41 +595,57 @@ ansible-playbook playbook.yml --vault-password-file .vault_pass1 --vault-passwor
 
 # Ansible Facts
 ## Core System
-`['distribution']`: "Ubuntu", "CentOS", "RedHat"
-`['distribution_version']`
-`['os_family']`: "Debian", "RedHat", "Windows"
-`['kernel']`: kernel ver
-`['hostname']`
-`['fqdn']`
-`['architecture']`
+- `['distribution']`: "Ubuntu", "CentOS", "RedHat"
+- `['distribution_version']`
+- `['os_family']`: "Debian", "RedHat", "Windows"
+- `['kernel']`: kernel ver
+- `['hostname']`
+- `['fqdn']`
+- `['architecture']`
 
 ## Network
-`['default_ipv4']['address']`:	Primary IPv4
-`['default_ipv4']['gateway']`
-`['default_ipv4']['interface']`
-`['all_ipv4_addresses']`
-`['interfaces']`
+- `['default_ipv4']['address']`:	Primary IPv4
+- `['default_ipv4']['gateway']`
+- `['default_ipv4']['interface']`
+- `['all_ipv4_addresses']`
+- `['interfaces']`
 
 ## HW
-`['memtotal_mb']`
-`['memfree_mb']`
-`['processor_vcpus']`
-`['processor_cores']`
-`['mounts']`
-`['devices']`: disks
+- `['memtotal_mb']`
+- `['memfree_mb']`
+- `['processor_vcpus']`
+- `['processor_cores']`
+- `['mounts']`
+- `['devices']`: disks
 
 ## User & Env
-`['user_id']`: Remote user exec Ansible
-`['real_user_id]`: ibid, but uid
-`['env']['HOME']`	Home dir of remote user
-`['env']['PATH']`
+- `['user_id']`: Remote user exec Ansible
+- `['real_user_id]`: ibid, but uid
+- `['env']['HOME']`	Home dir of remote user
+- `['env']['PATH']`
 
 
-# Error Handlling
+# Magic Variables
+- `hostvars`: acc. facts for multi hosts, after gathered/cached facts (`gather_facts: true`) @ play lvl.
+- `groups`: groups in inventory
+- `group_names`: groups the current host lies in.
+- `inventory_hostname`, `inventory_hostname_short`: FQDN, short hostname conf-ed in inventory, alt to `ansible_hostname` when fact-gathering disabled.
+
+```yml
+{% for h in groups['all'] %}
+  {{ hostvars[h]['ansible_facts']['default_ipv4']['address'] }}
+{% endfor %}
+```
+
+
+# Error Handling
 - `block`, `rescue`, `always`: try/catch/anyways
-- `any_errors_fatal`: abort on error, @ play / block lvl. 
-- ⚠️ `rescue` & `always` take priority over `abort_errors_fatal`
 - `force_handlers`: exec `handlers` even on error
+- `any_errors_fatal`: abort on error, @ play / block lvl. 
+
+> [!WARNING] 
+> Priority: `rescue` & `always` > `abort_errors_fatal` > `force_handlers`
+
 ```yml
 tasks:
 - name: Handle the error
@@ -654,8 +683,7 @@ tasks:
   command: /bin/fake_command
   register: result
   ignore_errors: True
-  changed_when: '"ERROR" in result.stderr' and result.rc == 2
-  # rc: return code
+  changed_when: '"ERROR" in result.stderr' and result.rc == 2 # rc: return code
 ```
 
 
@@ -710,10 +738,11 @@ ansible-navigator collections
 ```yml
 ansible-navigator:
   execution-environment:
-    image: registry.example.com/ee-supported-rhel9:latest # Exact image provided in exam prompt
+    image: registry.example.com/ee-supported-rhel9:latest # Image provided in exam prompt
     pull:
-      policy: missing # Crucial: Exam environments are offline/firewalled
-  mode: stdout
+      policy: missing # Crucial: Exam env are offline/firewalled
+
+  mode: stdout # -m stdout
 ```
 
 # `ansible-pull`
@@ -737,7 +766,8 @@ ansible-navigator:
 
 
 # `rhel-system-roles`
-- Ref `/usr/share/ansible/roles/rhel-system-roles.<role>/README.md`
+- Ref: `/usr/share/ansible/roles/rhel-system-roles.<role>/README.md`
+
 ```yml
 - name: 
   hosts: all
