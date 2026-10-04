@@ -1,30 +1,48 @@
 # Ansible
 
 - Collections in EX294: builtin, redhat.rhel_system_roles, ansible.posix
+`dnf install rhel-system-roles ansible-core`
+- `command` over `shell`, `shell` only for I/O redir
 
-# CLI
+
+# Code Check
 
 ```sh
 ansible-playbook --syntax-check playbook.yml
 ansible-playbook -C playbook.yml # dry-run (--check)
 ```
 
-# Coding Style
 
-- `command` over `shell`, `shell` only for I/O redir
-- `ansible-galaxy init`: install roles
+# Config File: `ansible.cfg`
+ `ansible-config`
+```sh
+ansible-config list
+ansible-config init > ansible.cfg
+ansible-config view path/to/ansible.cfg
+```
 
-# Config Files
 
-`/etc/ansible/ansible.cfg`
+default: `/etc/ansible/ansible.cfg`
+
+`ansible.cfg` search order:
+1. `ANSIBLE_CONFIG` env var
+2. `./ansible.cfg` 
+3. `~/.ansible.cfg` 
+4. `/etc/ansible/ansible.cfg`
 
 ```conf
 [defaults]
-inventory = ./inventory
+
+inventory = ./inventory.ini # default: ['/etc/ansible/hosts']
+collections_path = ~/collections:/usr/share/ansible/collections
+# `/etc/ansible/roles` @ head of entry 
+roles_path = ~/roles:/usr/share/ansible/roles:/etc/ansible/roles
 remote_user = automationuser
-roles_path = ./roles
-collections_path = ./collections
+private_key_file = ~/.ssh/ansible-mgmt
 host_key_checking = false
+
+[galaxy]
+server = https://galaxy.ansible.com
 
 [privilege_escalation]
 become = true
@@ -34,17 +52,13 @@ become_ask_pass = false
 
 ```
 
-`/etc/ansible/hosts`
-`/etc/ansible/roles`
-
 # Host Management
-
 
 
 ## Host Files
 
-`/etc/ansible/hosts`
-`ansible-inventory -i <hosts, inventory.ini> [--graph, --list]`
+- default: `/etc/ansible/hosts`
+- `ansible-inventory -i <hosts, inventory.ini> [--graph, --list]`
 
 ```ini
 localhost ansible_connection=local # exec on control node / Ansible server itself
@@ -57,14 +71,17 @@ server ansible_host=10.0.0.100 # Alias
 ansible_user=admin
 ansible_pasword=password
 http_port=8080
+
+[prod:children] # Nested group
+databases
 ```
 
 ```yml
 - name: Pattern matching for host groups
   hosts: a,b,&c,!d,!e 
-  # (a OR B) AND C AND (!d OR !e)
-  # `,` and `:`: concat, `&`: intersection, `!`: exclusion
 ```
+- (a OR B) AND C AND (!d OR !e)
+- `,` and `:`: concat, `&`: intersection, `!`: exclusion
 
 
 
@@ -78,6 +95,11 @@ http_port=8080
 # Service
 
 ```yml
+- name: install RPM Development Tools
+  dnf:
+    name: "@Development Tools" # @: pkg group
+    state: present
+
 - name: service module
   hosts: all
   tasks:
@@ -170,6 +192,26 @@ vars:
 
 ```
 
+## `lineinfile`
+- Check string, replace or delete
+- Cf. `ansible.builtin.replace`: replace all matches
+
+```yml
+- name: Update GPCC TLS Cert config
+  lineinfile:
+    path: "{{ gpcc_conf }}"
+    regexp: '^HTTPSCertFile'
+    line: 'HTTPSCertFile       = {{ new_cert_file }}'
+    state: present
+  tags:
+    - TLS
+
+- name: Ensure group wheel not in sudoers
+  lineinfile:
+    path: /etc/sudoers
+    state: absent
+    regexp: '^%wheel'
+```
 
 
 # Firewall
@@ -188,7 +230,7 @@ vars:
     dnf:
       name: httpd
       state: started
-  - name: open firewall port 80
+  - name: Open firewall port 80
     firewalld:
       service: http
       permanent: true
@@ -216,8 +258,8 @@ vars:
     url: https://dlcdn.apache.org/tomcat/tomcat-8/v8.5.78/bin/apache-tomcat-8.5.78.tar.gz
     dest: /opt/tomcat
     mode: 0755
-    group: iafzal
-    owner: iafzal
+    group: root
+    owner: root
 
 ```
 
@@ -246,14 +288,14 @@ vars:
 
 ```yml
 - name: Create partition & FS
-  parted: 
+  community.general.parted: 
     name: files
     label: gpt
     device: /dev/sdb
     number: 1
     state: present
     part_started: 1MiB # default: 0%
-    part_end: 1GiB # default: 100%
+    part_end: 1GiB     # default: 100%
     fs_type: xfs
 
 - name: Create mount dir
@@ -262,7 +304,7 @@ vars:
     state: directory
 
 - name: Mount FS on dir
-  mount: 
+  ansible.posix.mount: 
     src: /dev/sdb1
     path: /mnt/data
     fstype: xfs
@@ -275,17 +317,13 @@ vars:
 
 # User Mgmt
 
-
-
-## Create user
-
 ```yml
 - name: Create user
   user:
     name: george
     # Groups config
     groups: admins,developers # Secondary group
-    append: yes
+    append: true
     password_expire_warn: 30
     password_expire_account_disable: 15
 
@@ -295,7 +333,7 @@ vars:
 
 ## Update password
 
-- `vault.yml`: enc w/ ansible-vault
+- `vault.yml`: enc w/ `ansible-vault`
 
 ```sh
 ansible-playbook playbook.yml --ask-vault-pass
@@ -319,16 +357,43 @@ ansible-playbook playbook.yml --extra-vars newpassword=password1234
 
 ```yml
 - name: Get running proc from remote host
-  ignore_errors: yes
-  shell: "ps aux | grep top | awk '{print $2}'" # or ps -ef
+  ignore_errors: true
+  shell: "ps -ef | grep top | awk '{print $2}'"
   register: running_proc
 
 - name: Kill running proc
-  ignore_errors: yes
+  ignore_errors: true
   shell: "kill {{ item }}"
   with_items: "{{ running_proc.stdout_lines }}"
 ```
 
+# Repo Mgmt
+```yml
+- name: Add repo in /etc/yum.repos.d
+  yum_repository:
+    name: epel
+    description: EPEL YUM repo
+    file: external_repos
+    baseurl: https://download.fedoraproject.org/pub/epel/$releasever/$basearch/
+    gpgcheck: no
+    enabled: true
+```
+
+
+# Template
+`index.html.j2`
+```
+FQDN: {{ ansible_facts['fqdn'] }}
+IP: {{ ansible_facts['default_ipv4']['address'] }}
+```
+
+```yml
+- name: template file for httpd
+  template:
+    src: index.html.j2
+    dest: /var/www/html/index.html
+    mode: '0644'
+```
 
 
 # Task Control
@@ -348,7 +413,7 @@ ansible-playbook playbook.yml --start-at-task '<task-name>'
 ```sh
 # Test Connectivity
 ansible all -m ping
-ansible all -a "uptime" # w/o -m, default to `command` module
+ansible all -a "uptime" # w/o -m, `command` module (default)
 
 # Gather facts
 ansible all -m setup
@@ -364,9 +429,7 @@ ansible all -m user -a "name=george state=absent"
 ansible server1 -a "/sbin/reboot"
 ```
 
-
-
-# Handler
+## Handler
 
 - Special form of a Task, exec only when notified by a prev task which resulted in a "changed" status, and all tasks w/in a play are finished.
 - `notify` & `name` of the handler must be the same.
@@ -396,13 +459,14 @@ handlers:
 
 
 
-# Conditions
-
+## Conditions
+- Operator: `and`, `or`, `not`, `==`, `!=`, etc.
+- Type conversion: filter `|`
 ```yml
 - name: trigger task when cond met
   debug:
     msg: "this is triggered when cond met"
-  when: ansible_facts['os_family'] == 'RedHat'
+  when: ansible_facts['os_family'] == 'RedHat' and ansible_facts['cpu_temperature'] | float > 80
 
 
 
@@ -411,10 +475,10 @@ handlers:
 
 
 
-# Loop
+## Loop
 
 - `loop: "{{ <list_var> }}", "{{ <dict_var> | dict2items}}"`
-- l
+- `with_items: "{{ <list_var> }}"`
 
 ```yml
 - name: Loop examples
@@ -461,7 +525,7 @@ handlers:
 
 
 
-# Tag
+## Tag
 
 - Ref / alias for a task
 - Spec in command:
@@ -516,12 +580,84 @@ ansible-playbook playbook.yml --vault-password-file .vault_pass1 --vault-passwor
 
 
 
-# `ansible-config`
+# Ansible Facts
+## Core System
+`['distribution']`: "Ubuntu", "CentOS", "RedHat"
+`['distribution_version']`
+`['os_family']`: "Debian", "RedHat", "Windows"
+`['kernel']`: kernel ver
+`['hostname']`
+`['fqdn']`
+`['architecture']`
 
-```sh
-ansible-config list
-ansible-config view <ansible.cfg>
+## Network
+`['default_ipv4']['address']`:	Primary IPv4
+`['default_ipv4']['gateway']`
+`['default_ipv4']['interface']`
+`['all_ipv4_addresses']`
+`['interfaces']`
+
+## HW
+`['memtotal_mb']`
+`['memfree_mb']`
+`['processor_vcpus']`
+`['processor_cores']`
+`['mounts']`
+`['devices']`: disks
+
+## User & Env
+`['user_id']`: Remote user exec Ansible
+`['real_user_id]`: ibid, but uid
+`['env']['HOME']`	Home dir of remote user
+`['env']['PATH']`
+
+
+# Error Handlling
+- `block`, `rescue`, `always`: try/catch/anyways
+- `any_errors_fatal`: abort on error, @ play / block lvl. 
+- ⚠️ `rescue` & `always` take priority over `abort_errors_fatal`
+- `force_handlers`: exec `handlers` even on error
+```yml
+tasks:
+- name: Handle the error
+
+  block:
+  - name: Print a message
+    debug:
+      msg: 'Normal exec'
+  - name: Force a failure
+    command: /bin/false
+  - name: Never exec
+    debug:
+      msg: 'Never exec due to error'
+  
+  rescue:
+  - name: Print when errors
+    debug:
+      msg: 'Catch error'
+    
+  always:
+  - name: Always do
+    debug:
+      msg: 'I do it anyways, no matter what'
+
 ```
+
+## Def Failure
+- `failed_when`
+- `changed_when`: `command` or `shell` reports task status as "changed" no matter what, which breaks idempotency. This def what a real "change" is.
+- `ignore_errors`: skip error, not trig `rescue` block
+
+
+```yml
+- name: Combine multi cond to override 'changed' result
+  command: /bin/fake_command
+  register: result
+  ignore_errors: True
+  changed_when: '"ERROR" in result.stderr' and result.rc == 2
+  # rc: return code
+```
+
 
 
 
@@ -535,12 +671,13 @@ ansible-doc -s <module> # snippet
 
 
 
-# `[ansible-galaxy](https://galaxy.ansible.com)`
+# [`ansible-galaxy`](https://galaxy.ansible.com)
 
 - Install Roles & Collections
 
 ```sh
 ansible-galaxy role
+ansible-galaxy init <role> --init-path /path/to/roles # init a role
 
 ansible-galaxy collection [install | list]
 ansible-galaxy collection install -r requirements.yml -p /path/to/collections
@@ -561,30 +698,23 @@ collections:
 
 ```
 
-`ansible.cfg`
-
-```conf
-# `/etc/ansible/roles` @ head of entry 
-[defaults]
-roles_path = /etc/ansible/roles:<other_paths>
-
-[galaxy]
-server_list = automation_hub
-
-[galaxy_server.automation_hub]
-url = https://internal-exam-server.example.com/api/galaxy/
-```
-
-
 
 # `ansible-navigator`
-
 ```sh
+ansible-navigator run playbook.yml -m stdout	# Run playbook w/o TUI
 ansible-navigator doc <module>	# Container-aware equiv. of ansible-doc
-ansible-navigator run <file> -m stdout	# Run playbook w/o TUI
+ansible-navigator collections
 ```
 
-
+`project/ansible-navigator.yml`
+```yml
+ansible-navigator:
+  execution-environment:
+    image: registry.example.com/ee-supported-rhel9:latest # Exact image provided in exam prompt
+    pull:
+      policy: missing # Crucial: Exam environments are offline/firewalled
+  mode: stdout
+```
 
 # `ansible-pull`
 
@@ -592,19 +722,38 @@ ansible-navigator run <file> -m stdout	# Run playbook w/o TUI
 - Inversion of Ansible default "push" arch
 
 1. Create repo & upload playbooks
+  ```yml
+  - name: client self-config
+    hosts: localhost
+    tasks: ...
+  ```
+2. Managed node: install git, ansible
+3. Test: `ansible-pull --url https://github.com/<user>/<repo>/playbook.yml`
+4. Config cronjob:
+  ```sh
+  crontab -e
+  0 0 * * * /usr/bin/ansible-pull --url https://github.com/<user>/<repo>/playbook.yml >> /var/log/ansible-pull.log 2>&1
+  ```
 
+
+# `rhel-system-roles`
+- Ref `/usr/share/ansible/roles/rhel-system-roles.<role>/README.md`
 ```yml
-- name: client self-config
-  hosts: localhost
-  tasks: ...
+- name: 
+  hosts: all
+  roles: 
+  - role: rhel-system-roles.timesync
+    vars:
+      timesync_ntp_servers:
+      - server: 172.25.254.250
+        iburst: true
+        pool: false
 ```
 
-1. Managed node: install git, ansible
-2. Test: `ansible-pull --url https://github.com/<user>/<repo>/playbook.yml`
-3. Config cronjob:
 
+
+# Create & Distribute SSH Key to Managed Hosts
 ```sh
-crontab -e
-0 0 * * * /usr/bin/ansible-pull --url https://github.com/<user>/<repo>/playbook.yml >> /var/log/ansible-pull.log 2>&1
+ssh-keygen
+ssh-copy-id user1@managed-host
 ```
-
