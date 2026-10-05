@@ -297,6 +297,11 @@ vars:
     part_end: 1GiB     # default: 100%
     fs_type: xfs
 
+- name: Format partition as ext4
+  filesystem:
+    fstype: ext4
+    dev: /dev/sdb1
+
 - name: Create mount dir
   file:
     path: /mnt/data
@@ -312,6 +317,86 @@ vars:
     
 ```
 
+```yml
+- name: Create partition
+  hosts: all
+  tasks:
+  - block:
+    - name: Verify sdb disk existence
+      fail:
+        msg: "Disk: /dev/sdb DNE"
+      when: "'sdb' not in ansible_facts['devices']"
+    - block:
+      - name: "Create 1200M partition, FS: ext4"
+        parted:
+          device: /dev/sdb
+          number: 1
+          parted_end: 1200MiB
+          fs_type: ext4
+          state: present
+      rescue:
+      - debug:
+          msg: "/dev/sdb < 1200MiB"
+        when: (ansible_facts.devices.sdb.size | human_to_bytes) < ('1200MiB' | human_to_bytes)
+      - name: Create 800MiB partition as fallback
+        parted:
+          device: /dev/sdb
+          number: 1
+          part_end: 800MiB
+          fs_type: ext4
+          state: present
+    - name: Format partition as ext4
+      filesystem:
+        fstype: ext4
+        dev: /dev/sdb1
+    - name: Mount on prod host group
+      mount:
+        path: /srv
+        src: /dev/sdb1
+        fstype: ext4
+        state: mounted
+      when: "'prod' in group_names"
+```
+
+
+# LVM
+`ansible-galaxy collection install community.general`
+
+```yml
+- name: Create logical volume
+  hosts: all
+  tasks: 
+  - name: Create PV
+    lvm_pv:
+      device: /dev/sdc1
+  - name: Create VG
+    lvg:
+      vg: research
+      pvs: 
+      - /dev/sdc1
+      - /dev/sdc2
+      pesize: 128K    
+  - name: Create LV
+    lvol:
+      vg: research
+      lv: data
+      size: 1200
+  - name: Format FS for LV
+    filesystem:
+      fstype: ext4
+      dev: /dev/research/data
+
+  - name: Resize LV
+    lvol:
+      vg: research
+      lv: data
+      size: +512M # Or by %: 100%[VG|PVS|ORIGIN]
+      resizefs: true
+  - name: Check VG
+    fail: 
+      msg: "VG DNE"
+    when: "'research' not in ansible_facts['lvm']['vgs']"
+```
 
 
 # User Mgmt
@@ -782,6 +867,7 @@ ansible-navigator:
 
 # `rhel-system-roles`
 - Ref: `/usr/share/ansible/roles/rhel-system-roles.<role>/README.md`
+- Example: `/usr/share/doc/rhel-system-roles/<role>/README.md`
 
 ```yml
 - name: 
@@ -795,6 +881,31 @@ ansible-navigator:
         pool: false
 ```
 
+## SELinux
+ansible all -a "sestatus"
+
+
+```yml
+- name: Conf SELinux
+  hosts: all
+  vars:
+    selinux_state: enforcing | permissive
+    selinux_fcontexts:
+    - target: '/var/www/html(/.*)?'
+      setype: httpd_sys_content_t
+      state: present  
+    selinux_ports:
+    - ports: 22100
+      proto: tcp
+      setype: ssh_port_t
+      state: present
+    - ports: 8080
+      proto: tcp
+      setype: http_port_t
+      state: present
+  roles: 
+  - role: rhel-system-roles.selinux    
+```
 
 # Create & Distribute SSH Key to Managed Hosts
 ```sh
