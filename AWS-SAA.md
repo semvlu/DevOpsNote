@@ -2207,7 +2207,6 @@ e.g. `s3://my-bucket/flight/year=2026/month=1/day=1/`
 - Faster query, join, aggregation by indexes vs. Athena
 
 
-
 ## Cluster
 
 - Leader node: query planning, aggregation
@@ -2235,7 +2234,7 @@ e.g. `s3://my-bucket/flight/year=2026/month=1/day=1/`
 ```SQL
 COPY customer
 FROM 's3://amzn-s3-demo-bucket/customer' 
-iam_role 'arn:aws:iam::0123456789012:role/MyRedshiftRole';
+iam_role 'arn:aws:iam::123456789012:role/MyRedshiftRole';
 ```
 
 - JDBC driver: EC2 batch write
@@ -2251,13 +2250,13 @@ iam_role 'arn:aws:iam::0123456789012:role/MyRedshiftRole';
 
 # OpenSearch
 
-- Search any field even partial match. Solve DynamoDB query by primary key or indexes
+- Search any field w/ partial match. Solve DynamoDB query only by primary key or indexes
 - Cluster: Managed | Serverless
 - No native support for SQL, enable via plugin
 - Ingestion: Data Firehose, AWS IoT, CloudWatch Logs
 - Builtin Dashboard
 
-Patterns
+## Patterns
 
 - DynamoDB: DynamoDB -> DynamoDB Streams -> Lambda -> OpenSearch
 - CloudWatch: CloudWatch Logs -> Subscription Filter -> Lambda / Data Firehose -> OpenSearch
@@ -2267,11 +2266,11 @@ Patterns
 
 # EMR: Elastic MapReduce
 
-- Create Hadoop cluster (100+ EC2) for *Big data proc & analysis*
+- Hadoop cluster (100+ EC2) for *Big data proc & analysis*
 - Bundle w/ Spark, HBase, Flink, Presto
 - Takes care provision & config
 - Autoscaling & integrate w/ Spot inst
-- Long-running or Transient (temp) cluster
+- Cluster: Long-running | Transient (temp)
 - Scenario: data proc, ML, web index, big data
 
 
@@ -2299,7 +2298,7 @@ Patterns
 
 - AWS Services: RDS, Aurora, Redshift, Athena, S3, OpenSearch, Timestream
 - Import (SPICE): CSV, JSON, TSV, XLSX, ELF, CLF
-- SaaS: salesforce, Jira
+- SaaS: Salesforce, Jira
 - On-prem DB (JDBC)
 
 
@@ -2308,7 +2307,7 @@ Patterns
 
 - Read-only snapshot of an analysis to share
 - Preserve conf of analysis
-- Def User (Standard ver) & Group (Enterprise ver): only exist in QuickSight, NOT IAM
+- Def User (Standard ver) & Group (Enterprise ver): only in QuickSight, NOT IAM
 - Share analysis / dashboard to spec user or group
 - User w/ perm to dashboard can see underlying data
 
@@ -2319,7 +2318,7 @@ Patterns
 - Serverless ETL 
 - Convert to Parquet: S3 Event Notification -> Lambda / EventBridge -> Glue (import data from S3) -> S3 out bucket -> Athena
 
-Components:
+## Components
 
 - Job bookmark: prevent re-proc old data
 - Glue DataBrew: clean & normalise data w/ pre-built transformation
@@ -2350,7 +2349,7 @@ Components:
 - Framework for data stream proc
 - AWS: provision comp resource, parallel comp, autoscaling, app backup (checkpoint, snapshot)
 - Data src: Kinesis, MSK
-- *No support: Data Firehose*
+- *❌ support: Data Firehose*
 
 # MWAA: Managed Workflows for Apache Airflow
 - Workflow: collection of tasks as DAG
@@ -2360,7 +2359,7 @@ Components:
 # MSK: Managed Streaming for Apache Kafka
 
 - Alt to Kinesis
-- MSK: mng Kafka Broker & Zookeeper nodes, auto recovery
+- Mng Kafka Broker & Zookeeper nodes, auto recovery
 - MSK cluster in VPC, multi-AZ
 - Data in EBS
 - MSK Serverless: MSK mng capacity, provision resource, autoscaling
@@ -2389,8 +2388,8 @@ Components:
 - Kinesis: real-time data collection
 - Data Firehose: deliver to S3 ~real-time (1min)
 - Lambda: data transformation for Data Firehose
-- S3 trig SQS (opt) or Lambda directly
-- Athena store results to S3 out bucket
+- Lambda / S3 (opt): trig SQS
+- Athena: store results to S3 out bucket
 - Redshift / QuickSight read S3 out bucket
 
 
