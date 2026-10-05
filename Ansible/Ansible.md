@@ -28,7 +28,7 @@ inventory = ./inventory.ini # default: ['/etc/ansible/hosts']
 collections_path = ~/collections:/usr/share/ansible/collections
 # `/etc/ansible/roles` @ head of entry 
 roles_path = ~/roles:/usr/share/ansible/roles:/etc/ansible/roles
-remote_user = automationuser
+remote_user = ansible-user
 private_key_file = ~/.ssh/ansible-mgmt
 host_key_checking = false
 
@@ -559,6 +559,7 @@ ansible-playbook playbook.yml --list-tags
 ```sh
 ansible-vault [crate | edit | view | encrypt | decrypt | rekey] playbook.yml
 ansible-playbook playbook.yml --ask-vault-pass
+ansible-playbook playbook.yml --vault-password-file <password-file>
 ```
 
 
@@ -626,15 +627,29 @@ ansible-playbook playbook.yml --vault-password-file .vault_pass1 --vault-passwor
 
 
 # Magic Variables
-- `hostvars`: acc. facts for multi hosts, after gathered/cached facts (`gather_facts: true`) @ play lvl.
+- `hostvars`: list of facts for hosts, after gathered/cached facts (`gather_facts: true`) @ play lvl.
 - `groups`: groups in inventory
-- `group_names`: groups the current host lies in.
+- `group_names`: groups the current host belongs to.
 - `inventory_hostname`, `inventory_hostname_short`: FQDN, short hostname conf-ed in inventory, alt to `ansible_hostname` when fact-gathering disabled.
 
 ```yml
 {% for h in groups['all'] %}
   {{ hostvars[h]['ansible_facts']['default_ipv4']['address'] }}
 {% endfor %}
+
+
+- copy: 
+    dest: /etc/issue
+    # `>`: folded block scalar: \n into 1 space, multi-line -> single-line
+    # `-`: strip chomping: strip all new lines @ end of the string
+    content: >- 
+    {% if 'dev' in group_names %}Development
+    {% elif 'test' in group_names %}Test
+    {% elif 'prod' in group_names %}Production
+    {% endif %}
+  when: "'dev' in group_names or 'test' in group_names or 'prod' in group_names"
+  # Equiv: 
+  when: inventory_hostname in groups['dev'] or inventory_hostname in groups['test'] or inventory_hostname in groups['prod']
 ```
 
 
@@ -781,9 +796,8 @@ ansible-navigator:
 ```
 
 
-
 # Create & Distribute SSH Key to Managed Hosts
 ```sh
 ssh-keygen
-ssh-copy-id user1@managed-host
+ssh-copy-id ansible-user@managed-host
 ```
