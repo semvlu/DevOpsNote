@@ -511,6 +511,8 @@ ansible-playbook playbook.yml --start-at-task '<task-name>'
 `ansible [target] -m [module] -a "[module options]"`
 
 ```sh
+ansible --version # Check config file, collection path
+
 # Test Connectivity
 ansible all -m ping
 ansible all -a "uptime" # w/o -m, `command` module (default)
@@ -820,9 +822,9 @@ roles:
 
 collections:
 - name: ansible.posix
+  source: https://galaxy.ansible.com
   version: 2.2.2
 
-- src: https://github.com/bennojoy/nginx
 
 ```
 
@@ -890,18 +892,22 @@ ansible all -a "sestatus"
   hosts: all
   vars:
     selinux_state: enforcing | permissive
+    # semanage fcontext -a -t <type> <filename>
     selinux_fcontexts:
-    - target: '/var/www/html(/.*)?'
+    - target: '/custom_web(/.*)?'
       setype: httpd_sys_content_t
       state: present  
+    # restorecon -Rv <dir>
+    selinux_restore_dirs:
+    - /custom_web
     selinux_ports:
+    - ports: '8081,8082'
+      proto: tcp
+      setype: http_port_t
+      state: present
     - ports: 22100
       proto: tcp
       setype: ssh_port_t
-      state: present
-    - ports: 8080
-      proto: tcp
-      setype: http_port_t
       state: present
   roles: 
   - role: rhel-system-roles.selinux    
@@ -910,5 +916,30 @@ ansible all -a "sestatus"
 # Create & Distribute SSH Key to Managed Hosts
 ```sh
 ssh-keygen
-ssh-copy-id ansible-user@managed-host
+ssh-copy-id <user>@managed-host
 ```
+
+
+```yml
+- name: set up yum repo
+  hosts: all 
+  tasks: 
+  - name: base os
+    yum_repository:
+      name: BaseOS
+      baseurl: file:///media/BaseOS/
+      description: Base OS Repo
+      gpgcheck: true
+      gpgkey: file:///media/RPM-GPG-KEY-redhat-release
+      enabled: true
+  - name: app stream
+    yum_repository:
+      name: AppStream
+      baseurl: file:///media/AppStream/
+      description: AppStream Repo
+      gpgcheck: true
+      gpgkey: file:///media/RPM-GPG-KEY-redhat-release
+      enabled: true
+
+```
+
