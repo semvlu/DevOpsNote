@@ -2408,13 +2408,11 @@ iam_role 'arn:aws:iam::123456789012:role/MyRedshiftRole';
 - Content moderation: set min Confidence Threshold, flag sensitive content for manual review w/ Augmented AI (A2I)
 
 
-
 ## Transcribe
 
 - Speech-to-text w/ ASR
 - Auto remove Personally Identifiable Information (PII) using redaction
 - Support auto language identification for multi-lingual audio
-
 
 
 ## Polly
@@ -2434,8 +2432,6 @@ iam_role 'arn:aws:iam::123456789012:role/MyRedshiftRole';
 
 - Localise content
 
-
-
 ## Lex & Connect
 
 - Lex: ASR + Natural Language Understanding, like Alexa
@@ -2443,12 +2439,10 @@ iam_role 'arn:aws:iam::123456789012:role/MyRedshiftRole';
 - Phone call -> Connect -> Lex -> Lambda -> CRM
 
 
-
 ## Comprehend
 
 - Serverless NLP
 - Scenario: customer interaction analysis, group articles
-
 
 
 ### Comprehend Medical
@@ -2489,7 +2483,6 @@ iam_role 'arn:aws:iam::123456789012:role/MyRedshiftRole';
 # CloudWatch
 
 
-
 ## Metrics
 
 - Metric: var to monitor, e.g. CPU util
@@ -2525,7 +2518,7 @@ iam_role 'arn:aws:iam::123456789012:role/MyRedshiftRole';
 - Elastic Beanstalk: app log collection
 - ECS: containers collection
 - Lambda: function logs
-- VPC Flow logs
+- VPC Flow Logs
 - API Gateway
 - CloudTrail: based on filter
 - Route 53: DNS queries
@@ -2537,7 +2530,7 @@ iam_role 'arn:aws:iam::123456789012:role/MyRedshiftRole';
 - Auto discover fields from AWS services and JSON logs
 - Save queries to CloudWatch dashboard
 - Query multi groups in diff AWS accounts
-- Query engine, not real-time
+- Query engine, ❌ real-time
 
 
 
@@ -2582,7 +2575,7 @@ aws iam create-role --role-name CWLtoKinesisRole \
 }
 ```
 
-2. Role Perm (action) policy
+2. Role Perm / Policy
   ```sh
   aws iam put-role-policy \
     --role-name CWLtoKinesisRole \
@@ -2660,7 +2653,7 @@ Log Management > Log Group > Start tailing
 
 ## CloudWatch Alarm
 
-- Trigger notification for metrics
+- Trig. notification for metrics
 - States: `OK`, `INSUFFICIENT_DATA`, `ALARM`
 - Period: time length to evaluate the metric, time resolution
 - Test: `aws cloudwatch set-alarm-state --alarm-name "test" --state-value ALARM --state-reason "testing"`
@@ -2678,7 +2671,7 @@ Log Management > Log Group > Start tailing
 
 Status check:
 
-- Inst: EC2 VM
+- Inst: EC2
 - System: underlying HW
 - Attached EBS status
 - CloudWatch Alarm: StatusCheckFailed_System -> EC2 inst recovery
@@ -2706,7 +2699,7 @@ Status check:
 
 # EventBridge
 
-- Schedule (cronjob): trigger Lambda every 12 hr
+- Schedule (cronjob): trig Lambda every 12 hr
 - Event: Rule to react to an event, e.g. IAM Root User Sign in -> SNS Topic w/ Email notification
 - Gen JSON to dest
 
@@ -3078,7 +3071,7 @@ Advanced:
 # GuardDuty
 
 - Intelligent threat discovery w/ ML, 3e party data, anomaly detection, crypto attack
-- Input: CloudTrail Event logs, VPC Flow logs, DNS logs, etc. NO CloudWatch
+- Input: CloudTrail Event logs, VPC Flow Logs, DNS logs, etc. NO CloudWatch
 - Logs -> GuardDuty -> EventBridge -> Lambda / SNS
 
 
