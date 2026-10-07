@@ -1579,7 +1579,7 @@ Deployment Opt:
 
 - Deduplication ID: exactly-once processing, remove duplicates
 - Order by Message Group ID
-- Thruput: 300 msg/s (w/o batch), 3,000 msg/s (batch)
+- Thruput: 300 msg/s (w/o batch), 3000 msg/s (batch)
 
 
 
@@ -2725,7 +2725,7 @@ Status check:
 - Gov, Compliance, Audit for AWS account
 - *Record API calls (What, Who, When) in the AWS account*
 - CloudTrail logs -> CloudWatch / S3
-- All regions (default) or single region
+- All regions (default) | single region
 - Separate Read Events from Write Events
 - Events retention: 90 days
 - CloudTrail -> EventBridge
@@ -2734,10 +2734,8 @@ Status check:
 
 ## Management Event
 
-- Operations perf on resources in AWS account
-- Config sec, rules, logging
+- Op perf on resources in AWS account, e.g. sec conf, rule conf, logging setup
 - CloudTrail logs Management Event (default)
-
 
 
 ## Data Event
@@ -2761,7 +2759,7 @@ Status check:
 - Per-region, can aggregate across regions & accounts
 - Custom config rules def in Lambda
 - Rule trigger/evaluation: On config change, Periodic
-- $: $0.003 per config rule, $0.001 per evaluation
+- $0.003 per config rule, $0.001 per evaluation
 - Does NOT prevent actions from happening
 - Non-Compliant Remediation: trig SSM Automation Document
 - Notification: EventBridge, SNS
@@ -2950,7 +2948,7 @@ aws ssm get-parameters-by-path --path /path/to/param --recursive
 # CloudHSM
 
 - User mng keys himself
-- Redshift support CloudHSM for DB enc & key mgmt
+- Support: Redshift for DB enc & key mgmt
 - Scenario: SSE-C enc
 - IAM policy: CRUD HSM cluster (HA)
 - Integration: AWS Services (config KMS Custom Key Store: CloudHSM)
@@ -2962,7 +2960,7 @@ aws ssm get-parameters-by-path --path /path/to/param --recursive
 - *Layer 7* (HTTP) protection
 - Deploy on: ALB, API Gateway, CloudFront, AppSync GrpahQL API, Cognito User Pool
 - ❌ NLB
-- IP Set: Max 10,000 IP adr, multi rules for more IP
+- IP Set: Max 10000 IP adr, multi rules for more IP
 - Rule Group: reusable set of rules to add to ACL
 
 
@@ -2973,7 +2971,7 @@ aws ssm get-parameters-by-path --path /path/to/param --recursive
 - Geo-based rule: allow/block
 - Rate-based rule: DDoS 
 - Request component: HTTP headers, body, query, URI string MATCH SQL injection, Cross-Site Scripting (XSS), Request Size constraint
-- Web ACL are regional, except CloudFront
+- Regional, except for CloudFront
 
 
 
@@ -2987,16 +2985,16 @@ aws ssm get-parameters-by-path --path /path/to/param --recursive
 
 # Shield
 
-Counter DDoS
+- Counter DDoS
 
 Standard:
 - $0
 - Protect from SYN/UDP floods, reflection attacks, other Layer 3, 4 attacks
 
 Advanced:
-- Opt DDoS mitigation service: $3,000 per mo per organization
+- Opt DDoS mitigation service: $3000 per mo per Org
 - Protect from more sophisticated attack on EC2, ELB, CloudFront, Global Accelerator, Route 53
-- 24/7 to AWS DDoS response team (DRP)
+- 24/7 AWS DDoS response team (DRP)
 - Protect from higher $ during DDoS 
 - Auto create, evaluate & deploy WAF rules to mitigate Layer 7 attacks
 
@@ -3022,7 +3020,7 @@ Advanced:
 - Domain name resolution @ edge
 - NXDOMAIN (Non-Existent Domain) DDoS: A/Alias wildcard record 
   - Explicit A/Alias records precede wildcard
-  - Wildcard: A/Alias: `*.example.com` to AWS resources, query not be charged 
+  - Wildcard: A/Alias: `*.example.com` to empty AWS resources (CloudFront, S3 website), query $0
 
 
 ## Infra Layer
@@ -3048,7 +3046,7 @@ Advanced:
 
 ## Obfuscate AWS Resources
 
-- CloudFront + ELB + API Gateway: hide backend EC2, Lambda
+- CloudFront + ELB + API Gateway: hide backend EC2 & Lambda
 
 
 
@@ -3062,7 +3060,7 @@ Advanced:
 
 ## Protect API Endpoints: API Gateway
 
-- Hide EC2, Lambda
+- Hide EC2 & Lambda
 - Edge-optimized mode / Regional mode + CloudFront
 - Integration: WAF
 
@@ -3078,7 +3076,7 @@ Advanced:
 
 # Inspector
 
-- Sec assessment automation
+- Sec assessment automation @ data/software lvl
 - EC2: util AWS System Manager (SSM) agent, analyse unintended network acc, running OS against known vulnerabilities
 - Container image push to ECR
 - Lambda: Software vulnerabilites in func code & pkg dep
@@ -3107,7 +3105,6 @@ Advanced:
 - Max CIDR per VPC: 5; CIDR Max: /16, min: /28
 - Only Private IPv4 ranges: 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16
 - VPC CIDR NOT overlap w/ other VPC & on-prem network
-
 
 
 ## Subnet
