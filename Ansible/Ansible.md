@@ -375,7 +375,7 @@ Insert/Update: `lineinfile`, `blockinfile`, `replace`
 `ansible-galaxy collection install community.general`
 
 ```yml
-- name: Create logical volume
+- name: LVM
   hosts: all
   tasks: 
   - name: Create PV
