@@ -124,7 +124,7 @@ ansible-playbook -C playbook.yml # dry-run (--check)
   - name: Append text
     blockinfile: 
       path: /tmp/file.txt
-      block: |
+      block: |-
         add this line to the file
         add this for a new line
 
@@ -207,6 +207,18 @@ vars:
     regexp: '^%wheel'
 ```
 
+Overwrite: `copy`, `template`
+Insert/Update: `lineinfile`, `blockinfile`, `replace`
+
+## Summary
+
+| Module        | Param                                 | Behaviour |
+|---------------|---------------------------------------|-----------|
+| `copy`        | `content`/`src`, `dest` ,`remote_src` | Overwrite |
+| `template`    | `src`, `dest`                         | Overwrite |
+| `lineinfile`  | `regexp`, `line`, `create`            | Update    |
+| `blockinfile` | `block`, `create`                     | Update    |
+| `replace`     | `regexp`, `replace`                   | Update    |
 
 # Firewall
 
@@ -483,7 +495,7 @@ ansible-playbook playbook.yml --extra-vars newpassword=password1234
 # Template
 `index.html.j2`
 ```yml
-FQDN: {{ ansible_facts['fqdn'] }}
+FQDN: {{ ansible_facts['fqdn'] | default ('NONE') }}
 IP: {{ ansible_facts['default_ipv4']['address'] }}
 ```
 
@@ -623,7 +635,22 @@ handlers:
 
 ```
 
-
+```yml
+- name: replace file
+  hosts: all 
+  vars:
+    grp:
+      dev: "Development"
+      test: "Test"
+      prod: "Production"
+  tasks: 
+  - name: custom file
+    copy:
+      path: /etc/issue
+      content: "{{ item.value }}"
+    when: item.key in group_names
+    loop: "{{ grp | dict2items }}"
+```
 
 ## Tag
 
@@ -721,7 +748,7 @@ ansible-playbook playbook.yml --vault-password-file .vault_pass1 --vault-passwor
 
 ```yml
 {% for h in groups['all'] %}
-  {{ hostvars[h]['ansible_facts']['default_ipv4']['address'] }}
+{{ hostvars[h]['ansible_facts']['default_ipv4']['address'] }}
 {% endfor %}
 
 
@@ -918,28 +945,3 @@ ansible all -a "sestatus"
 ssh-keygen
 ssh-copy-id <user>@managed-host
 ```
-
-
-```yml
-- name: set up yum repo
-  hosts: all 
-  tasks: 
-  - name: base os
-    yum_repository:
-      name: BaseOS
-      baseurl: file:///media/BaseOS/
-      description: Base OS Repo
-      gpgcheck: true
-      gpgkey: file:///media/RPM-GPG-KEY-redhat-release
-      enabled: true
-  - name: app stream
-    yum_repository:
-      name: AppStream
-      baseurl: file:///media/AppStream/
-      description: AppStream Repo
-      gpgcheck: true
-      gpgkey: file:///media/RPM-GPG-KEY-redhat-release
-      enabled: true
-
-```
-
