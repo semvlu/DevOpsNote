@@ -407,7 +407,7 @@ Insert/Update: `lineinfile`, `blockinfile`, `replace`
   - name: Check VG
     fail: 
       msg: "VG DNE"
-    when: "'research' not in ansible_facts['lvm']['vgs']"
+    when: "'research' not in ansible_lvm.vgs" # Alt: ansible_lvm.vgs.research is not defined 
 ```
 
 
@@ -773,7 +773,7 @@ ansible-playbook playbook.yml --vault-password-file .vault_pass1 --vault-passwor
 - `any_errors_fatal`: abort on error, @ play / block lvl. 
 
 > [!WARNING] 
-> Priority: `rescue` & `always` > `abort_errors_fatal` > `force_handlers`
+> Priority: `rescue` & `always` > `any_errors_fatal` > `force_handlers`
 
 ```yml
 tasks:
