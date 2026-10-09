@@ -112,7 +112,7 @@ ansible-playbook -C playbook.yml # dry-run (--check)
 
 # File Op
 `ansible.builtin.file` module
-- state: "touch", "file", "directory", "absent", "hard", "link"
+- `state`: touch, file, directory, absent, hard, link
 ```yml
 - name: File op
   hosts: all
@@ -206,9 +206,6 @@ vars:
     state: absent
     regexp: '^%wheel'
 ```
-
-Overwrite: `copy`, `template`
-Insert/Update: `lineinfile`, `blockinfile`, `replace`
 
 ## Summary
 
@@ -349,7 +346,7 @@ Insert/Update: `lineinfile`, `blockinfile`, `replace`
       rescue:
       - debug:
           msg: "/dev/sdb < 1200MiB"
-        when: (ansible_facts.devices.sdb.size | human_to_bytes) < ('1200MiB' | human_to_bytes)
+        when: (ansible_facts.devices.sdb.size | human_to_bytes) < ('1200MiB' | human_to_bytes) # opt, since block goes to rescue if fails
       - name: Create 800MiB partition as fallback
         parted:
           device: /dev/sdb
@@ -387,12 +384,27 @@ Insert/Update: `lineinfile`, `blockinfile`, `replace`
       pvs: 
       - /dev/sdc1
       - /dev/sdc2
-      pesize: 128K    
-  - name: Create LV
-    lvol:
-      vg: research
-      lv: data
-      size: 1200
+      pesize: 128K
+
+  - name: Check VG
+    fail: 
+      msg: "VG DNE"
+    when: "'research' not in ansible_lvm.vgs" # Alt: ansible_lvm.vgs.research is not defined ]
+
+  - block:
+    - name: Create LV
+      lvol:
+        vg: research
+        lv: data
+        size: 1200
+    rescue:
+    - debug: 
+        msg: "Cannot create a LV of the size"
+    - name: Create LV
+      lvol:
+        vg: research
+        lv: data
+        size: 800
   - name: Format FS for LV
     filesystem:
       fstype: ext4
@@ -404,10 +416,6 @@ Insert/Update: `lineinfile`, `blockinfile`, `replace`
       lv: data
       size: +512M # Or by %: 100%[VG|PVS|ORIGIN]
       resizefs: true
-  - name: Check VG
-    fail: 
-      msg: "VG DNE"
-    when: "'research' not in ansible_lvm.vgs" # Alt: ansible_lvm.vgs.research is not defined 
 ```
 
 
@@ -424,8 +432,6 @@ Insert/Update: `lineinfile`, `blockinfile`, `replace`
     password_expire_account_disable: 15
 
 ```
-
-
 
 ## Update password
 
@@ -446,7 +452,6 @@ ansible-playbook playbook.yml --extra-vars newpassword=password1234
       name: george
       password: "{{ newpassword | password_hash('sha512') }}"
 ```
-
 
 
 # Kill Process
@@ -478,6 +483,7 @@ ansible-playbook playbook.yml --extra-vars newpassword=password1234
 # ACL
 ```yml
 - name: Set default ACL on file for user alice
+  # setfacl -m d:u:alice:rw path/to/file
   ansible.posix.acl:
   path: path/to/file
   entity: alice
@@ -895,8 +901,8 @@ ansible-navigator:
 
 
 # `rhel-system-roles`
+- **Example: `/usr/share/doc/rhel-system-roles/<role>/example-<scenario>-playbook.yml`**
 - Ref: `/usr/share/ansible/roles/rhel-system-roles.<role>/README.md`
-- Example: `/usr/share/doc/rhel-system-roles/<role>/README.md`
 
 ```yml
 - name: 
@@ -911,7 +917,7 @@ ansible-navigator:
 ```
 
 ## SELinux
-ansible all -a "sestatus"
+`ansible all -a "sestatus"`
 
 
 ```yml
