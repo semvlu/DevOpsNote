@@ -1,6 +1,5 @@
 # Ansible
 
-- Collections in EX294: builtin, redhat.rhel-system-roles, ansible.posix
 - `dnf install rhel-system-roles ansible-core`
 - `command` over `shell`, `shell` only for I/O redir (`>`, `>>`, `2>`, `|`)
 
@@ -389,7 +388,7 @@ vars:
   - name: Check VG
     fail: 
       msg: "VG DNE"
-    when: "'research' not in ansible_lvm.vgs" # Alt: ansible_lvm.vgs.research is not defined ]
+    when: "'research' not in ansible_lvm.vgs" # Alt: ansible_lvm.vgs.research is not defined
 
   - block:
     - name: Create LV
@@ -677,7 +676,7 @@ ansible-playbook playbook.yml --list-tags
 # Ansible Vault
 
 ```sh
-ansible-vault [crate | edit | view | encrypt | decrypt | rekey] playbook.yml
+ansible-vault [create | edit | view | encrypt | decrypt | rekey] playbook.yml
 ansible-playbook playbook.yml --ask-vault-pass
 ansible-playbook playbook.yml --vault-password-file <password-file>
 ```
@@ -817,7 +816,7 @@ tasks:
 - name: Combine multi cond to override 'changed' result
   command: /bin/fake_command
   register: result
-  ignore_errors: True
+  ignore_errors: true
   changed_when: '"ERROR" in result.stderr' and result.rc == 2 # rc: return code
 ```
 
@@ -904,6 +903,7 @@ ansible-navigator:
 - **Example: `/usr/share/doc/rhel-system-roles/<role>/example-<scenario>-playbook.yml`**
 - Ref: `/usr/share/ansible/roles/rhel-system-roles.<role>/README.md`
 
+## NTP, Timesync (Chrony)
 ```yml
 - name: 
   hosts: all
