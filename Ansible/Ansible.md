@@ -856,7 +856,7 @@ collections:
 - name: ansible.posix
   source: https://galaxy.ansible.com
   version: 2.2.2
-
+- name: http://example.com/collection-1.0.0.tar.gz
 
 ```
 
