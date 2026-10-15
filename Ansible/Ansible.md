@@ -1,6 +1,6 @@
 # Ansible
 
-- `dnf install rhel-system-roles ansible-core`
+- `dnf install ansible rhel-system-roles`
 - `command` over `shell`, `shell` only for I/O redir (`>`, `>>`, `2>`, `|`)
 
 
