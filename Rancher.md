@@ -1,7 +1,6 @@
 # Rancher
 
-Kubeconfig: `kubectl` shell on env var permanently:
-`cp /etc/rancher/rke2/rke2.yaml ~/.kube/config`
+Kubeconfig: `cp /etc/rancher/rke2/rke2.yaml ~/.kube/config`
 
 ```sh
 # Add to PATH
@@ -16,18 +15,16 @@ export CONTAINER_RUNTIME_ENDPOINT=unix:///run/k3s/containerd/containerd.sock
 
 ## Config Filepath
 
-RKE2 node: `/etc/rancher/rke2/config.yaml`
-RKE2 data: `/var/lib/rancher/rke2/`
-logs: `/var/log/rancher/`
-etcd: `/var/lib/rancher/rke2/server/db/`
+- RKE2 node: `/etc/rancher/rke2/config.yaml`
+- RKE2 data: `/var/lib/rancher/rke2/`
+- logs: `/var/log/rancher/`
+- etcd: `/var/lib/rancher/rke2/server/db/`
 
 ```sh
 systemctl status rke2-server # Master
 systemctl status rke2-agent # Worker
 journalctl -u rke2-server -f
 ```
-
-
 
 ## Rancher Backups
 
@@ -58,7 +55,7 @@ helm repo update
 helm get values rancher -n cattle-system -o yaml > rancher-values.yaml
 helm upgrade rancher rancher-latest/rancher \
 --namespace cattle-system \
---version 2.14.3 \
+--version <version> \
 -f rancher-values.yaml
 
 kubectl -n cattle-system rollout status deploy/rancher
@@ -86,7 +83,7 @@ kubectl -n cattle-system rollout status deploy/rancher
 ## Rancher: add downstream cluster
 
 - Downstream cluster node hanging post-registration
-- cattle-cluster-agent: CrashLoopBackOff
+- `cattle-cluster-agent`: CrashLoopBackOff
 
 1. `kubectl edit cm -n kube-system rke2-coredns-rke2-coredns`
 
