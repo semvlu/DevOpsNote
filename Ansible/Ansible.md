@@ -305,9 +305,9 @@ vars:
     part_end: 1GiB     # default: 100%
     fs_type: xfs
 
-- name: Format partition as ext4
+- name: Format partition as xfs
   filesystem:
-    fstype: ext4
+    fstype: xfs
     dev: /dev/sdb1
 
 - name: Create mount dir
@@ -438,7 +438,7 @@ vars:
 
 ```sh
 ansible-playbook playbook.yml --ask-vault-pass
-ansible-playbook playbook.yml --extra-vars newpassword=password1234
+ansible-playbook playbook.yml --extra-vars <password_var>=password1234
 ```
 
 ```yml
@@ -449,7 +449,7 @@ ansible-playbook playbook.yml --extra-vars newpassword=password1234
   - name: Change password
     user: 
       name: george
-      password: "{{ newpassword | password_hash('sha512') }}"
+      password: "{{ <password_var> | password_hash('sha512') }}"
 ```
 
 
@@ -516,7 +516,7 @@ IP: {{ ansible_facts['default_ipv4']['address'] }}
 # Task Control
 
 ```sh
-ansible-playbook playbook.yml --start-at-task '<task-name>'
+ansible-playbook playbook.yml --start-at-task "<task-name>"
 ```
 
 
@@ -545,7 +545,7 @@ ansible all -m package -a "name=httpd state=present"
 
 
 ansible all -m user -a "name=george state=absent"
-ansible server1 -a "/sbin/reboot"
+ansible <server> -a "/sbin/reboot"
 ```
 
 ## Handler
@@ -746,7 +746,7 @@ ansible-playbook playbook.yml --vault-password-file .vault_pass1 --vault-passwor
 
 
 # Magic Variables
-- `hostvars`: list of facts for hosts, after gathered/cached facts (`gather_facts: true`) @ play lvl.
+- `hostvars`: list of hosts containing vars, e.g. facts, after gathered/cached facts (`gather_facts: true`) @ play lvl.
 - `groups`: groups in inventory
 - `group_names`: groups the current host belongs to.
 - `inventory_hostname`, `inventory_hostname_short`: FQDN, short hostname conf-ed in inventory, alt to `ansible_hostname` when fact-gathering disabled.
@@ -949,5 +949,5 @@ ansible-navigator:
 # Create & Distribute SSH Key to Managed Hosts
 ```sh
 ssh-keygen
-ssh-copy-id <user>@managed-host
+ssh-copy-id <user>@<managed-host>
 ```
