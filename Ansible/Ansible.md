@@ -1,6 +1,7 @@
 # Ansible
 
 - `dnf install ansible rhel-system-roles`
+- `ansible-galaxy role install geerlingguy.php balancer`
 - `command` over `shell`, `shell` only for I/O redir (`>`, `>>`, `2>`, `|`)
 
 
