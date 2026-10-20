@@ -143,7 +143,7 @@ ansible-playbook -C playbook.yml # dry-run (--check)
   - debug:
       msg: "{{ stat }}"
 
-  - name: Copy file 
+  - name: Copy file
     become: true
     copy:
      src: /tmp/file.txt
@@ -152,7 +152,13 @@ ansible-playbook -C playbook.yml # dry-run (--check)
      group: admin
      mode: 0644
      remote_src: true | false # true: on managed host, false (default): on control node
-     
+    
+  - name: Write file
+    copy: 
+      content: Development
+      dest: /webdev/index.html
+      setype: httpd_sys_content_t
+
   - name: Symlink
     file:
       src: /file/to/link/to
