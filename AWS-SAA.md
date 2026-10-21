@@ -2868,7 +2868,7 @@ cat FileDec.base64 | base64 -d > FileDec.txt
 
 # SSM Parameter Store
 
-- Config & secret store
+- Config & Secret store
 - Can enc w/ KMS
 - Versioning
 - Hierarchical structure
@@ -2958,7 +2958,7 @@ aws ssm get-parameters-by-path --path /path/to/param --recursive
 # WAF: Web Application Firewall
 
 - *Layer 7* (HTTP) protection
-- Deploy on: ALB, API Gateway, CloudFront, AppSync GrpahQL API, Cognito User Pool
+- Deploy on: ALB, API Gateway, CloudFront, AppSync GraphQL API, Cognito User Pool
 - ❌ NLB
 - IP Set: Max 10000 IP adr, multi rules for more IP
 - Rule Group: reusable set of rules to add to ACL
@@ -2995,7 +2995,7 @@ Advanced:
 - Opt DDoS mitigation service: $3000 per mo per Org
 - Protect from more sophisticated attack on EC2, ELB, CloudFront, Global Accelerator, Route 53
 - 24/7 AWS DDoS response team (DRP)
-- Protect from higher $ during DDoS 
+- Protect from 📈 $ during DDoS 
 - Auto create, evaluate & deploy WAF rules to mitigate Layer 7 attacks
 
 
@@ -3187,7 +3187,7 @@ Advanced:
 - 1 NACL per Subnet
 - Stateless vs. Stateful (SG): return traffic must be explicitly set w/ allow rules; while Stateful auto allow return traffic
 - Rule
-  - Number (1-32766): smaller -> higher priority
+  - Number (1-32766): Small -> Hi priority
   - Last (*): deny request in case no rule match
   - Add rule by increment of 100
 
@@ -3241,7 +3241,7 @@ Advanced:
 
 ### Gateway Endpoint
 
-- Support:S3, DynamoDB
+- Support: S3, DynamoDB
 - Set as Target in Route Table
 - No SG
 - $0
@@ -3252,7 +3252,7 @@ Advanced:
 
 - Interface IP traffic: VPC, Subnet, ENI 
 - Integration: S3, CloudWatch Logs, Data Firehose
-- Capture also info from AWS managed interfaces: ELB, RDS, ElastiCache, Redshift, NATGW, TGW, etc.
+- Capture info also from AWS managed interfaces: ELB, RDS, ElastiCache, Redshift, NATGW, TGW, etc.
 - Syntax: `<version> <account-id> <interface-id> <srcaddr> <dstaddr> <srcport> <dstport> <protocol> <packets> <bytes> <start> <end> <action> <log-status>`
 - VPC Flow Logs -> CloudWatch Logs -> CloudWatch Contributor Insights: Top-N IP
 - VPC Flow Logs -> CloudWatch Logs (Metric filter: SSH, RDP) -> CloudWatch Alarm -> SNS
@@ -3716,7 +3716,7 @@ Hosted Connection: 50 Mbps - 25 Gbps
 ## Service Role
 
 - IAM Role for CloudFormation to CRUD resources
-- Give user ability w/o perm to control stack resources: `iam:PassRole`
+- Give user w/o perm ability to control stack resources: `iam:PassRole`
 
 
 
@@ -3742,7 +3742,7 @@ Hosted Connection: 50 Mbps - 25 Gbps
 # SSM Session Manager
 
 - Start a SSH on EC2 & on-prem
-- No need SSH acc, port 22, bastion host, SSH keys 
+- No need: SSH acc, port 22, bastion host, SSH keys 
 - Support: Linux, macOS, Win
 - Session log data -> S3 / CloudWatch Logs
 - User (IAM policy) -> SSM Session Manager -> EC2
