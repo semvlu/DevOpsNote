@@ -757,6 +757,10 @@ ansible-playbook playbook.yml --vault-password-file .vault_pass1 --vault-passwor
 - `groups`: groups in inventory
 - `group_names`: groups the current host belongs to.
 - `inventory_hostname`, `inventory_hostname_short`: FQDN, short hostname conf-ed in inventory, alt to `ansible_hostname` when fact-gathering disabled.
+- List magic variables:
+```sh
+ansible localhost -m debug -a "var=hostvars[inventory_hostname]"
+```
 
 ```yml
 {% for h in groups['all'] %}
@@ -860,10 +864,11 @@ roles:
   version: v1.4
 
 collections:
-- name: ansible.posix
-  source: https://galaxy.ansible.com
+- name: https://galaxy.ansible.com
   version: 2.2.2
+  type: url
 - name: http://example.com/collection-1.0.0.tar.gz
+  type: url
 
 ```
 
