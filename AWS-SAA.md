@@ -1,4 +1,4 @@
-# AWS Solution Atchitect - Associate
+# AWS Solution Architect - Associate
 
 # IAM
 
