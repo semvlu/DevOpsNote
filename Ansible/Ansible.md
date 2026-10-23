@@ -8,7 +8,7 @@
 # Config File: `ansible.cfg`
  `ansible-config`
 ```sh
-ansible-config init > ansible.cfg
+ansible-config init --disable > ansible.cfg
 ansible-config view path/to/ansible.cfg
 ```
 
@@ -93,7 +93,7 @@ ansible-playbook -C playbook.yml # dry-run (--check)
 ```yml
 - name: install RPM Development Tools
   dnf:
-    name: "@Development Tools" # @: pkg group
+    name: "@RPM Development Tools" # @: pkg group
     state: present
 
 - name: install/uninstall apache
@@ -269,7 +269,7 @@ vars:
 ```yml
 - name: Download Tomcat using get_url
   get_url:
-    url: https://dlcdn.apache.org/tomcat/tomcat-8/v8.5.78/bin/apache-tomcat-8.5.78.tar.gz
+    url: https://dlcdn.apache.org/tomcat/tomcat-11/v11.0.27/bin/apache-tomcat-11.0.27.tar.gz
     dest: /opt/tomcat
     mode: 0755
     group: root
@@ -340,7 +340,7 @@ vars:
     - name: Verify sdb disk existence
       fail:
         msg: "Disk: /dev/sdb DNE"
-      when: "'sdb' not in ansible_facts['devices']"
+      when: '"sdb" not in ansible_facts['devices']'
     - block:
       - name: "Create 1200M partition, FS: ext4"
         parted:
@@ -370,7 +370,7 @@ vars:
         src: /dev/sdb1
         fstype: ext4
         state: mounted
-      when: "'prod' in group_names"
+      when: '"prod" in group_names'
 ```
 
 
@@ -395,7 +395,7 @@ vars:
   - name: Check VG
     fail: 
       msg: "VG DNE"
-    when: '"research' not in ansible_lvm.vgs"' # Alt: ansible_lvm.vgs.research is not defined
+    when: '"research" not in ansible_lvm.vgs' # Alt: ansible_lvm.vgs.research is not defined
 
   - block:
     - name: Create LV
@@ -744,6 +744,7 @@ ansible-playbook playbook.yml --vault-password-file .vault_pass1 --vault-passwor
 - `['processor_cores']`
 - `['mounts']`
 - `['devices']`: disks
+- `['lvm']['vgs']`
 
 ## User & Env
 - `['user_id']`: Remote user exec Ansible
@@ -777,7 +778,7 @@ ansible localhost -m debug -a "var=hostvars[inventory_hostname]"
     {% elif 'test' in group_names %}Test
     {% elif 'prod' in group_names %}Production
     {% endif %}
-  when: "'dev' in group_names or 'test' in group_names or 'prod' in group_names"
+  when: '"dev" in group_names or "test" in group_names or "prod" in group_names'
   # Equiv: 
   when: inventory_hostname in groups['dev'] or inventory_hostname in groups['test'] or inventory_hostname in groups['prod']
 ```
