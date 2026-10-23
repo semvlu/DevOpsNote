@@ -75,7 +75,7 @@
 
 ## IAM Role vs. Resource-Based Policy
 
-- IAM Role: Role perm over original perm
+- IAM Role: Role perm > original perm
 - Resource-based policy: principal does not have to give up perm
   - Support: S3, Lambda, KMS, SNS, SQS, API Gateway, DynamoDB
 - EventBridge Rule perm on target
@@ -140,7 +140,7 @@ Deny (explicit Deny) -> Org SCP -> Resource-based -> Identity-based -> IAM Permi
 ## IAM Identity Center
 
 - SSO for: AWS accounts in the same AWS Org, Business cloud app (Salesforce, MS365), SAML 2.0-enabled app, EC2 Win inst
-- Identity provider: Builtin identity store, AD, Okta
+- IdP: Builtin identity store, AD, Okta
 - Multi-Account permission: Permission Set: 1+ IAM policies assigned to users/groups
 - Application assignment: assign apps to acc
 - Attr-BAC (ABAC): fine-grained perm based on user attr in builtin Identity Store
@@ -232,6 +232,7 @@ Requirements:
   2. Scope: regional or zonal (AZ)
 - Scenario: steady-state app, e.g. DB
 - Buy & Sell in RI Marketplace
+- Regional vs. Zonal RI: ❌/✅ capacity reservation
 - Hotel analogy: VIP discount
 
 ### Convertible Reserved Instance
@@ -338,7 +339,7 @@ Attr:
 
 ## Snapshots
 
-- Archive: 75% cheaper, takes 24-72 hr for restore.
+- Archive: 75% cheaper, takes 24-72 hr to restore.
 - Recycle bin: setup rules to retain deleted snapshots.
 - Fast snapshot restore (FSR): full init of snapshot w/ 0 latency on the first use, Hi $.
 
@@ -478,9 +479,9 @@ Enc un-encrypted EBS volume:
 
 ## Cross-Zone Load Balancing
 
-- #EC2 across AZ are not uniformly distributed, with Cross Zone LB, LBs consider the distribution to achieve true LB.
-- ALB: enabled (always), disable @ Target group level, $0 for inter AZ data.
-- NLB: disabled (default), $ for inter AZ data
+- #EC2 across AZ are not uniformly distributed, Cross-Zone LB consider the distribution to achieve true LB.
+- ALB: enabled (always), disable @ Target group level, $0 for cross-AZ data.
+- NLB: disabled (default), $ for cross-AZ data
 - LB lvl: ELB > Attributes
 - Target group lvl: Target Group > Attributes
 
@@ -488,7 +489,7 @@ Enc un-encrypted EBS volume:
 ## TLS Cert
 
 - Mng certs: AWS Certificate Manager (ACM)
-- Clients spec. *Server Name Indication (SNI)*, i.e. hostname, solves 1+ TLS certs in 1 web server. Marche: ALB, NLB, CloudFront.
+- Client spec. *Server Name Indication (SNI)*, i.e. hostname. Solve 1+ TLS certs in 1 web server. Marche: ALB, NLB, CloudFront.
 - ELB > Listeners > Add listener > Secure listener settings
 
 
@@ -533,7 +534,7 @@ ASG auto forecast and schedule scaling
 
 ### Scaling Cooldown
 
-- Cooldown period (default 300s) post-scaling.
+- Cooldown period (default: 300s) post-scaling.
 - During cooldown ASG will not launch / terminate EC2.
 - Ready-to-use AMI: Cooldown period -
 
@@ -556,7 +557,7 @@ ASG auto forecast and schedule scaling
 ## Read Replicas
 
 - Max 15
-- Intra, inter AZ, cross-region 
+- Intra, cross AZ, cross-region 
 - Async replication: reads are consistent
 - Can be promoted to indep DB
 - App updates conn. string to util RR
@@ -596,7 +597,7 @@ ASG auto forecast and schedule scaling
 - Support: Postgres, MySQL
 - AWS cloud optm performance: 5x vs. MySQL, 3x vs. Postgres (on RDS)
 - Auto storage incr: 10GB, Max 256TB
-- Max 15 replicas, <10ms replica lag
+- Max 15 RR, <10ms replica lag
 - $: +20% vs. RDS
 
 ## Aurora DSQL
@@ -807,10 +808,8 @@ Alias
 ### Simple
 
 - 1 record, multi val
-- If multi val -> one chosen by client randomly
+- If 1+ val -> 1 chosen by client randomly
 - If Alias: only 1 AWS resource
-
-
 
 ### Weighted
 
@@ -821,10 +820,9 @@ Alias
 - If all records w/ weight 0, records be returned equally.
 
 
-
 ### Latency
 
-- Redirect to the resource w/ lowest latency
+- Redir to the resource w/ lowest latency
 - Based on client and AWS region
 - Create record: 
   - Value: resource
@@ -865,7 +863,7 @@ Alias
 
 ### Multi-Value
 
-- Multi records, same name, diff. val
+- 1+ records, same name, diff. val
 - Routing to multi resources
 - Route 53 returns multi val / resources
 - Max 8 healthy records returned 
@@ -984,7 +982,7 @@ Alias
 ## Object (file)
 
 - Key (path): `s3://my-bucket/folder/file.txt`, prefix: `folder`, obj name: `file.txt`
-- Value: content, Max 50 TB, *multi-part upload* for obj > 5GB
+- Value: content, Max 50 TB, *multi-part upload* for obj >5GB
 - Metadata: list of kv pairs
 - Tags: Max 10 kv pairs
 
