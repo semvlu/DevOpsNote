@@ -395,7 +395,7 @@ vars:
   - name: Check VG
     fail: 
       msg: "VG DNE"
-    when: "'research' not in ansible_lvm.vgs" # Alt: ansible_lvm.vgs.research is not defined
+    when: '"research' not in ansible_lvm.vgs"' # Alt: ansible_lvm.vgs.research is not defined
 
   - block:
     - name: Create LV
@@ -764,7 +764,7 @@ ansible localhost -m debug -a "var=hostvars[inventory_hostname]"
 
 ```yml
 {% for h in groups['all'] %}
-{{ hostvars[h]['ansible_facts']['default_ipv4']['address'] }}
+{{ hostvars[h].ansible.default_ipv4.address }}
 {% endfor %}
 
 
@@ -962,4 +962,18 @@ ansible-navigator:
 ```sh
 ssh-keygen
 ssh-copy-id <user>@<managed-host>
+```
+
+# Appendix
+## Balancer Role (HAProxy)
+
+`roles/balancer/templates/balancer.j2`
+```
+#---------------------------------------------------------------------
+# round robin balancing between the various backends
+#---------------------------------------------------------------------
+backend app
+    balance     roundrobin
+    server ansible-mng-1 192.168.119.163:80 check
+    server ansible-mng-2 192.168.119.173:80 check
 ```
