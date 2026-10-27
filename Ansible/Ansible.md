@@ -765,7 +765,7 @@ ansible localhost -m debug -a "var=hostvars[inventory_hostname]"
 
 ```yml
 {% for h in groups['all'] %}
-{{ hostvars[h].ansible.default_ipv4.address }}
+{{ hostvars[h].ansible_default_ipv4.address }}
 {% endfor %}
 
 
@@ -774,10 +774,10 @@ ansible localhost -m debug -a "var=hostvars[inventory_hostname]"
     # `>`: folded block scalar: \n into 1 space, multi-line -> single-line
     # `-`: strip chomping: strip all new lines @ end of the string
     content: >- 
-    {% if 'dev' in group_names %}Development
-    {% elif 'test' in group_names %}Test
-    {% elif 'prod' in group_names %}Production
-    {% endif %}
+      {% if 'dev' in group_names %}Development
+      {% elif 'test' in group_names %}Test
+      {% elif 'prod' in group_names %}Production
+      {% endif %}
   when: '"dev" in group_names or "test" in group_names or "prod" in group_names'
   # Equiv: 
   when: inventory_hostname in groups['dev'] or inventory_hostname in groups['test'] or inventory_hostname in groups['prod']
