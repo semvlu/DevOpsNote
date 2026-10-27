@@ -25,12 +25,12 @@ default: `/etc/ansible/ansible.cfg`
 [defaults]
 
 inventory = ./inventory.ini # default: ['/etc/ansible/hosts']
-collections_path = ~/collections:/usr/share/ansible/collections
+collections_path = ~/proj/collections:/usr/share/ansible/collections
 # `/etc/ansible/roles` @ head of entry 
-roles_path = ~/roles:/usr/share/ansible/roles:/etc/ansible/roles
+roles_path = ~/proj/roles:/usr/share/ansible/roles:/etc/ansible/roles
 remote_user = ansible-user
 private_key_file = ~/.ssh/ansible-mgmt
-host_key_checking = false
+host_key_checking = False
 
 [galaxy]
 server = https://galaxy.ansible.com
