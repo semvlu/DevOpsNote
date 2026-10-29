@@ -353,8 +353,8 @@ Attr:
 - ❌ HDD be boot volume
 - General SSD: `gp2` / `gp3`
 - Provisioned IOPS (PIOPS) SSD: 
-  - `io1`: 64,000 IOPS
-  - `io2 Block Express`: 256,000 IOPS
+  - `io1`: Max 64,000 IOPS, 50 IOPS/GiB
+  - `io2 Block Express`: Max 256,000 IOPS, 1000 IOPS/GiB
   - Multi-attach
 - HDD: 
   - `sc1`: lowest $
