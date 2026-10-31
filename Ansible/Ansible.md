@@ -4,21 +4,22 @@
 - `ansible-galaxy role install geerlingguy.php balancer`
 - `command` over `shell`, `shell` only for I/O redir (`>`, `>>`, `2>`, `|`)
 
-
 # Config File: `ansible.cfg`
+
  `ansible-config`
+
 ```sh
 ansible-config init --disable > ansible.cfg
 ansible-config view path/to/ansible.cfg
 ```
 
-
 default: `/etc/ansible/ansible.cfg`
 
 `ansible.cfg` search order:
+
 1. `ANSIBLE_CONFIG` env var
-2. `./ansible.cfg` 
-3. `~/.ansible.cfg` 
+2. `./ansible.cfg`
+3. `~/.ansible.cfg`
 4. `/etc/ansible/ansible.cfg`
 
 ```conf
@@ -39,12 +40,11 @@ server = https://galaxy.ansible.com
 become = true
 become_method = sudo
 become_user = root
-become_ask_pass = false
+become_ask_pass = False
 
 ```
 
 # Host Mgmt
-
 
 ## Host Files
 
@@ -71,10 +71,9 @@ databases
 - name: Pattern matching for host groups
   hosts: a,b,&c,!d,!e 
 ```
+
 - (a OR B) AND C AND (!d OR !e)
 - `,` and `:`: concat, `&`: intersection, `!`: exclusion
-
-
 
 # Playbook
 
@@ -82,11 +81,11 @@ databases
 - No need to mod file perm
 
 ## Code Check
+
 ```sh
 ansible-playbook --syntax-check playbook.yml
 ansible-playbook -C playbook.yml # dry-run (--check)
 ```
-
 
 # Service
 
@@ -108,11 +107,12 @@ ansible-playbook -C playbook.yml # dry-run (--check)
    enabled: true
 ```
 
-
-
 # File Op
+
 `ansible.builtin.file` module
+
 - `state`: touch, file, directory, absent, hard, link
+
 ```yml
 - name: File op
   hosts: all
@@ -174,8 +174,6 @@ ansible-playbook -C playbook.yml # dry-run (--check)
     - { src: file2, dest: link2 }
 ```
 
-
-
 ## `lookup`
 
 - Plugin to retrieve data from external sources
@@ -193,6 +191,7 @@ vars:
 ```
 
 ## `lineinfile`
+
 - Check string, replace or delete
 - Cf. `ansible.builtin.replace`: replace all matches
 
@@ -262,8 +261,6 @@ vars:
       state: reloaded
 ```
 
-
-
 # Download from URL
 
 ```yml
@@ -276,8 +273,6 @@ vars:
     owner: root
 
 ```
-
-
 
 # Cronjob
 
@@ -293,8 +288,6 @@ vars:
     user: root
     job: "path/to/script.sh"
 ```
-
-
 
 # Mount Storage
 
@@ -373,8 +366,8 @@ vars:
       when: '"prod" in group_names'
 ```
 
-
 # LVM
+
 `ansible-galaxy collection install community.general`
 
 ```yml
@@ -424,7 +417,6 @@ vars:
       resizefs: true
 ```
 
-
 # User Mgmt
 
 ```yml
@@ -459,7 +451,6 @@ ansible-playbook playbook.yml --extra-vars <password_var>=password1234
       password: "{{ <password_var> | password_hash('sha512') }}"
 ```
 
-
 # Kill Process
 
 ```yml
@@ -475,6 +466,7 @@ ansible-playbook playbook.yml --extra-vars <password_var>=password1234
 ```
 
 # Repo Mgmt
+
 ```yml
 - name: Add repo in /etc/yum.repos.d
   yum_repository:
@@ -487,6 +479,7 @@ ansible-playbook playbook.yml --extra-vars <password_var>=password1234
 ```
 
 # ACL
+
 ```yml
 - name: Set default ACL on file for user alice
   # setfacl -m d:u:alice:rw path/to/file
@@ -505,7 +498,9 @@ ansible-playbook playbook.yml --extra-vars <password_var>=password1234
 ```
 
 # Template
+
 `index.html.j2`
+
 ```yml
 FQDN: {{ ansible_facts['fqdn'] | default ('NONE') }}
 IP: {{ ansible_facts['default_ipv4']['address'] }}
@@ -519,14 +514,11 @@ IP: {{ ansible_facts['default_ipv4']['address'] }}
     mode: '0644'
 ```
 
-
 # Task Control
 
 ```sh
 ansible-playbook playbook.yml --start-at-task "<task-name>"
 ```
-
-
 
 ## Ad-Hoc Commands
 
@@ -558,7 +550,7 @@ ansible <server> -a "/sbin/reboot"
 ## Handler
 
 - Special form of a Task, exec only when (AND)
-  1. Notified by prev task which resulted in a "changed" status, 
+  1. Notified by prev task which resulted in a "changed" status,
   2. All tasks in a play are finished.
 - `notify` & `name` of the handler be identical.
 
@@ -585,19 +577,17 @@ handlers:
 
 ```
 
-
-
 ## Conditions
+
 - Operator: `and`, `or`, `not`, `==`, `!=`, etc.
 - Type conversion: filter `|`
+
 ```yml
 - name: trigger task when cond meet
   debug:
     msg: "this is triggered when cond meet"
   when: ansible_facts['os_family'] == 'RedHat' and ansible_facts['cpu_temperature'] | float > 80
 ```
-
-
 
 ## Loop
 
@@ -613,8 +603,10 @@ handlers:
 
     # list of dict
     users:
-    - { name: 'alice', group: 'admin' }
-    - { name: 'bob', group: 'developers' }
+    - name: alice
+      group: admin
+    - name: bob
+      group: developers
 
     # dict
     user_dict:
@@ -678,8 +670,6 @@ ansible-playbook playbook.yml --list-tags
 --skip-tags tag3,tag4
 ```
 
-
-
 # Ansible Vault
 
 ```sh
@@ -687,8 +677,6 @@ ansible-vault [create | edit | view | encrypt | decrypt | rekey] playbook.yml
 ansible-playbook playbook.yml --ask-vault-pass
 ansible-playbook playbook.yml --vault-password-file <password-file>
 ```
-
-
 
 ## Encrypt String
 
@@ -718,10 +706,10 @@ ansible-playbook playbook.yml --vault-password-file .vault_pass1 --vault-passwor
       var: plaintext
 ```
 
-
-
 # Ansible Facts
+
 ## Core System
+
 - `['distribution']`: "Ubuntu", "CentOS", "RedHat"
 - `['distribution_version']`
 - `['os_family']`: "Debian", "RedHat", "Windows"
@@ -731,6 +719,7 @@ ansible-playbook playbook.yml --vault-password-file .vault_pass1 --vault-passwor
 - `['architecture']`
 
 ## Network
+
 - `['default_ipv4']['address']`:	Primary IPv4
 - `['default_ipv4']['gateway']`
 - `['default_ipv4']['interface']`
@@ -738,6 +727,7 @@ ansible-playbook playbook.yml --vault-password-file .vault_pass1 --vault-passwor
 - `['interfaces']`
 
 ## HW
+
 - `['memtotal_mb']`
 - `['memfree_mb']`
 - `['processor_vcpus']`
@@ -747,18 +737,20 @@ ansible-playbook playbook.yml --vault-password-file .vault_pass1 --vault-passwor
 - `['lvm']['vgs']`
 
 ## User & Env
+
 - `['user_id']`: Remote user exec Ansible
 - `['real_user_id]`: ibid, but uid
 - `['env']['HOME']`	Home dir of remote user
 - `['env']['PATH']`
 
-
 # Magic Variables
+
 - `hostvars`: list of hosts containing vars, e.g. facts, after gathered/cached facts (`gather_facts: true`) @ play lvl.
 - `groups`: groups in inventory
 - `group_names`: groups the current host belongs to.
 - `inventory_hostname`, `inventory_hostname_short`: FQDN, short hostname conf-ed in inventory, alt to `ansible_hostname` when fact-gathering disabled.
 - List magic variables:
+
 ```sh
 ansible localhost -m debug -a "var=hostvars[inventory_hostname]"
 ```
@@ -783,11 +775,11 @@ ansible localhost -m debug -a "var=hostvars[inventory_hostname]"
   when: inventory_hostname in groups['dev'] or inventory_hostname in groups['test'] or inventory_hostname in groups['prod']
 ```
 
-
 # Error Handling
+
 - `block`, `rescue`, `always`: try/catch/anyways
 - `force_handlers`: exec `handlers` even on error
-- `any_errors_fatal`: abort on error, @ play / block lvl. 
+- `any_errors_fatal`: abort on error, @ play / block lvl.
 
 > [!WARNING] 
 > Priority: `rescue` & `always` > `any_errors_fatal` > `force_handlers`
@@ -819,10 +811,10 @@ tasks:
 ```
 
 ## Def Failure
+
 - `failed_when`
 - `changed_when`: `command` or `shell` reports task status as "changed" no matter what, which breaks idempotency. This def what a real "change" is.
 - `ignore_errors`: skip error, not trig `rescue` block
-
 
 ```yml
 - name: Combine multi cond to override 'changed' result
@@ -832,9 +824,6 @@ tasks:
   changed_when: '"ERROR" in result.stderr' and result.rc == 2 # rc: return code
 ```
 
-
-
-
 # `ansible-doc`
 
 ```sh
@@ -842,8 +831,6 @@ ansible-doc -l <collection (opt)> # ansible.builtin, ansible.posix, etc.
 ansible-doc <module> # file
 ansible-doc -s <module> # snippet
 ```
-
-
 
 # [`ansible-galaxy`](https://galaxy.ansible.com)
 
@@ -873,8 +860,8 @@ collections:
 
 ```
 
-
 # `ansible-navigator`
+
 ```sh
 ansible-navigator run playbook.yml -m stdout	# Run playbook w/o TUI
 ansible-navigator doc <module>	# Container-aware equiv. of ansible-doc
@@ -882,6 +869,7 @@ ansible-navigator collections
 ```
 
 `project/ansible-navigator.yml`
+
 ```yml
 ansible-navigator:
   execution-environment:
@@ -898,25 +886,26 @@ ansible-navigator:
 - Inversion of Ansible default "push" arch
 
 1. Create repo & upload playbooks
-  ```yml
-  - name: client self-config
-    hosts: localhost
-    tasks: ...
-  ```
+   ```yml
+   - name: client self-config
+     hosts: localhost
+     tasks: ...
+   ```
 2. Managed node: install git, ansible
 3. Test: `ansible-pull --url https://github.com/<user>/<repo>/playbook.yml`
 4. Config cronjob:
-  ```sh
-  crontab -e
-  0 0 * * * /usr/bin/ansible-pull --url https://github.com/<user>/<repo>/playbook.yml >> /var/log/ansible-pull.log 2>&1
-  ```
-
+   ```sh
+   crontab -e
+   0 0 * * * /usr/bin/ansible-pull --url https://github.com/<user>/<repo>/playbook.yml >> /var/log/ansible-pull.log 2>&1
+   ```
 
 # `rhel-system-roles`
-- **Example: `/usr/share/doc/rhel-system-roles/<role>/example-<scenario>-playbook.yml`**
+
+- **Example:** `/usr/share/doc/rhel-system-roles/<role>/example-<scenario>-playbook.yml`
 - Ref: `/usr/share/ansible/roles/rhel-system-roles.<role>/README.md`
 
 ## NTP, Timesync (Chrony)
+
 ```yml
 - name: 
   hosts: all
@@ -930,8 +919,8 @@ ansible-navigator:
 ```
 
 ## SELinux
-`ansible all -a "sestatus"`
 
+`ansible all -a "sestatus"`
 
 ```yml
 - name: Conf SELinux
@@ -960,15 +949,18 @@ ansible-navigator:
 ```
 
 # Create & Distribute SSH Key to Managed Hosts
+
 ```sh
 ssh-keygen
 ssh-copy-id <user>@<managed-host>
 ```
 
 # Appendix
+
 ## Balancer Role (HAProxy)
 
 `roles/balancer/templates/balancer.j2`
+
 ```
 #---------------------------------------------------------------------
 # round robin balancing between the various backends
