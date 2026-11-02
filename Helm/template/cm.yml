@@ -1,0 +1,40 @@
+# All config files under config/
+# No nested structure
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-conf
+  namespace: {{ .Release.Namespace }}
+data:
+  {{- (.Files.Glob "config/*").AsConfig | nindent 2 }}
+
+---
+# Nested config files 
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-app-conf
+  namespace: {{ .Release.Namespace }}
+data:
+  {{- range $path, $_ :=  .Files.Glob  "config/app/**" }}
+  {{- $relPath := trimPrefix "config/app/" $path }}
+  {{- $safeKey := replace "/" "_" $relPath }}
+  {{ $safeKey }}: |-
+    {{- $.Files.Get $path | nindent 4 }}
+  {{- end }}
+
+---
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Release.Name }}-app-env
+  namespace: {{ .Release.Namespace }}
+data:
+  {{- range $key, $val := .Values.appEnv }}
+  {{ $key }}: {{ $val | toString | b64enc | quote }}
+  {{- end }}
+  CLIENT_KEY: {{ get $data "CLIENT_KEY" | default (randAlphaNum 48 | b64enc) | quote }}
+
+
