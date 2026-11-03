@@ -866,18 +866,25 @@ collections:
 ansible-navigator run playbook.yml -m stdout	# Run playbook w/o TUI
 ansible-navigator doc <module>	# Container-aware equiv. of ansible-doc
 ansible-navigator collections
+
+ansible-navigator settings --sample > ansible-navigator.yml
 ```
 
 `project/ansible-navigator.yml`
 
 ```yml
 ansible-navigator:
+  ansible:
+    inventory:
+      entries:
+        - /path/to/inventory
   execution-environment:
-    image: registry.example.com/ee-supported-rhel9:latest # Image provided in exam prompt
+    image: registry.example.com/ee-supported-rhel10:latest # Image provided in exam prompt
     pull:
       policy: missing # Crucial: Exam env are offline/firewalled
-
   mode: stdout # -m stdout
+  playbook-artifact:
+    enable: false # No post-run artifact JSON file 
 ```
 
 # `ansible-pull`
