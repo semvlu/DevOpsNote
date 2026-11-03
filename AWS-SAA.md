@@ -445,7 +445,8 @@ Enc un-encrypted EBS volume:
 ## ALB: Application LB
 
 - Routing: path, hostname, query string
-- Target group: EC2 inst (ASG), ECS, Lambda (HTTP -> JSON), private IP
+- Target group: private IP, EC2 inst (ASG), ECS, Lambda (HTTP -> JSON)
+- Support on-prem if connection (DX, VPN) b/w on-prem and AWS exists
 - App servers do not see client info directly, but in headers: IP: `X-Forwarded-For`, Port: `X-Forwarded-Port`, Protocol: `X-Forwarded-Proto`
 
 
