@@ -3824,6 +3824,14 @@ Hosted Connection: 50 Mbps - 25 Gbps
 | Temp Storage | EBS / Instance Store | 512MB - 10GB  |
 |              | EC2                  | Serverless    |
 
+
+## AppSync
+- Serverless GraphQL & Pub/Sub API service
+- GraphQL Resolvers: mapping templates to convert a GraphQL expression into a format that the data source can use.
+  - Unit resolver: perf single op against a predefined data source
+  - Pipeline resolver: serial exec op against multi data sources in 1 API call, trig by queries, mutations, or subscriptions
+
+
 ## AppFlow
 - Integrate AWS & SaaS for data transfer
 - Source: Salesforce, SAP, Zendesk, Slack
