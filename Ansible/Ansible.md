@@ -24,7 +24,6 @@ default: `/etc/ansible/ansible.cfg`
 
 ```conf
 [defaults]
-
 inventory = ./inventory.ini # default: ['/etc/ansible/hosts']
 collections_path = ~/proj/collections:/usr/share/ansible/collections
 # `/etc/ansible/roles` @ head of entry 
@@ -41,7 +40,6 @@ become = true
 become_method = sudo
 become_user = root
 become_ask_pass = False
-
 ```
 
 # Host Mgmt
@@ -187,7 +185,6 @@ vars:
   envvar: "{{ lookup('env', 'HOME') }}"
   date: "{{ lookup('pipe', 'date +%Y-&m-%d') }}"
   content: "{{ lookup('url', 'https://example.com/') }}"
-
 ```
 
 ## `lineinfile`
@@ -199,7 +196,7 @@ vars:
 - name: Update GPCC TLS Cert config
   lineinfile:
     path: "{{ gpcc_conf }}"
-    regexp: '^HTTPSCertFile'
+    regexp: '^\s*#?\s*HTTPSCertFile'
     line: 'HTTPSCertFile       = {{ new_cert_file }}'
     state: present
   tags:
@@ -271,7 +268,6 @@ vars:
     mode: 0755
     group: root
     owner: root
-
 ```
 
 # Cronjob
@@ -333,7 +329,7 @@ vars:
     - name: Verify sdb disk existence
       fail:
         msg: "Disk: /dev/sdb DNE"
-      when: '"sdb" not in ansible_facts['devices']'
+      when: '"sdb" not in ansible_facts["devices"]'
     - block:
       - name: "Create 1200M partition, FS: ext4"
         parted:
@@ -494,7 +490,6 @@ ansible-playbook playbook.yml --extra-vars <password_var>=password1234
   acl:
     path: path/to/file
   register: file_acl_info
-
 ```
 
 # Template
@@ -807,7 +802,6 @@ tasks:
   - name: Always do
     debug:
       msg: 'I do it anyways, no matter what'
-
 ```
 
 ## Def Failure
@@ -894,16 +888,16 @@ ansible-navigator:
 
 1. Create repo & upload playbooks
    ```yml
-   - name: client self-config
-     hosts: localhost
-     tasks: ...
+     - name: client self-config
+       hosts: localhost
+       tasks: ...
    ```
 2. Managed node: install git, ansible
 3. Test: `ansible-pull --url https://github.com/<user>/<repo>/playbook.yml`
 4. Config cronjob:
    ```sh
-   crontab -e
-   0 0 * * * /usr/bin/ansible-pull --url https://github.com/<user>/<repo>/playbook.yml >> /var/log/ansible-pull.log 2>&1
+     crontab -e
+     0 0 * * * /usr/bin/ansible-pull --url https://github.com/<user>/<repo>/playbook.yml >> /var/log/ansible-pull.log 2>&1
    ```
 
 # `rhel-system-roles`
