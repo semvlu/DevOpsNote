@@ -424,7 +424,6 @@ vars:
     append: true
     password_expire_warn: 30
     password_expire_account_disable: 15
-
 ```
 
 ## Update password
@@ -631,7 +630,6 @@ handlers:
       name: "{{ item.key }}"
       group: "{{ item.value }}"
     loop: "{{ users_dict | dict2items }}"
-
 ```
 
 ```yml
@@ -851,7 +849,6 @@ collections:
   type: url
 - name: http://example.com/collection-1.0.0.tar.gz
   type: url
-
 ```
 
 # `ansible-navigator`
@@ -888,16 +885,16 @@ ansible-navigator:
 
 1. Create repo & upload playbooks
    ```yml
-     - name: client self-config
-       hosts: localhost
-       tasks: ...
+      - name: client self-config
+        hosts: localhost
+        tasks: ...
    ```
 2. Managed node: install git, ansible
 3. Test: `ansible-pull --url https://github.com/<user>/<repo>/playbook.yml`
 4. Config cronjob:
    ```sh
-     crontab -e
-     0 0 * * * /usr/bin/ansible-pull --url https://github.com/<user>/<repo>/playbook.yml >> /var/log/ansible-pull.log 2>&1
+      crontab -e
+      0 0 * * * /usr/bin/ansible-pull --url https://github.com/<user>/<repo>/playbook.yml >> /var/log/ansible-pull.log 2>&1
    ```
 
 # `rhel-system-roles`
