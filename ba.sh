@@ -1,4 +1,8 @@
 #!/bin/bash
+set -euo pipefail
+# -e: exit the script if any command fails
+# -u: treat unset var and param as error and exit
+# -o pipefail: cause pipeline to return exit status of the last command that failed
 
 # Input, If/else
 correct="no"
@@ -104,4 +108,3 @@ wget <url>
 which <cmd>
 # locate executable file asso. w/ a given command name, e.g. ls, cronitor.
 # for: delete undesirable CLI downloaded
-
