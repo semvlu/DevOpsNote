@@ -632,7 +632,7 @@ ASG auto forecast and schedule scaling
 ## Aurora Serverless
 
 - Auto DB instantiation & auto-scaling
-- Infreqeent, intermittent, unpredictable workloads
+- Infrequent, intermittent, unpredictable workloads
 - $: per sec
 - Client comm. w/ Proxy Fleet
 
@@ -796,7 +796,7 @@ Alias
 - Auto recog resource IP change
 - A or AAAA
 - Targets: ELB, CloudFront distribution, API Gateway, Elastic Beanstalk, S3 website, VPC Interface Endpoint, Global Accelerator, Route 53 record in the same hosted zone
-- No ALIAS for an EC2 DNS
+- ❌ ALIAS points to an EC2 DNS name
 - Hosted zone (Domain Name) > Create record > A/AAAA, Route traffic to: ✅ Alias, choose endpoint
 
 
@@ -898,13 +898,9 @@ Alias
 - Scenario: website maintenace
 
 
-
-### Router 53 - CloudWatch Alarm
-
+### Private Health Check 
 - For Private Hosted Zone
-- Health checkers are outside VPC
-- Create CloudWatch Metric, check CloudWatch
-
+- Create CloudWatch Metric, asso. CloudWatch Alarm, health check Alarm
 
 
 ## 3e Party Domain Registrar & DNS Service
@@ -1049,6 +1045,7 @@ Delete obj behaviour: **Show versions** switch
 | **Glacier Flexible Retrieval** | 90 D           | 40 KB        | Per GB (varies by speed) | min-hr          |
 | **Glacier Deep Archive**       | 180 D          | 40 KB        | Per GB                   | 12-48 hr        |
 
+*ms: 10-100ms
 
 - Durability: 99.999999999% (11 9's), loss of 1 obj per 10M obj per 10K yr.
 - Availability: Standard: 99.99%, N/A 53 min per yr.
