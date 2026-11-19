@@ -672,7 +672,6 @@ ASG auto forecast and schedule scaling
 - Hack: If not using RDS for a long time -> backup & restore
 
 
-
 ## Aurora
 - PITR: Max 35 days
 
@@ -1451,6 +1450,7 @@ Deployment Opt:
 - AD, ACL, user quotas
 - Support: MS Distributed FS (DFS) namespaces, Mounted on Linux EC2
 - Daily backup to S3
+- DataSync: data replication
 
 
 
@@ -1467,6 +1467,7 @@ Deployment Opt:
 
 - OS support: Linux, Win, MacOS
 - Protocols: NFS, SMB, iSCSI (block storage)
+- SnapMirror: data replication
 - Marche w/ EC2, ECS, EKS, VMware Cloud on AWS
 - PIT instantaneous cloning
 - Data deduplication
@@ -1651,7 +1652,7 @@ On-demand:
 
 - Message broker service for RabbitMQ & ActiveMQ
 - Queue: ~SQS, Topic: ~SNS
-- HA w/ failover
+- HA w/ failover, RabbitMQ: cluster; ActiveMQ: active/standby
 
 
 
@@ -2339,7 +2340,7 @@ iam_role 'arn:aws:iam::123456789012:role/MyRedshiftRole';
 - Discover, cleanse, transform, ingest data
 - Automate complex manual steps: collecting, cleansing, moving, cataloging, deduplicate
 - Blueprint: migration to Lake Formation, e.g. S3, RDS, RDBMS, NoSQL
-- ***Row & Clmn lvl*** *Fine-grained acc control* for apps (Athena, Redshift, EMR, Spark): centralised perm control
+- ***Row & Column lvl*** *Fine-grained acc control* for apps (Athena, Redshift, EMR, Spark): centralised perm control
 - Data stored in S3
 - Glue as backend
 
