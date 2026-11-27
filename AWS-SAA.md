@@ -131,7 +131,7 @@ Deny (explicit Deny) -> Org SCP -> Resource-based -> Identity-based -> IAM Permi
 - Multi-Account permission: Permission Set: 1+ IAM policies assigned to users/groups
 - Application assignment: assign apps to acc
 - Attr-BAC (ABAC): fine-grained perm based on user attr in builtin Identity Store
-- User login w/ AD/LDAP to AWS assume IAM role and STS token
+- User login to AWS via AD/LDAP w/ STS token, assume IAM role
 
 ### Directory Service (AD)
 
