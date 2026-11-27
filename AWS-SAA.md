@@ -35,8 +35,6 @@
 }
 ```
 
-
-
 ### Condition
 
 ```json
@@ -66,8 +64,6 @@
 }
 ```
 
-
-
 ### S3 Bucket & Object Lvl Perm
 
 - Bucket: `"s3:ListBucket"`, `"arn:aws:s3:::test"`
@@ -82,9 +78,8 @@
   - Resource-based: S3, Lambda, SNS, SQS, API Gateway
   - IAM Role: Kinesis, EC2 ASG, ECS
 
-
-
 ## Role
+
 - IAM Entity for AWS services to perform actions on your behalf, e.g. EC2 Inst Role, Lambda Function Role
 
 ## Organization
@@ -100,8 +95,6 @@
 - Root: Management Account
 - Hierarchical structure
 
-
-
 ### [SCP: Service Control Policy](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps_evaluation.html#strategy_using_scps)
 
 - IAM policy applied to OU/Accounts: restrict users and roles
@@ -112,8 +105,6 @@
 - Top-down tracing
 - OU (Root) [FullAWSAccess] > OU (Dev) [FullAWSAccess] > Account D [Allow EC2]: Account D acc: EC2
 
-
-
 ### Tag Policy
 
 - Attr-BAC
@@ -123,15 +114,11 @@
 - Prevent non-compliant tagging op on spec services & resources, but no effect on resources w/o tags
 - EventBridge monitors non-compliant tags
 
-
-
 ## IAM Permission Boundary
 
 - Support: User, Role, not Group
 - Set Max perm (boundary)
 - Actual perm = Org SCP ∩ Identity-based pol (User, Group, Role) ∩ Permission boundary
-
-
 
 ## [Policy Evaluation Logic](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic_policy-eval-basics.html)
 
@@ -144,8 +131,7 @@ Deny (explicit Deny) -> Org SCP -> Resource-based -> Identity-based -> IAM Permi
 - Multi-Account permission: Permission Set: 1+ IAM policies assigned to users/groups
 - Application assignment: assign apps to acc
 - Attr-BAC (ABAC): fine-grained perm based on user attr in builtin Identity Store
-
-
+- User login w/ AD/LDAP to AWS assume IAM role and STS token
 
 ### Directory Service (AD)
 
@@ -154,16 +140,12 @@ Deny (explicit Deny) -> Org SCP -> Resource-based -> Identity-based -> IAM Permi
 - Simple AD: Cannot join on-prem AD
 - Integration: IAM Identity Center (2-way trust)
 
-
-
 ## Control Tower
 
 - Setup & Govern multi-account AWS env
 - Util AWS Organizations to create accounts
 - Preventive Guardrail: util SCP, e.g. restrict regions for all accounts
 - Detective Guardrail: util AWS Config, e.g. identify untagged resources
-
-
 
 # EC2: Elastic Compute Cloud
 
@@ -174,17 +156,13 @@ Components:
 - EC2: VM
 - EBS: Drives
 - ELB: Distributing loads across VMs
-- ASG: Auto-scaling Group
-
-
+- ASG: Auto scaling Group
 
 # EC2 (VM)
 
 Config: OS, CPU, RAM, Storage (network-attached, HW), NIC, Firewall (Security Group), Bootstrap script (EC2 User Data)
 
 - EC2 User Data: bootstrap script, run as root.
-
-
 
 ## Instance Type
 
@@ -193,8 +171,6 @@ Config: OS, CPU, RAM, Storage (network-attached, HW), NIC, Firewall (Security Gr
 - r: mem optm
 - i,d,h: storage optm
 
-
-
 ## SG: Security Group
 
 - Locked down to a region / VPC combination.
@@ -202,8 +178,6 @@ Config: OS, CPU, RAM, Storage (network-attached, HW), NIC, Firewall (Security Gr
 - Inbound default: blocked
 - Outbound default: authorized
 - SG refer to other SGs to control traffic, e.g. if inst A + SG1: inbound ref SG2, SG3; inst B + SG2 can acc inst A
-
-
 
 ## Attach Roles to EC2 Instance
 
@@ -219,14 +193,14 @@ Requirements:
 - EBS root size > RAM
 - EBS encrypted
 
-
-
 ## Purchasing Options
 
 ### On-demand
+
 - $: per sec, Highest
 
-### Reserved Instance (RI, 1-3 yr): 
+### Reserved Instance (RI, 1-3 yr):
+
 - Reserve:
   1. Inst attr: Inst type, Region, Tenancy, OS
   2. Scope: regional or zonal (AZ)
@@ -236,10 +210,11 @@ Requirements:
 - Hotel analogy: VIP discount
 
 ### Convertible Reserved Instance
+
 - Reserve options changable (inst type, tenancy, OS, scope)
 
-
 ### Savings Plan (1-3 yr)
+
 - Discount for long-term usage
 - Commitment to an amount of usage
 - Usage over SP -> billed on-demand
@@ -248,12 +223,14 @@ Requirements:
 - Hotel analogy: VIP discount, pay lower per hr for 1-3 yr, and stay in any room type.
 
 ### Spot Instance
+
 - Can lose at any time, unreliable
 - Most cost-efficient
 - $: change per hr
 - Scenario: batch, data analysis, image proc, dstb workloads
 
 #### Spot Instance Request
+
 - Max spot price: if cur <= max -> provision, if cur > max -> stop | teminate.
 - #Inst
 - Spec
@@ -263,6 +240,7 @@ Requirements:
 - Only cancel requests that are open, active, disabled. Cancel a request does not terminate inst.
 
 ### Spot Fleet
+
 - Set: { spot inst, on-demand inst }
 - Def multi launch pools: inst type, OS, AZ
 - SF chooses b/w launch pools
@@ -272,24 +250,25 @@ Requirements:
   - Diversified: dstb across all pools (availability, long workload)
   - Capacity optimized: pool w/ optm capacity for #inst
   - Price capacity optimized (recom): pools w/ highest capacity avail, select the one w/ lowest price.
-  
+
 ### Dedicated Host
+
 - Book entire phys server (host), control inst placement
 - Scenario: compliance, server-bound software licenses (BYOL)
 - On-demand | Reserved
 
 ### Dedicated Inst
+
 - Host can be diff, but always dedicated to customer.
 - ❌ Control over inst placement, i.e. host
 
 ### Capacity Reservation
+
 - Reserve capacity in a spec. AZ for any duration.
 - No time commitment
 - Combine w/ regional RI & Savings Plan to discount-max
 - $: On-demand rate whether running inst or not
 - Hotel analogy: book a room for a period w/ full price, even not staying
-
-
 
 ## Placement Group
 
@@ -298,14 +277,10 @@ Requirements:
 - Partition: inst across diff partitions (racks) in an AZ, Max 100 EC2, 7 parti per AZ. Scenario: HDFS, Cassandra, Kafka.
 - Practice: launch EC2 -> select Placement Group.
 
-
-
 ## EIP: Elastic IP
 
 - Static public IP
 - ⚠️ Avoid EIP: often reflects poor arch decision. Use LB or register DNS name.
-
-
 
 ## ENI: Elastic Network Interface
 
@@ -321,21 +296,16 @@ Attr:
 - EC2 inst failover: create ENI independently, attach / detach on failure
 - ENI ∈ Subnet ∈ VPC: EC2 w/ multi-ENI is in multi subnets inside a VPC.
 
-
 ## AMI: Amazon Machine Image
 
 - Customisation of EC2 inst
 - Select inst > Actions > Image and templates > Create image
-
-
 
 # EBS: Elastic Block Storage
 
 - Network drive to attach to EC2 inst.
 - Bound to AZ
 - Move across AZ or Region: take snapshot
-
-
 
 ## Snapshots
 
@@ -344,8 +314,8 @@ Attr:
 - Fast snapshot restore (FSR): full init of snapshot w/ 0 latency on the first use, Hi $.
 
 ## DLM: Data Lifecycle Manager
-- Automate creation, retention, deletion of EBS snapshots and EBS-backed AMI.
 
+- Automate creation, retention, deletion of EBS snapshots and EBS-backed AMI.
 
 ## EBS Volume Types
 
@@ -360,15 +330,11 @@ Attr:
   - `sc1`: lowest $
   - `st1`: lo $, freq acc, thruput optm
 
-
-
 ## EBS Multi-Attach
 
 - Attach an EBS Max *16* EC2 inst in 1 AZ.
 - Must use cluster-aware FS (❌ XFS, ext4)
 - Support: `io1`, `io2 Block Express`
-
-
 
 ## EBS Encryption
 
@@ -376,6 +342,7 @@ Attr:
 - At-rest & In-transit b/w EC2 & attached EBS vol & snapshots.
 
 Enc un-encrypted EBS volume: 
+
 1. Create EBS snapshot of the un-encrypted EBS.
 2. Select snapshot > Actions > Create volume from snapshot > ✅ Encrypt, select KMS key.
 
@@ -386,8 +353,6 @@ Enc un-encrypted EBS volume:
 - Lose storage if stopped
 - Scenario: buffer, cache, scratch data, tmp data
 
-
-
 # EFS: Elastic File System
 
 - NFS mounted on multi EC2 in diff. AZ
@@ -395,8 +360,6 @@ Enc un-encrypted EBS volume:
 - SG to control acc to EFS
 - Marche only w/ Linux based AMI
 - Enc at-rest w/ KMS
-
-
 
 ## Modes
 
@@ -408,14 +371,10 @@ Enc un-encrypted EBS volume:
   - Provisioned: set thruput regardless of storage size
   - Bursting
 
-
-
 ## Storage Class
 
 - Move file after N days.
 - Lifecycle policy: move files b/w storage tiers.
-
-
 
 ### Tiers
 
@@ -423,14 +382,10 @@ Enc un-encrypted EBS volume:
 - Infrequent Access (EFS-IA)
 - Archive
 
-
-
 ### Availability & Durability
 
 - Standard: Multi-AZ
 - One Zone: 1 AZ
-
-
 
 # ELB: Elastic Load Balancer
 
@@ -440,16 +395,12 @@ Enc un-encrypted EBS volume:
 - Classic (CLB): deprecated
 - EC2 SG: only allow traffic from LB (HTTP, TCP, 80. ALB SG)
 
-
-
 ## ALB: Application LB
 
 - Routing: path, hostname, query string
 - Target group: private IP, EC2 inst (ASG), ECS, Lambda (HTTP -> JSON)
 - Support on-prem if connection (DX, VPN) b/w on-prem and AWS exists
 - App servers do not see client info directly, but in headers: IP: `X-Forwarded-For`, Port: `X-Forwarded-Port`, Protocol: `X-Forwarded-Proto`
-
-
 
 ## NLB: Network LB
 
@@ -458,8 +409,6 @@ Enc un-encrypted EBS volume:
 - Health check: TCP, HTTP, HTTPS
 - EC2 SG: add NLB SG (HTTP, TCP, 80. NLB SG)
 
-
-
 ## GWLB: Gateway LB
 
 - Manage 3e party NVA in AWS (Firewall, Intrusion detection, Pkt inspection sys)
@@ -467,16 +416,12 @@ Enc un-encrypted EBS volume:
 - GENEVE protocol, port: 6081
 - Request -> GWLB -> NVA target group (proceed or drop) -> GWLB -> App
 
-
-
 ## Sticky Session
 
 - Marche: CLB, ALB, NLB
 - App-based cookie: cookie name spec. individually for each target group. Reserved: AWSALB, AWSALBAPP, AWSALBTG
 - Duration-based cookie: gen by LB
 - Target group > Actions > Edit attributes > Target selection configuration
-
-
 
 ## Cross-Zone Load Balancing
 
@@ -486,22 +431,17 @@ Enc un-encrypted EBS volume:
 - LB lvl: ELB > Attributes
 - Target group lvl: Target Group > Attributes
 
-
 ## TLS Cert
 
 - Mng certs: AWS Certificate Manager (ACM)
 - Client spec. *Server Name Indication (SNI)*, i.e. hostname. Solve 1+ TLS certs in 1 web server. Marche: ALB, NLB, CloudFront.
 - ELB > Listeners > Add listener > Secure listener settings
 
-
-
 ## Deregistration Delay
 
 - Time to complete in-transit requests while EC2 is de-registering or unhealthy
 - Stops sending new req to the de-registering EC2
 - 0-3600s, default: 300s
-
-
 
 # ASG: Auto Scaling Group
 
@@ -511,19 +451,13 @@ Enc un-encrypted EBS volume:
 - Launch template: AMI, Inst type, EC2 user data, EBS volumes, SG, SSH key pair, IAM roles, VPC, Subnet, LB
 - ASG + ELB: Step 3: Integrate with other services > Health checks > ✅ ELB health checks
 
-
-
 ## Scaling Policy
-
-
 
 ### Dynamic
 
 - Target Tracking: avg ASG CPU @40%
 - Simple / Step: CloudWatch Alarm -> scale out/in
 - Metrics: CPUUtilization, RequestCountPerTarget, Average Network I/O
-
-
 
 ### Scheduled
 
@@ -539,8 +473,6 @@ ASG auto forecast and schedule scaling
 - During cooldown ASG will not launch / terminate EC2.
 - Ready-to-use AMI: Cooldown period -
 
-
-
 # Aurora & RDS: RDBMS
 
 - Support: Postgres, MySQL, MariaDB, Oracle, MS SQL, IBM DB2, Aurora
@@ -548,12 +480,9 @@ ASG auto forecast and schedule scaling
 - DR: Multi-AZ 
 - Not accessible via SSH
 
-
-
 ## Storage Auto Scaling
+
 - Storage > Additional storage configuration > Maximum Storage Threshold
-
-
 
 ## Read Replicas
 
@@ -565,14 +494,10 @@ ASG auto forecast and schedule scaling
 - `SELECT` SQL only
 - DB > Actions > Create read replica
 
-
-
 ### Data Replication
 
 - Same-region RR: $0
 - Cross-region RR: $
-
-
 
 ## [RDS Multi-AZ (DR)](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.Migrating.html)
 
@@ -591,6 +516,7 @@ ASG auto forecast and schedule scaling
 - De-activate automation mode, take DB snapshot pre-customisation
 
 ## Enhanced Monitoring
+
 - RDS - CloudWatch Logs
 
 # Aurora
@@ -602,10 +528,10 @@ ASG auto forecast and schedule scaling
 - $: +20% vs. RDS
 
 ## Aurora DSQL
+
 - Serverless, Dstb RDBMS
 - Active-active HA: single/multi region
 - Postgres compatible
-
 
 ## HA
 
@@ -620,23 +546,21 @@ ASG auto forecast and schedule scaling
   - Client - Reader Endpt (LB) - RR
 
 ## Aurora Auto Scaling
+
 - Autoscale RR
 
 ## Custom Endpoint
+
 - Diff RR inst type for diff usage
 - 1:1 Mapping Custom Endpt - RR group 
 - Reader Endpt generally discarded
 
-
-
 ## Aurora Serverless
 
-- Auto DB instantiation & auto-scaling
+- Auto DB instantiation & autoscaling
 - Infrequent, intermittent, unpredictable workloads
 - $: per sec
 - Client comm. w/ Proxy Fleet
-
-
 
 ## Global Aurora
 
@@ -645,21 +569,15 @@ ASG auto forecast and schedule scaling
 - Max 10 RR per secondary region
 - Promote another region as primary (DR): RTO <1min.
 
-
-
 ## Aurora ML
 
 - Support: SageMaker, Comprehend (sentiment analysis)
 - App -> Aurora -> ML -> Aurora -> App
 
-
-
 ## Babelfish for Aurora PostgreSQL
 
 - MS SQL -> Aurora PostgreSQL migration
 - T-SQL -> Babelfish -> PL/pgSQL
-
-
 
 # DB Backup & Restore
 
@@ -671,8 +589,8 @@ ASG auto forecast and schedule scaling
 - Manual: retention as user desires
 - Hack: If not using RDS for a long time -> backup & restore
 
-
 ## Aurora
+
 - PITR: Max 35 days
 
 ### Aurora DB Cloning
@@ -682,12 +600,10 @@ ASG auto forecast and schedule scaling
   - New DB uses same volume as orig.
   - Update: allo additional storage, data copied & separated
 
-
 ## Restore
 
 - Backup to S3
 - On-prem -> Aurora: Percona XtraBackup -> S3
-
 
 # DB Security
 
@@ -699,8 +615,6 @@ ASG auto forecast and schedule scaling
 - SG
 - ❌ SSH, except RDS custom
 
-
-
 # RDS Proxy
 
 - Reduce DB CPU & RAM
@@ -709,8 +623,6 @@ ASG auto forecast and schedule scaling
 - Enforce IAM auth 
 - Acc from VPC only
 
-
-
 # ElastiCache
 
 - Redis, Memcached
@@ -718,16 +630,12 @@ ASG auto forecast and schedule scaling
 - App write data into ElastiCache: Stateless-ise app
 - Require code change
 
-
-
 ## Redis
 
 - Multi-AZ w/ auto failover
 - Data durability w/ AOF persistence 
 - Backup & restore
 - Sorted sets: guarantee uniqueness & elem ordering, e.g. real-time ranking.
-
-
 
 ## Memcached
 
@@ -737,8 +645,6 @@ ASG auto forecast and schedule scaling
 - Backup & restore only for Serverless type
 - Multi-thread arch
 
-
-
 ## Security
 
 - IAM auth: Redis only
@@ -746,15 +652,11 @@ ASG auto forecast and schedule scaling
 - Redis AUTH: set "password/token", support TLS in-transit enc
 - Memchched supports SASL based auth
 
-
-
 ## Patterns
 
 - Lazy loading: all the read data is cached, can become stale
 - Write through: Add/update data in cache when written to a DB, no stale data
 - Session store: store temp session data (TTL)
-
-
 
 # Route 53
 
@@ -772,16 +674,12 @@ ASG auto forecast and schedule scaling
   - CNAME: hostname to another hostname. Not allowed for top node of a DNS ns, e.g. ❌ `example.com` ✅ `www.example.com`
   - NS: name servers for the hosted zone
 
-
-
 ## Hosted Zone
 
 - Container of records, def how to route traffic
 - Public: how to route on internet
 - Private: how to route w/in VPCs (private domains)
 - $0.5 per mo per hosted zone
-
-
 
 ## CNAME vs. Alias
 
@@ -799,11 +697,7 @@ Alias
 - ❌ ALIAS points to an EC2 DNS name
 - Hosted zone (Domain Name) > Create record > A/AAAA, Route traffic to: ✅ Alias, choose endpoint
 
-
-
 ## Routing Policy
-
-
 
 ### Simple
 
@@ -813,12 +707,11 @@ Alias
 
 ### Weighted
 
-- Control % of requests that go to each resource, like rolling a dice
+- Control % of requests that go to each resource, ~ rolling a dice
 - DNS records w/ the same name (app.example.com) and type (A/AAAA)
 - Scenario: LB across regions 
 - Weight: 0 to stop sending request to a resource
 - If all records w/ weight 0, records be returned equally.
-
 
 ### Latency
 
@@ -828,22 +721,16 @@ Alias
   - Value: resource
   - Region: AWS region, if client closest to this region, go to the resource (Value)
 
-
-
 ### Failover (Active-Passive)
 
 - 2 records, same name
 - Primary: mandatory health check
 - Secondary (DR): opt health check
 
-
-
 ### Geolocation
 
 - Routing based on client loc by Continent, Country
 - Spec "Default" in case there's no match
-
-
 
 ### Geoproximity
 
@@ -851,15 +738,11 @@ Alias
 - Bias: expand [1, 99]/ shrink [-99, -1]
 - AWS resource, on-prem (latitude, longitude)
 
-
-
 ### IP
 
 - Routing based on IP
 - Provide a list of CIDRs
 - Scenario: route client from a parti. ISP to a spec endpt
-
-
 
 ### Multi-Value
 
@@ -869,13 +752,9 @@ Alias
 - Max 8 healthy records returned 
 - NOT a substitute for ELB
 
-
-
 ## Health Check
 
 - HTTP health check only for *public* resources
-
-
 
 ### Endpoint
 
@@ -887,8 +766,6 @@ Alias
 - Healthy: 2xx, 3xx status codes, head 5120 bytes resp
 - Config router / firewall: allow inbound request: Route 53 health checkers
 
-
-
 ### Calculated
 
 - Combine res of multi health checks
@@ -897,11 +774,10 @@ Alias
 - Spec #health checks threshold
 - Scenario: website maintenace
 
+### Private Health Check
 
-### Private Health Check 
 - For Private Hosted Zone
 - Create CloudWatch Metric, asso. CloudWatch Alarm, health check Alarm
-
 
 ## 3e Party Domain Registrar & DNS Service
 
@@ -911,22 +787,18 @@ Alias
   1. Route 53 public hosted zone: copy Name servers
   2. Paste on GoDaddy Nameservers
 
-
-
 ## Route 53 Resolver & Hybrid DNS
 
 - Resolve DNS queries b/w VPC (Route 53 Resolver) & On-prem networks (other DNS Resolvers)
 - Conn. VPC & On-prem w/ AWS Direct Connect or AWS VPN first
-
-
 
 ### Inbound / Outbound Endpoint
 
 - Allow on-prem DNS resolvers to resolve AWS resource domain names (inbound), vice versa (outbound)
 - Inbound: On-prem server -> DNS Resolvers -> Inbound Endpoint -> Route 53 Resolver -> Private Hosted Zone (VPC)
 
-
 # RAM: Resource Access Manager
+
 - Share resources across AWS accounts/Organizations, e.g. Subnet, TGW, License Manager, Route 53 Profile
 
 # Case Study: E-commerce
@@ -941,8 +813,6 @@ Alias
   - EC2 SG -> ElastiCache
   - EC2 SG -> RDS
 
-
-
 # Elastic Beanstalk
 
 - $0, Centralised deploy mgmt: EC2, ASG, ELB, RDS, etc.
@@ -954,14 +824,10 @@ Alias
   - Application versions: app code
   - Environment: collection of AWS resources, tiers
 
-
-
 ### Environment Tier
 
 - Web Server: ELB + ASG
 - Worker: SQS Queue + ASG. EC2 as worker pull msg from SQS queue
-
-
 
 # S3
 
@@ -974,15 +840,12 @@ Alias
   - Account Regional namespace: reuse the same name, AWS adds suffix (Account ID).
 - Type: General purpose, Table, Vector, Directory (Express One Zone)
 
-
 ## Object (file)
 
 - Key (path): `s3://my-bucket/folder/file.txt`, prefix: `folder`, obj name: `file.txt`
 - Value: content, Max 50 TB, *multi-part upload* for obj >5GB
 - Metadata: list of kv pairs
 - Tags: Max 10 kv pairs
-
-
 
 ## Policy
 
@@ -992,8 +855,6 @@ Alias
 - (I ∨ R) ∧ ¬D → A
 - Block public access: ✅ (default for protection)
 
-
-
 ## Versioning
 
 - Enable @ bucket lvl
@@ -1001,6 +862,7 @@ Alias
 - Suspend versioning does not delete prev ver
 
 Delete obj behaviour: **Show versions** switch 
+
 - On: permanent delete
 - Off: add *Delete marker*
 
@@ -1015,24 +877,17 @@ Delete obj behaviour: **Show versions** switch
 - ❌ Chaining: bucket A -> bucket B, bucket B -> bucket C. Obj created in bucket A -> replica in bucket B, but not bucket C.
 - Practice: Src S3 > Management > Replication rules: Create replication rule
 
-
-
 ### Existing & New Obj
 
 - Only new obj replicated post-enable Replication
 - Existing: S3 Batch Replication
-
-
 
 ### Delete Marker Replication
 
 - Delete markers created by S3 delete op will be replicated.
 - Permanent delete (spec version ID) not replicated.
 
-
-
 ## Storage Class
-
 
 | Storage Class                  | min Storage ⏳ | min Obj Size | Retrieval $              | 1e Byte Latency |
 | ------------------------------ | ---------------| ------------ | ------------------------ | --------------- |
@@ -1053,37 +908,25 @@ Delete obj behaviour: **Show versions** switch
   - Obj > Actions > Edit storage class
   - Bucket > Management > Lifecycle rules
 
-
-
 ### Standard
 
 - 99.99% Avail
 - Lo-latency, Hi-thruput
 - Sustain 2 concurrent facility failures
 
-
-
 ### Standard-Infrequent Access (IA)
 
 - 99.9% Avail
 - Scenario: DR, backups
-
-
 
 ### One Zone-Infrequent Access (IA)
 
 - 99.5% Avail
 - Scenario: secondary backup copy
 
-
-
 ### Glacier
 
-
-
 #### Glacier Instant Retrieval
-
-
 
 #### Glacier Flexible Retrieval
 
@@ -1092,22 +935,16 @@ Delete obj behaviour: **Show versions** switch
   - Standard: 3-5 hr
   - Bulk: 5-12 hr
 
-
-
 #### Glacier Deep Archive
 
 - Retrieval
   - Standard: 12 hr
   - Bulk: 48 hr
 
-
-
 ### Intelligent Tiering
 
 - $: Monitoring & auto-tiering per mo
 - $0: retrieval
-
-
 
 ### Express One Zone
 
@@ -1116,22 +953,16 @@ Delete obj behaviour: **Show versions** switch
 - 100K+ requests, <10ms latency
 - 99.95% Avail
 
-
-
 ## Lifecycle Rule
 
 - Per prefix or obj Tag
 - Transition action: obj to another storage class
 - Expiration action: obj to be deleted
 
-
-
 ## Requester Pays
 
 - Enable in bucket, requester pays, not owner
 - Requester must be authn in AWS
-
-
 
 ## Event Notification
 
@@ -1139,22 +970,16 @@ Delete obj behaviour: **Show versions** switch
 - Obj name filtering, e.g. `*.jpg`
 - Send event to SNS, SQS, Lambda, EventBridge. Def. acc policy on dest, i.e. SNS, SQS (`sqs:SendMessage`), Lambda
 
-
-
 ## Performance
 
 - 3,500 PUT/COPY/POST/DELETE, 5,500 GET/HEAD req per sec per prefix in a bucket.
 - Multi-part upload: recom file >100MB, upload parallelism
 - Transfer acceleration: Src S3 -> AWS edge FW -> Target S3 in another region.
 
-
-
 ### Get Partial Data
 
 - Byte-range fetch
 - S3 Select: SQL to get partial content, support CSV, JSON, Parquet
-
-
 
 ## Batch
 
@@ -1167,15 +992,11 @@ Delete obj behaviour: **Show versions** switch
 - Batch mng retry, progress, completion notification, gen report
 - S3 Inventory: get obj list, Athena: query & filtre obj
 
-
-
 ## Storage Lens
 
 - Dashboard: default or custom
 - Config: Org, Accounts, Regions, Buckets
 - Aggeregation
-
-
 
 ### Metrics
 
@@ -1189,13 +1010,9 @@ Delete obj behaviour: **Show versions** switch
 - Detailed status code ($): 200OKStatusCount, 403ForbiddenErrorCount
 - Advanced feat ($):CloudWatch publishing, prefix aggregation, data avail for query for 15 mo.
 
-
-
 ## Encryption
 
 - Set per bucket or obj (override)
-
-
 
 ### SSE: Server-Side Encryption
 
@@ -1210,8 +1027,6 @@ Delete obj behaviour: **Show versions** switch
   - S3 does NOT store key
   - HTTPS req
   - Header: key, in all HTTP req.
-
-
 
 ### CSE (Client-Side Encryption)
 
@@ -1251,8 +1066,6 @@ Encrypted files upload to S3
 }
 ```
 
-
-
 ## CORS
 
 Origin: scheme (protocol) + host (domain) + port
@@ -1283,8 +1096,6 @@ CORS Headers: `Access-Control-Allow-Origin`, `Access-Control-Allow-Methods`
 ]
 ```
 
-
-
 ## MFA Delete
 
 - MFA required: permanent delete an obj ver, suspend versioning
@@ -1297,18 +1108,14 @@ CORS Headers: `Access-Control-Allow-Origin`, `Access-Control-Allow-Methods`
 - Do NOT set the monitored and logging bucket as the same
 - Practice: Bucket > Properties > Server access logging
 
-
-
 ## Pre-Signed URL
 
 - Pre-signed URL inherit the perm of URL generator
 - URL expiration:
   - S3 Console: 1-720 min
-  - CLI: param `--expires-in` sec, default: 3600, max 604800s (168hr)
+  - CLI: param `--expires-in` sec, default: 3600, Max 604800s (168hr)
   - `aws s3 presign s3://<bucket>/<obj>  --expires-in <sec> --region <region>`
 - Practice: obj > Object actions > Share with a pre-signed URL
-
-
 
 ## Glacier Vault Lock
 
@@ -1317,22 +1124,19 @@ CORS Headers: `Access-Control-Allow-Origin`, `Access-Control-Allow-Methods`
 - Lock the policy, not editable
 - Compliance
 
-
-
 ## Object Lock
 
 - Enable Versioning
 - Block an obj ver delete for a period
 - Retention mode:
   - Compliance: nobody can change/delete obj ver, mode not changable, retention cannot be shortened.
-  - Governance: Previlige users can change obj ver
+  - Governance: Privilige users can change obj ver
 - Legal hold: protect obj ♾️⏱️, indep from retention period, add/remove  w/ `s3:PutObjectLegalHold` IAM policy.
 
 ## Access Point
 
 - DNS: Internet or VPC
 - Policy: R/W, prefix (sub-dir) perm
-
 
 ### VPC Origin Access Point
 
@@ -1356,10 +1160,7 @@ Origin:
 - VPC: private ALB, NLB, EC2
 - Custom: S3 website, public HTTP backend
 
-
-
 ## CloudFront vs. S3 CRR (Cross-Region Replication)
-
 
 |             | CloudFront          | S3 CRR           |
 | ----------- | ------------------- | ---------------- |
@@ -1367,9 +1168,6 @@ Origin:
 | Up-to-date  | Cache TTL           | Real-time update |
 | Content     | Static              | Dynamic          |
 | P.S.        |                     | Read-only        |
-
-
-
 
 ## VPC Origin
 
@@ -1384,21 +1182,15 @@ SG Setup
   - EC2 (public or private): allow ALB SG
   - ALB (public): allow edge loc public IP
 
-
-
 ## Geo Restriction
 
 - Allowlist / Blocklist
 - Scenario: copyright laws
 
-
-
 ## CloudFront Invalidation
 
 - Back-end origin update -> Invalidation (Cache refresh, bypass TTL) 
 - Spec. path: `*`, `/images/*`
-
-
 
 # Global Accelerator
 
@@ -1409,28 +1201,21 @@ SG Setup
 - Health check + failover
 - AWS Shield: DDoS protect
 
-
-
 ## CloudFront vs. Global Accelerator
-
 
 |               | CloudFront                           | Global Accelerator                          |
 | ------------- | ------------------------------------ | ------------------------------------------- |
 | Common        | Util AWS global network & AWS Shield |                                             |
 | Functionality | Cache content @ Edge                 | Proxy pkt b/w Edge & app across AWS regions |
 
-
-
-
 # Snowball
 
 - Phys device: 104 vCPUs, 416 GB mem
-  - Snowcone: 14 TB 
+  - Snowcone: 14 TB SSD
   - Snowball Edge: 210 TB SSD
 - Scenario: data migration, edge computing
 - Snowball -> S3 -> Glacier
 - EOL: DataSync (online) or Data Transfer Terminal (offline) as alt
-
 
 # FSx
 
@@ -1438,8 +1223,6 @@ Deployment Opt:
 
 - Scratch: temp storage, data not replicated, Hi-burst
 - Persistent: long-term, data replication intra AZ
-
-
 
 ## Windows
 
@@ -1449,16 +1232,12 @@ Deployment Opt:
 - Daily backup to S3
 - DataSync: data replication
 
-
-
 ## Lustre (Linux + Cluster)
 
 - Parallel DFS
 - Lustre vs. EFS: HPC vs. Normal Linux FS
 - ML, HPC
 - S3 integration: Read S3 as FS, Write computation output back to S3
-
-
 
 ## NetApp ONTAP
 
@@ -1469,23 +1248,17 @@ Deployment Opt:
 - PIT instantaneous cloning
 - Data deduplication
 
-
-
 ## OpenZFS
 
-- Compatible: NFS
+- Protocol: NFS
 - Marche w/ Linux, Win, MacOS, EC2, ECS, EKS, VMware Cloud on AWS
 - PIT instantaneous cloning
-
-
 
 # Storage Gateway
 
 - GW b/w on-prem & AWS cloud for hybrid storage
 - On-prem VM as GW (ESXi, Hyper-V, KVM), or EC2 (less frequent)
 - Cache
-
-
 
 ## S3 File GW
 
@@ -1497,8 +1270,6 @@ Deployment Opt:
 - GW acc. S3 w/ IAM role
 - On-prem app server -> NFS/SMB -> S3 File GW -> HTTPS -> S3 -> S3 Glacier
 
-
-
 ## Volume GW
 
 - Block storage, iSCSI protocol
@@ -1506,14 +1277,13 @@ Deployment Opt:
 - On-prem app server -> iSCSI -> Volume GW -> HTTPS -> S3 -> EBS Snapshots
 
 ### Type
+
 - Cached Volume: lo-latency acc to most recent data
-- Stored Volume: on-prem -> S3 scheduled backup 
+- Stored Volume: on-prem -> S3 scheduled backup
 
 ## Tape GW
 
 - On-prem backup server -> iSCSI-VTL -> Tape GW -> HTTPS -> S3 -> S3 Glacier
-
-
 
 # Transfer Family
 
@@ -1521,8 +1291,6 @@ Deployment Opt:
 - Protocols: FTP, FTPS, SFTP
 - $: per hr per provisioned endpoint, data transfer in GB
 - Authn: AD, LDAP, Okta, AWS Cognito
-
-
 
 # DataSync
 
@@ -1536,8 +1304,6 @@ Deployment Opt:
 - NFS/SMB server <-> DataSync Agent <-> TLS <-> DataSync <-> AWS Storage Services (S3, EFS, FSx)
 - DataSync (S3 service) vs. Stored Volume GW: Move files vs. blocks (RDBMS)
 
-
-
 # SQS: Simple Queue Service
 
 - Decouple apps: App <-> Queue <-> App (Async/Event)
@@ -1545,14 +1311,12 @@ Deployment Opt:
 - Msg persistence: consumer deletes msg or retention
 - Retention: 4 days (default), Max 14 days
 - Lo-latency: <10ms on publish and recv
-- Msg Max size: 1 MiB
+- Max msg size: 1 MiB
 - Duplicate msgs: at-least-once delivery
 - Best-effort msg ordering
 - Producer [`SendMessage` API] -> SQS <-> [`DeleteMessage` API] Consumer
 - In-transit enc: HTTPS, At-rest enc: KMS
 - SQS API acc control: IAM policy
-
-
 
 ## Message Visibility Timeout
 
@@ -1561,8 +1325,6 @@ Deployment Opt:
 - Consumer calls `ChangeMessageVisibility` API to get more time
 - After visibility timeout, msg visible in SQS
 
-
-
 ## Long Polling
 
 - Consumer waits for msg if SQS is empty
@@ -1570,22 +1332,16 @@ Deployment Opt:
 - Wait time: 1-20s
 - Enable @ queue (`ReceiveMessageWaitTimeSeconds`) or API (`WaitTimeSeconds` param of `ReceiveMessage` req) lvl
 
-
-
 ## FIFO Queue
 
 - Deduplication ID: exactly-once processing, remove duplicates
 - Order by Message Group ID
 - Thruput: 300 msg/s (w/o batch), 3000 msg/s (batch)
 
-
-
 ## SQS + ASG
 
 - Horizontal autoscale w/ CloudWatch Metric: Queue Length: `ApproximateNumberOfMessages` -> CloudWatch Alarm -> ASG
 - SQS qua buffer to DB write: When INSERT complete, delete msg in SQS. Enqueue ASG -> SQS -> Dequeue ASG -> DB
-
-
 
 # SNS: Simple Notification Service
 
@@ -1593,22 +1349,16 @@ Deployment Opt:
 - Subscriber: recvr, e.g. SQS, Lambda, Data Firehose, Email, SMS, HTTP(S) endpoint. Max: 12,500,000 per Topic.
 - Security: enc, Acc control, etc. same as SQS
 
-
-
 ## SNS + SQS: Fan Out Pattern
 
 - SQS qua subscribers, not bounded by region
 - Allow SNS write on SQS policy
 - FIFO opt: same as SQS
 
-
-
 ## Subscription Filter Policy
 
 - JSON policy to control which messages a subscribe recv.
 - Subscription w/o filter policy recv. all msg
-
-
 
 # Kinesis Data Streams
 
@@ -1631,8 +1381,6 @@ On-demand:
 - 4 MB/s
 - Autoscale based on observed thruput peak in the last 30 days
 
-
-
 # Data Firehose
 
 - Batch write to S3, Redshift, AWS OpenSearch, 3e party, custom HTTP endpoint
@@ -1643,15 +1391,11 @@ On-demand:
 - Convert to Parquet, ORC, Compression w/ gzip, snappy
 - ❌ Replay, storage
 
-
-
 # Amazon MQ
 
 - Message broker service for RabbitMQ & ActiveMQ
 - Queue: ~SQS, Topic: ~SNS
 - HA w/ failover, RabbitMQ: cluster; ActiveMQ: active/standby
-
-
 
 # ECS
 
@@ -1661,11 +1405,7 @@ On-demand:
 - Integration: ALB (recom), NLB
 - Volume: EFS
 
-
-
 ## Launch Type
-
-
 
 ### EC2
 
@@ -1673,13 +1413,9 @@ On-demand:
 - EC2 runs ECS Agent
 - EC2 instance profile: IAM role for ECS agent to make API calls to ECS, send container logs to CloudWatch, pull image from ECR, ref sensitive data in Secrets Manager / SSM Parameter Store
 
-
-
 ### Fargate
 
 - Serverless
-
-
 
 ## Autoscaling
 
@@ -1689,30 +1425,20 @@ On-demand:
 - Scheduled: date/time
 cf. Auto Scaling Group (ASG) > Scaling Policy
 
-
-
 ### Autoscaling for EC2 Launch Type
 
 - ASG
 - ✅ ECS Cluster Capacity Provider: paired w/ ASG
 
-
-
 ## ECS Sol Arch
 
 - Upload obj -> S3 event -> EventBridge -> ECS get S3 obj
-- EventBridge trigger ECS every hr
+- EventBridge trig. ECS every hr
 - ECS task exited -> EventBridge -> SNS -> email
-
-
 
 # EKS: Elastic Kubernetes Service
 
-
-
 ## Node Type
-
-
 
 ### Managed node group
 
@@ -1720,21 +1446,15 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 - EKS mng Nodes in ASG
 - Support: on-demand, spot inst
 
-
-
 ### Self-Managed Node
 
 - User create & register Nodes to EKS, ASG mng Nodes
 - Util pre-built AMI or EKS optm AMI
 - Support: on-demand, spot inst
 
-
-
 ### AWS Fargate
 
 - No need for maintenance, Node mgmt
-
-
 
 ## Volume
 
@@ -1742,13 +1462,9 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 - EBS, EFS, FSx Lustre, FSx NetApp ONTAP
 - *Fargate only w/ EFS & EBS*
 
-
-
 # Serverless
 
 - Lambda, DynamoDB, Cognito, API Gateway, S3, SQS, SNS, Data Firehose, Aurora Serverless, Step Functions, Fargate
-
-
 
 # Lambda
 
@@ -1756,7 +1472,7 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 - $: $0.2 per 1M request, $1 per 600K GB-sec compute time
 - Free tier: 1M Lambda requests, 400K GB-sec compute time
 - Max 10 GB RAM per function
-- Language support: node.js, python, C#, etc.
+- Language support: Node.js, Python, C#, etc.
 - Scenario: Cronjob
 
 **Integration**
@@ -1764,15 +1480,11 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 - API Gateway: REST API to invoke Lambda
 - Kinesis: util Lambda for data transform
 - DynamoDB: trig. Lambda on DB change
-- CloudWatch: automation on code pipeline pipeline change
+- CloudWatch: automation on code pipeline change
 - Cognito: whenever user login to DB
 - S3, etc.
 
-
-
 ## Limits
-
-
 
 ### Execution
 
@@ -1782,15 +1494,11 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 - Function container disk (`/tmp`): 512 MB - 10 GB
 - Concurrency: 1000 per region
 
-
-
 ### Deployment
 
 - Size: 50 MB (compressed .zip), 250 MB (uncompressed code + dep)
 - `/tmp` to load other files @ startup
 - Env var: 4 KB
-
-
 
 ## Concurrency
 
@@ -1801,15 +1509,11 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 - Throttling error (429) & System error (5xx) events: enqueue event -> retry Max: 6hr
 - Retry interval: exp. incr, 1s - 5min
 
-
-
 ### Cold Start & Provisioned Concurrency
 
 - Init code takes time, 1e req has Hi-latency
 - Provisioned concurrency: concurrency allo. pre-invoke
 - Application Auto Scaling mng concurrency (schedule or target)
-
-
 
 ## SnapStart
 
@@ -1818,14 +1522,10 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 - Normal: Init -> Invoke -> Shutdown; SnapStart: Invoke -> Shutdown
 - New version publish -> Lambda init func -> Take snapshot of mem & disk state of init-ed func -> Snapshot cached for lo-latency
 
-
-
 ## Lambda - VPC
 
 - Lambda in VPC: def VPC ID, Subnet, SG. Lambda creates ENI
 - Lambda -> RDS Proxy -> RDS, all w/in VPC
-
-
 
 ## RDS Invoke Lambda
 
@@ -1834,16 +1534,12 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 - Allow outbound traffic: DB -> Lambda (Public, NATGW, VPC endpoint)
 - DB invoke Lambda perm: Lambda resource-based policy, IAM policy
 
-
-
 ## RDS Event Notification
 
 - DB info, no data
 - Subscribe: DB inst, DB snapshot, DB param group, DB SG, RDS Proxy, Custom engine ver
 - ~ Real-time
 - RDS -> SNS / EventBridge -> Lambda
-
-
 
 # CloudFront Function & Lambda@Edge
 
@@ -1852,8 +1548,6 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 - $ by usage
 - Scenario: custom CDN content, website sec & privacy, dynamic web app, SEO, bot mitigation @ edge, user auth, user prioritisation
 
-
-
 ## CloudFront Function
 
 - Func lang: JS
@@ -1861,11 +1555,9 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 - Change: Viewer Request, Viewer Response
 - Scenario: cache key normalisation (header, cookie, query string, URL), header manipulation, URL redirect, user auth (JWT)
 
-
-
 ## Lambda@Edge
 
-- Func lang: NodeJS, Python
+- Func lang: Node.js, Python
 - 1,000+ req/sec
 - Change: Viewer Request, Viewer Response, Origin Request, Origin Response
 - Publish func in 1 region, CloudFront replicates to its loc
@@ -1874,7 +1566,6 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 - Network acc for external service
 - FS, Request body acc
 - Deploy to CloudFront edge
-
 
 # DynamoDB
 
@@ -1886,7 +1577,6 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 - Table Class: Standard | IA
 - Hi-cardinality partition key: for evenly distributed I/O
 
-
 ## Basics
 
 - Table, Primary Key
@@ -1897,11 +1587,7 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
   - Set: String Set, Number Set, Binary Set
 - Rapid evolve schema
 
-
-
 ## R/W Capacity Mode
-
-
 
 ### Provisioned Mode (default)
 
@@ -1910,13 +1596,9 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 - $: provisioned Read/Write Capacity Unit (RCU, WCU)
 - Add autoscaling mode for RCU & WCU
 
-
-
 ### On-Demand Mode
 
 - Scenario: unpredictable workloads, sudden spikes
-
-
 
 ## DynamoDB Accelerator (DAX)
 
@@ -1926,17 +1608,12 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 - 5 min cache TTL (default)
 - *Store Aggregation result w/ ElastiCache*
 
-
-
 ## DynamoDB Streams
 
 - Ordered item-lvl mod (create/update/delete) stream 
 - Scenario: real-time analytics, welcome email, insert derivative table, cross-region replication, invoke Lambda
 
-
-
 ### DynamoDB Streams vs. Kinesis Data Streams
-
 
 |                     | DynamoDB Streams         | Kinesis Data Streams       |
 | ------------------- | ------------------------ | -------------------------- |
@@ -1944,38 +1621,26 @@ cf. Auto Scaling Group (ASG) > Scaling Policy
 | #Consumers          | Limited                  | Hi                         |
 | Processing Pipeline | Lambda, Kinesis (w/ KCL) | ibid., Data Firehose, etc. |
 
-
-
-
 ## Global Tables
 
 - Lo-latency acc. in multi-regions
 - Active-active pattern: R/W in any region 
 - Pre: DynamoDB Streams
 
-
-
 ## TTL
 
 - Auto delete items after expiry timestamp
-- Attr: ExpTime in Table
 - Scenario: regulation (1yr expiration), session mgmt
-
-
 
 ## Backup & DR
 
 - PITR: Max 35 days
 - DR creates new Table
 
-
-
 ### On-demand Backup
 
 - Full backup, explicit delete
 - Cross-region copy: conf & mng in AWS Backup
-
-
 
 ### DynamoDB - S3
 
@@ -1990,8 +1655,6 @@ Import from S3
 
 - Format: CSV, JSON, ION
 
-
-
 # API Gateway
 
 - Handle API versioning, diff env (dev,test,prod), auth
@@ -2002,29 +1665,20 @@ Import from S3
 - Practice: 
   - API > Resources > Create method
   - API > Deploy API
-
-
 - Integration: Lambda (expose Lambda REST API), HTTP (on-prem HTTP API, ALB), AWS Service
 - Why integrate w/ HTTP & AWS Service? Rate limiting, caching, user auth
 
-
-
 ## Endpoint Type
-
-
 
 ### Edge-Optimized (default)
 
 - Request routed thru CloudFront edge loc
 - API still in 1 region
 
-
 ### Regional
 
 - Clients w/in the region
 - Manual combine w/ CloudFront
-
-
 
 ### Private
 
@@ -2034,8 +1688,6 @@ Import from S3
 ## API Gateway Security
 
 - User auth: IAM role, Cognito, custom
-
-
 
 ### Custom Domain Name HTTPS
 
@@ -2047,21 +1699,15 @@ Cert Loc:
 - Edge-Optimized endpoint: `us-east-1`
 - Regional endpoint: API region
 
-
-
 # Step Functions
 
 - Serverless visual workflow orchestration
 - Orchestrate Lambda, EC2, ECS, on-prem, API Gateway, SQS, etc.
 - Seq, Parallelism, Cond, Timeout, Error handling, Human approval
 
-
-
 # Cognito
 
 - Non-AWS user auth (web/mobile app, SAML)
-
-
 
 ## User Pool (CUP)
 
@@ -2070,15 +1716,11 @@ Cert Loc:
 - Userpass login, password reset, MFA, federated identity (Facebook, Google, OIDC, SAML)
 - Integration: API Gateway, ALB
 
-
-
 ## Identity Pool
 
 - Provide temp AWS cred to users to acc AWS resources
 - IdP: CUP, 3e party
 - Web/mobile app login ->  IdP / CUP (token) -> Web/mobile app -> Identity Pool (AWS cred + IAM policy) -> Web/mobile app -> AWS resources
-
-
 
 # Serverless Arch
 
@@ -2090,15 +1732,13 @@ Services:
 - API Gateway -> Lambda -> ElastiCache
 - ELB -> EC2 ASG -> RDS
 - Sync: API Gateway, ELB
-- Async: SQS, SNS, Kinesis, Lambda trig S3
+- Async: SQS, SNS, Kinesis, Lambda trig. S3
 
 Challenges:
 
 - Overhead: repeated creation of new micro-service
 - Optm server util
 - Complex: multi ver of micro-service simultaneously
-
-
 
 ## Software Update Distribution
 
@@ -2112,23 +1752,17 @@ Challenges:
 - Data warehouse (SQL Analytics / BI): Athena, EMR, Redshift (OLAP)
 - Search: OpenSearch (JSON): free text, unstructured search
 - Graph: Neptune
-- Ledger: Quantum Ledger Database
+- Ledger: Quantum Ledger DB
 - Time series: Timestream
-
-
 
 # DocumentDB
 
 - MongoDB
 - ~ Deployment concept as Aurora: HA: replication across 3 AZ, storage incr: 10 GB
 
-
-
 # Neptune
 
 - Graph DB, e.g. social network
-
-
 
 ## Neptune Streams
 
@@ -2139,8 +1773,6 @@ Challenges:
 - Replicate Neptune across regions
 - Scenario: sync graph data in another data store, e.g. S3, OpenSearch, ElastiCache
 
-
-
 # Keyspaces
 
 - Cassandra NoSQL dstb DB
@@ -2149,8 +1781,6 @@ Challenges:
 - <10ms latency, 1000+ req/sec
 - Capacity: Provisioned mode + autoscaling | On-demand
 - PITR: Max 35 days
-
-
 
 # Timestream
 
@@ -2161,15 +1791,13 @@ Challenges:
 - Input: IoT, Kinesis, Prometheus
 - Output: QuickSight, SageMaker, Grafana, JDBC connection
 
-
-
 # Athena
 
 - Serverless query service
 - Source: S3
 - Support: CSV, JSON, ORC, Avro, Parquet
 - $: $5 per TB data scanned
-- Combine w/ QuickSight for dashboard
+- Integration: QuickSight (dashboard)
 - Scenario: BI, analytics, logs analysis (VPC Flow, ELB), CloudTrail trails
 
 ```SQL
@@ -2180,14 +1808,12 @@ LOCATION 's3://target-bucket/prefix/';
 
 ## Optimisation
 
-- Columnar data: less scan, less $ -> Parquet or ORC
+- Columnar data: scan -, $ - -> Parquet or ORC
 - Glue: convert to Parquet, ORC
 - Compress data for small retrieval
 - Partition datasets in S3: easy query: `s3://my-bucket/pathToTable/<PARTITION_COLUMN_NAME>=<VALUE>/<PARTITION_COLUMN_NAME>=<VALUE>/...` 
 e.g. `s3://my-bucket/flight/year=2026/month=1/day=1/`
 - Import Larger file (>128MB): minimise overhead
-
-
 
 ## Federated Query
 
@@ -2203,14 +1829,11 @@ e.g. `s3://my-bucket/flight/year=2026/month=1/day=1/`
 - Integration: BI, e.g. QuickSight, Tableau
 - Faster query, join, aggregation by indexes vs. Athena
 
-
 ## Cluster
 
 - Leader node: query planning, aggregation
 - Compute node: perform query, send results to Leader
 - Provisioned mode: choose inst type, RI
-
-
 
 ## Snapshot & DR
 
@@ -2220,8 +1843,6 @@ e.g. `s3://my-bucket/flight/year=2026/month=1/day=1/`
 - Restore to new cluster
 - Auto backup: every 8 hr, every 5 GB, schedule
 - Auto copy snapshot to another region
-
-
 
 ## Data Source
 
@@ -2236,14 +1857,10 @@ iam_role 'arn:aws:iam::123456789012:role/MyRedshiftRole';
 
 - JDBC driver: EC2 batch write
 
-
-
 ## Spectrum
 
 - Query data in *S3* w/o loading
 - Query submit to 1000+ Redshift Spectrum nodes
-
-
 
 # OpenSearch
 
@@ -2259,18 +1876,14 @@ iam_role 'arn:aws:iam::123456789012:role/MyRedshiftRole';
 - CloudWatch: CloudWatch Logs -> Subscription Filter -> Lambda / Data Firehose -> OpenSearch
 - Kinesis: Kinesis Data Streams -> Data Firehose + Lambda (~real-time) / Lambda (real-time) -> OpenSearch
 
-
-
 # EMR: Elastic MapReduce
 
 - Hadoop cluster (100+ EC2) for *Big data proc & analysis*
 - Bundle w/ Spark, HBase, Flink, Presto
 - Takes care provision & config
-- Autoscaling & integrate w/ Spot inst
+- Autoscaling w/ Spot inst
 - Cluster: Long-running | Transient (temp)
 - Scenario: data proc, ML, web index, big data
-
-
 
 ## Node Type
 
@@ -2281,15 +1894,11 @@ iam_role 'arn:aws:iam::123456789012:role/MyRedshiftRole';
   - On-demand & RI (min 1yr): Master & Core nodes
   - Spot: Task nodes
 
-
-
 # QuickSight
 
 - Serverless ML-powered BI dashboard
 - SPICE engine: in-mem comp if using data import
 - Column-Level Security (CLS)(Enterprise ver): prevent some clmns disp to some users
-
-
 
 ## Data Sources
 
@@ -2298,8 +1907,6 @@ iam_role 'arn:aws:iam::123456789012:role/MyRedshiftRole';
 - SaaS: Salesforce, Jira
 - On-prem DB (JDBC)
 
-
-
 ## Dashboard
 
 - Read-only snapshot of an analysis to share
@@ -2307,8 +1914,6 @@ iam_role 'arn:aws:iam::123456789012:role/MyRedshiftRole';
 - Def User (Standard ver) & Group (Enterprise ver): only in QuickSight, NOT IAM
 - Share analysis / dashboard to spec user or group
 - User w/ perm to dashboard can see underlying data
-
-
 
 # Glue
 
@@ -2322,14 +1927,10 @@ iam_role 'arn:aws:iam::123456789012:role/MyRedshiftRole';
 - Studio: GUI to create, run, monitor ETL jobs
 - Streaming ETL: based on Spark Structured Streaming. Compatibility: Kinesis, Kafka, MSK (managed Kafka)
 
-
-
 ## Data Catalog
 
 - Data src -> Glue Data Crawler [Write Metadata] -> Data Catalog -> Glue
 - Data Catalog [Data/Schema discovery] -> Athena / Redshift Spectrum / EMR
-
-
 
 # Lake Formation
 
@@ -2341,17 +1942,17 @@ iam_role 'arn:aws:iam::123456789012:role/MyRedshiftRole';
 - Data stored in S3
 - Glue as backend
 
-
 # Managed Apache Flink
+
 - Framework for data stream proc
 - AWS: provision comp resource, parallel comp, autoscaling, app backup (checkpoint, snapshot)
 - Data src: Kinesis, MSK
 - *❌ support: Data Firehose*
 
 # MWAA: Managed Workflows for Apache Airflow
+
 - Workflow: collection of tasks as DAG
 - Integration: Apache Hadoop, Presto, Hive, Spark, S3, Redshift, EMR, AWS Batch, SageMaker
-
 
 # MSK: Managed Streaming for Apache Kafka
 
@@ -2361,10 +1962,7 @@ iam_role 'arn:aws:iam::123456789012:role/MyRedshiftRole';
 - Data in EBS
 - MSK Serverless: MSK mng capacity, provision resource, autoscaling
 
-
-
 ## Kinesis vs. MSK
-
 
 |               | Kinesis Data Streams                                     | MSK                              |
 | ------------- | -------------------------------------------------------- | -------------------------------- |
@@ -2375,9 +1973,6 @@ iam_role 'arn:aws:iam::123456789012:role/MyRedshiftRole';
 | KMS Enc       | ✅                                                        | ✅                                |
 | Consumer      | Managed Apache Flink, Glue, Lambda, EC2, ECS, EKS        |                                  |
 
-
-
-
 # Big Data Ingestion Pipeline
 
 - IoT Core -> Kinesis -> Data Firehose (every 1 min) -> S3 -> Lambda -> Athena (pull data from S3) -> S3 out bucket -> Redshift / QuickSight
@@ -2385,18 +1980,16 @@ iam_role 'arn:aws:iam::123456789012:role/MyRedshiftRole';
 - Kinesis: real-time data collection
 - Data Firehose: deliver to S3 ~real-time (1min)
 - Lambda: data transformation for Data Firehose
-- Lambda / S3 (opt): trig SQS
+- Lambda / S3 (opt): trig. SQS
 - Athena: store results to S3 out bucket
 - Redshift / QuickSight read S3 out bucket
-
-
 
 # AI / ML
 
 ## Bedrock
+
 - API acc to Foundation models (LLM)
 - Knowledge Base: RAG, sources: S3, Aurora, etc.
-
 
 ## Rekognition
 
@@ -2404,13 +1997,11 @@ iam_role 'arn:aws:iam::123456789012:role/MyRedshiftRole';
 - Obj labelling, content moderation, text detection, facial analysis/search
 - Content moderation: set min Confidence Threshold, flag sensitive content for manual review w/ Augmented AI (A2I)
 
-
 ## Transcribe
 
 - Speech-to-text w/ ASR
 - Auto remove Personally Identifiable Information (PII) using redaction
 - Support auto language identification for multi-lingual audio
-
 
 ## Polly
 
@@ -2423,8 +2014,6 @@ iam_role 'arn:aws:iam::123456789012:role/MyRedshiftRole';
   - Phonetic pronunciation
   - Breathing sounds, whispering
 
-
-
 ## Translate
 
 - Localise content
@@ -2435,25 +2024,19 @@ iam_role 'arn:aws:iam::123456789012:role/MyRedshiftRole';
 - Connect: virtual contact center, Integration: CRM, AWS
 - Phone call -> Connect -> Lex -> Lambda -> CRM
 
-
 ## Comprehend
 
 - Serverless NLP
 - Scenario: customer interaction analysis, group articles
-
 
 ### Comprehend Medical
 
 - NLP to detect Protected Health Information (PHI) w/ DetectPHI API
 - S3 / Data Firehose / Transcribe -> Comprehend Medical
 
-
-
 ## SageMaker
 
 - Build ML models
-
-
 
 ## Kendra
 
@@ -2462,23 +2045,16 @@ iam_role 'arn:aws:iam::123456789012:role/MyRedshiftRole';
 - Incremental Learning: learn from user interactions/feedback to promote preferred results
 - Manual fine-tuning search results
 
-
-
 ## Personalize
 
 - Personalised recom, real-time
 - S3 / Personalize API (real-time) -> Personalize -> Website / App / SMS / Email
 
-
-
 ## Textract
 
 - Extract text from scanned docs
 
-
-
 # CloudWatch
-
 
 ## Metrics
 
@@ -2489,14 +2065,10 @@ iam_role 'arn:aws:iam::123456789012:role/MyRedshiftRole';
 - Create CloudWatch dashboards for metrics
 - Create CloudWatch Custom Metrics
 
-
-
 ### Metric Streams
 
 - ~Real-time stream metrics to Data Firehose, Datadog, Dynatrace, New Relic, Splunk, etc.
 - Filter by namespace
-
-
 
 ## Logs
 
@@ -2506,8 +2078,6 @@ iam_role 'arn:aws:iam::123456789012:role/MyRedshiftRole';
 - Export to S3: log data up to 12 hr avail for export, API call: `CreateExportTask`
 - Logs encrypted (default)
 - Setup KMS-based enc w/ own keys
-
-
 
 ### Log Source
 
@@ -2520,8 +2090,6 @@ iam_role 'arn:aws:iam::123456789012:role/MyRedshiftRole';
 - CloudTrail: based on filter
 - Route 53: DNS queries
 
-
-
 ### Insights
 
 - Auto discover fields from AWS services and JSON logs
@@ -2529,14 +2097,10 @@ iam_role 'arn:aws:iam::123456789012:role/MyRedshiftRole';
 - Query multi groups in diff AWS accounts
 - Query engine, ❌ real-time
 
-
-
 ### Log Subscription
 
 - Send real-time logs: Kinesis, Data Firehose, Lambda, OpenSearch
 - Subscription Filter
-
-
 
 #### [Cross-Account Subscription](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CreateDestination.html)
 
@@ -2573,55 +2137,51 @@ aws iam create-role --role-name CWLtoKinesisRole \
 ```
 
 2. Role Perm / Policy
-  ```sh
-  aws iam put-role-policy \
-    --role-name CWLtoKinesisRole \
-    --policy-name Permissions-Policy-For-CWL \
-    --policy-document PermissionsForCWL.json
-  ```
+   ```sh
+   aws iam put-role-policy \
+     --role-name CWLtoKinesisRole \
+     --policy-name Permissions-Policy-For-CWL \
+     --policy-document PermissionsForCWL.json
+   ```
 
-  `PermissionsForCWL.json`
-
-  ```json
-  {
-    "Statement": [
-      {
-        "Effect": "Allow",
-        "Action": "kinesis:PutRecord",
-        "Resource": "arn:aws:kinesis:region:999999999999:stream/RecipientStream"
-      }
-    ]
-  }
-  ```
-
+   `PermissionsForCWL.json`
+   ```json
+   {
+     "Statement": [
+       {
+         "Effect": "Allow",
+         "Action": "kinesis:PutRecord",
+         "Resource": "arn:aws:kinesis:region:999999999999:stream/RecipientStream"
+       }
+     ]
+   }
+   ```
 3. Create Destination: asso Role & Kinesis to it
-  ```sh
-  aws logs put-destination \
-    --destination-name "testDestination" \
-    --target-arn "arn:aws:kinesis:region:999999999999:stream/RecipientStream" \
-    --role-arn "arn:aws:iam::999999999999:role/CWLtoKinesisRole" \
-    --access-policy AccessPolicy.json
-  ```
+   ```sh
+   aws logs put-destination \
+     --destination-name "testDestination" \
+     --target-arn "arn:aws:kinesis:region:999999999999:stream/RecipientStream" \
+     --role-arn "arn:aws:iam::999999999999:role/CWLtoKinesisRole" \
+     --access-policy AccessPolicy.json
+   ```
 
-  `AccessPolicy.json`: grant sender account acc
-  ```json
-  {
-      "Version":"2012-10-17",
-      "Statement": [
-          {
-              "Sid": "",
-              "Effect": "Allow",
-              "Principal": {
-                  "AWS": "111111111111"
-              },
-              "Action": "logs:PutSubscriptionFilter",
-              "Resource": "arn:aws:logs:us-east-1:999999999999:destination:testDestination"
-          }
-      ]
-  }
-  ```
-
-
+   `AccessPolicy.json`: grant sender account acc
+   ```json
+   {
+       "Version":"2012-10-17",
+       "Statement": [
+           {
+               "Sid": "",
+               "Effect": "Allow",
+               "Principal": {
+                   "AWS": "111111111111"
+               },
+               "Action": "logs:PutSubscriptionFilter",
+               "Resource": "arn:aws:logs:us-east-1:999999999999:destination:testDestination"
+           }
+       ]
+   }
+   ```
 
 ### Live Tail
 
@@ -2633,7 +2193,6 @@ Log Management > Log Group > Start tailing
 - IAM role: EC2 -> CloudWatch Logs
 - Logs Agent: only send to CloudWatch Logs, older
 - [Built-in Metrics](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/viewing_metrics_with_cloudwatch.html?utm_source=gemini): ❌ Mem util, Disk swap, Page file util, Log collection
-
 
 #### Unified Agent
 
@@ -2647,7 +2206,6 @@ Log Management > Log Group > Start tailing
   - Process
   - Swap space
 
-
 ## CloudWatch Alarm
 
 - Trig. notification for metrics
@@ -2655,14 +2213,10 @@ Log Management > Log Group > Start tailing
 - Period: time length to evaluate the metric, time resolution
 - Test: `aws cloudwatch set-alarm-state --alarm-name "test" --state-value ALARM --state-reason "testing"`
 
-
-
 ### Composite Alarm
 
 - AND / OR cond
 - CPU Hi AND Mem Lo -> Alarm
-
-
 
 #### EC2 Inst Recovery
 
@@ -2674,16 +2228,12 @@ Status check:
 - CloudWatch Alarm: StatusCheckFailed_System -> EC2 inst recovery
 - Recovery: same private/public/Elastic IP, metadata, placement group
 
-
-
 ## Network Synthetic Monitor
 
 - Monitor network issue b/w AWS & On-prem
 - No agnet
 - Test ICMP, TCP to on-prem dest IP thru Direct Connect or S2S VPN
 - Publish to CloudWatch Metrics
-
-
 
 ## CloudWatch Insights
 
@@ -2692,15 +2242,11 @@ Status check:
 - Contributor: top-N contributors for some metrics
 - Application: select tech on EC2 (Java, IIS, DB, etc.). Can select other AWS resources
 
-
-
 # EventBridge
 
-- Schedule (cronjob): trig Lambda every 12 hr
+- Schedule (cronjob): trig. Lambda every 12 hr
 - Event: Rule to react to an event, e.g. IAM Root User Sign in -> SNS Topic w/ Email notification
 - Gen JSON to dest
-
-
 
 ## Event Bus
 
@@ -2708,14 +2254,10 @@ Status check:
 - Archive & Replay archived events
 - Resource-based Policy: allow events from other AWS account/region
 
-
-
 ## Schema Registry
 
 - Analyse events in bus and infer schema
 - Schema: versioned
-
-
 
 # CloudTrail
 
@@ -2727,13 +2269,10 @@ Status check:
 - Events retention: 90 days
 - CloudTrail -> EventBridge
 
-
-
 ## Management Event
 
 - Op perf on resources in AWS account, e.g. sec conf, rule conf, logging setup
 - CloudTrail logs Management Event (default)
-
 
 ## Data Event
 
@@ -2741,14 +2280,10 @@ Status check:
 - S3 obj lvl activity: GetObject, DeleteObject, PutObject
 - Lambda: Invoke API
 
-
-
 ## CloudTrail Insights Event
 
 - Detect unusual activity
 - Cont. analysis on *Write Events*
-
-
 
 # AWS Config
 
@@ -2758,7 +2293,7 @@ Status check:
 - Rule trigger/evaluation: On config change, Periodic
 - $0.003 per config rule, $0.001 per evaluation
 - Does NOT prevent actions from happening
-- Non-Compliant Remediation: trig SSM Automation Document
+- Non-Compliant Remediation: trig. SSM Automation Document
 - Notification: EventBridge, SNS
 
 # Security
@@ -2808,14 +2343,10 @@ aws kms decrypt --ciphertext-blob fileb://SecretFileEnc \
 cat FileDec.base64 | base64 -d > FileDec.txt
 ```
 
-
-
 ## Key Policy
 
 - Must use Key Policy to control acc to KMS key
 - Cross-account acc
-
-
 
 ## Multi-Region Key
 
@@ -2827,8 +2358,6 @@ cat FileDec.base64 | base64 -d > FileDec.txt
 - Not global: Primary + Replicas
 - Scenario: global client-side enc, Global Aurora / DynamoDB: enc attr (clmn), e.g. SSN
 
-
-
 ## [S3 Replication Encryption](https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-config-for-kms-objects.html)
 
 - Un-encrypted & SSE-S3 obj replicated (default)
@@ -2838,7 +2367,6 @@ cat FileDec.base64 | base64 -d > FileDec.txt
   - IAM Role: `kms:Decrypt` source KMS key, `kms:Encrypt` target KMS key
 - Might get KMS throttling error, ask incr Service Quotas
 - Can use Multi-region key, but S3 treats them as indep keys
-
 
 ## Share Encrypted AMI
 
@@ -2861,8 +2389,6 @@ cat FileDec.base64 | base64 -d > FileDec.txt
 
 - Target account can use new key to re-encrypt on launching EC2
 
-
-
 # SSM Parameter Store
 
 - Config & Secret store
@@ -2877,8 +2403,6 @@ aws ssm get-parameters --names <param-name> --with-decryption
 aws ssm get-parameters-by-path --path /path/to/param --recursive
 ```
 
-
-
 ## Parameter Policy
 
 - TTL (expiration) to force update/delete 
@@ -2887,8 +2411,6 @@ aws ssm get-parameters-by-path --path /path/to/param --recursive
 - `ExpirationNotification`: notify before exp
 - `NoChangeNotification`: notify if no change happened
 
-
-
 # Secrets Manager
 
 - Secret store
@@ -2896,14 +2418,10 @@ aws ssm get-parameters-by-path --path /path/to/param --recursive
 - Automate secret gen on rotation w/ Lambda
 - Integration: RDS
 
-
-
 ## Multi-Region Secret
 
 - Keep RR in sync w/ primary
 - Can promote RR to standalone
-
-
 
 # ACM: AWS Certificate Manager
 
@@ -2912,25 +2430,19 @@ aws ssm get-parameters-by-path --path /path/to/param --recursive
 - Auto cert renewal
 - Integration: ELB, CloudFront, APIs on API Gateway
 
-
-
 ## Request Public Cert
 
 1. Domain names: FQDN, wildcard (*.example.com)
 2. Validation method:
-  - DNS: for automation, util CNAME to DNS config
-  - Email: send email to contact adr in WHOIS DB
+   - DNS: for automation, util CNAME to DNS config
+   - Email: send email to contact adr in WHOIS DB
 3. Public cert auto renewal: 60 days before expiry
-
-
 
 ## Import Public Cert
 
 - ❌ auto renewal
 - ACM sends daily expiration event 45 days (default) before expiry
 - AWS Config rule (alt): `acm-certificate-expiration-check`
-
-
 
 ## ACM - API Gateway
 
@@ -2940,8 +2452,6 @@ aws ssm get-parameters-by-path --path /path/to/param --recursive
 - Private: acc from VPC w/ VPC endpoint (ENI)
 - Setup CNAME or A-alias in Route 53
 
-
-
 # CloudHSM
 
 - User mng keys himself
@@ -2949,8 +2459,6 @@ aws ssm get-parameters-by-path --path /path/to/param --recursive
 - Scenario: SSE-C enc
 - IAM policy: CRUD HSM cluster (HA)
 - Integration: AWS Services (config KMS Custom Key Store: CloudHSM)
-
-
 
 # WAF: Web Application Firewall
 
@@ -2960,8 +2468,6 @@ aws ssm get-parameters-by-path --path /path/to/param --recursive
 - IP Set: Max 10000 IP adr, multi rules for more IP
 - Rule Group: reusable set of rules to add to ACL
 
-
-
 ## Web ACL Rules
 
 - IP-based rule: select IP set
@@ -2970,32 +2476,28 @@ aws ssm get-parameters-by-path --path /path/to/param --recursive
 - Request component: HTTP headers, body, query, URI string MATCH SQL injection, Cross-Site Scripting (XSS), Request Size constraint
 - Regional, except for CloudFront
 
-
-
 ## WAF + ALB + Global Accelerator
 
 - ALB no static IP
 - WAF does NOT support NLB
 - Global Accelerator for fixed IP
 
-
-
 # Shield
 
 - Counter DDoS
 
 Standard:
+
 - $0
 - Protect from SYN/UDP floods, reflection attacks, other Layer 3, 4 attacks
 
 Advanced:
+
 - Opt DDoS mitigation service: $3000 per mo per Org
 - Protect from more sophisticated attack on EC2, ELB, CloudFront, Global Accelerator, Route 53
 - 24/7 AWS DDoS response team (DRP)
 - Protect from 📈 $ during DDoS 
 - Auto create, evaluate & deploy WAF rules to mitigate Layer 7 attacks
-
-
 
 # Firewall Manager
 
@@ -3003,10 +2505,7 @@ Advanced:
 - WAF rules, Shield advanced, SG for EC2 & ALB, ENI in VPC, Network Firewall (VPC), Route 53 resolver DNS firewall, Policies @ region lvl
 - Rules applied to new resources across Org
 
-
 # DDoS Best Practices
-
-
 
 ## Edge Services
 
@@ -3014,24 +2513,20 @@ Advanced:
 - Global Accelerator: acc app from edge, i.e. AWS internal network proxy, Integration: AWS Shield
 
 ### Route 53
+
 - Domain name resolution @ edge
 - NXDOMAIN (Non-Existent Domain) DDoS: A/Alias wildcard record 
   - Explicit A/Alias records precede wildcard
   - Wildcard: A/Alias: `*.example.com` to empty AWS resources (CloudFront, S3 website), query $0
-
 
 ## Infra Layer
 
 - Global Accelerator + Route 53 + ELB
 - Protect EC2 from Hi traffic
 
-
-
 ## Autoscaling
 
 - ASG for flash crowd or DDoS
-
-
 
 ## Detect & Filtre Malicious Request
 
@@ -3039,13 +2534,9 @@ Advanced:
 - CloudFront: cache static content and serve from edge, geo block
 - WAF: on top of CloudFront & ALB, filtre & block request
 
-
-
 ## Obfuscate AWS Resources
 
 - CloudFront + ELB + API Gateway: hide backend EC2 & Lambda
-
-
 
 ## SG + NACL (VPC)
 
@@ -3053,23 +2544,17 @@ Advanced:
 - EIP protected by Shield Advanced
 - SG: Inbound: IP `0.0.0.0/0`, Port `80`, `443`; Outbound: IP `0.0.0.0/0`, Port: `*`. SG becomes stateless, rely on NACL & WAF
 
-
-
 ## Protect API Endpoints: API Gateway
 
 - Hide EC2 & Lambda
 - Edge-optimized mode / Regional mode + CloudFront
 - Integration: WAF
 
-
-
 # GuardDuty
 
 - Intelligent threat discovery w/ ML, 3e party data, anomaly detection, crypto attack
 - Input: CloudTrail Event logs, VPC Flow Logs, DNS logs, etc. NO CloudWatch
 - Logs -> GuardDuty -> EventBridge -> Lambda / SNS
-
-
 
 # Inspector
 
@@ -3079,21 +2564,22 @@ Advanced:
 - Lambda: Software vulnerabilites in func code & pkg dep
 - Integration: AWS Security Hub, EventBridge
 
-
-
 # Macie
 
 - ML & pattern matching for sensitive data discovery
 - Identify & alert sensitive data, e.g. PII
 
-# Security Hub 
+# Security Hub
+
 - Source: Inspector, GuardDuty, Macie, Security Hub CSPM, IAM Access Analyzer
 
 ## Security Hub CSPM: Cloud Security Posture Management
+
 - Assess AWS resources against security standards, e.g. FSBP, CIS, PCI DSS, NIST
 - Backend: AWS Config
 
 # AWS Artifact
+
 - Sec & compliance report
 
 # VPC
@@ -3102,7 +2588,6 @@ Advanced:
 - Max CIDR per VPC: 5; CIDR Max: /16, min: /28
 - Only Private IPv4 ranges: 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16
 - VPC CIDR NOT overlap w/ other VPC & on-prem network
-
 
 ## Subnet
 
@@ -3114,8 +2599,6 @@ Advanced:
   - `.255` (or last): Network Broadcast
 - Actions > Edit subnet settings > Auto-assign IP settings > Enable auto-assign public IPv4 address: yes/no
 
-
-
 ## IGW: Internet Gateway
 
 - Allow resources in VPC to Internet
@@ -3125,15 +2608,11 @@ Advanced:
 - Route Table route: 0.0.0.0/0 -> IGW
 - 1 Route Table per Subnet
 
-
-
 ## Bastion Host
 
 - EC2 in Public Subnet conn to Private Subnet EC2
 - SG: Inbound, SSH 22, Source: restricted public CIDR
 - Private EC2 SG: Inbound, SSH 22, Source: Bastion Host SG or private IP
-
-
 
 ## NAT Gateway
 
@@ -3150,8 +2629,6 @@ Advanced:
 - BW: 5-100 Gbps
 - Multi NATGW in diff. AZ for fault-tolerance, no cross-AZ failover
 
-
-
 ### RNAT: Regional NAT Gateway
 
 - HA
@@ -3159,8 +2636,6 @@ Advanced:
 - Own Route Tables
 - No need Public Subnet 
 - Auto detect resources (Private Subnets) in new AZ and expand to the AZ
-
-
 
 ### NAT Instance
 
@@ -3177,7 +2652,6 @@ Advanced:
   - Outbound: HTTP/HTTPS, Destination: Internet
 - Practice: NAT inst > Actions > Networking > Change source/destination check > ❌ Source / destination checking
 
-
 ## NACL: Network ACL
 
 - Firewall policy @ Subnet lvl
@@ -3188,25 +2662,17 @@ Advanced:
   - Last (*): deny request in case no rule match
   - Add rule by increment of 100
 
-
-
 ### Ephemeral Port
 
 - Client send request w/ an ephemeral port in a def range (IANA & Win10: 49152-65535; Linux: 32768-60999), Server NACL must def outbound w/ ephemeral port range
 
-
-
 ### SG vs. NACL
-
 
 |                      | SG       | NACL         |
 | -------------------- | -------- | ------------ |
 | Lvl                  | EC2      | Subnet       |
 | Op                   | Allow    | Allow / Deny |
 | Request Statefulness | Stateful | Stateless    |
-
-
-
 
 ## VPC Peering
 
@@ -3216,15 +2682,11 @@ Advanced:
 - Update Route Tables in every subnet of VPC on both sides
 - *SG rule: ref peer VPC SG marche for diff accounts, but same region*
 
-
-
 ## VPC Endpoint
 
 - VPC -> AWS service via VPC Endpoint
 - Redundant, horizontal scale
 - ⚠️ Issue: check DNS resolution in VPC
-
-
 
 ### Interface Endpoint
 
@@ -3234,16 +2696,12 @@ Advanced:
 - Acc from on-prem (S2S VPN / Direct Connect)
 - $ per hr + per GB
 
-
-
 ### Gateway Endpoint
 
 - Support: S3, DynamoDB
 - Set as Target in Route Table
 - No SG
 - $0
-
-
 
 ## VPC Flow Logs
 
@@ -3256,8 +2714,6 @@ Advanced:
 - VPC Flow Logs -> S3 -> Athena
 - IAM Role: VPC Flow Logs -> CloudWatch Logs, `logs:CreateLogGroup`, `logs:CreateLogStream`, `logs:PutLogEvents`
 
-
-
 ### Troubleshoot SG & NACL
 
 - Field: `<action>`
@@ -3267,8 +2723,6 @@ Advanced:
 - Outgoing:
   - Outbound REJECT: NACL or SG
   - Outbound ACCEPT, Inbound REJECT: NACL
-
-
 
 ## Site-to-Site VPN (S2S VPN)
 
@@ -3283,15 +2737,11 @@ Setup:
 - Route Table: enable Route Propagation for VGW
 - On-prem -> EC2 ping: SG: Inbound, ICMP
 
-
-
 ### VPN CloudHub
 
 - Multi VPN conn, hub-and-spoke model
 - 1:N Mapping VPC-VPN
 - Setup Dynamic routing, config Route Tables
-
-
 
 ## DX: Direct Connect
 
@@ -3306,6 +2756,7 @@ Setup:
 - If encrypted traffic desired: VPN b/w on-prem & DX
 
 Scenario:
+
 - BW thruput +, $ -
 - Consistent network 
 - Hybrid env
@@ -3315,7 +2766,6 @@ Scenario:
 
 - On-prem to VPCs in diff regions
 - Asso. to VGWs or TGW
-
 
 ### Connection Type
 
@@ -3329,8 +2779,6 @@ Hosted Connection: 50 Mbps - 25 Gbps
 - Capacity +/- on-demand
 - Request made via DX partners
 
-
-
 ### Resiliency
 
 - High Resiliency: 1 conn in multi loc
@@ -3341,8 +2789,6 @@ Hosted Connection: 50 Mbps - 25 Gbps
   - On-prem 1 Router 2 -> DX Loc 1 Router 2 -> VGW
   - On-prem 2 Router 1 -> DX Loc 2 Router 1 -> VGW
   - On-prem 2 Router 2 -> DX Loc 2 Router 2 -> VGW
-
-
 
 ## Transit Gateway
 
@@ -3356,8 +2802,6 @@ Hosted Connection: 50 Mbps - 25 Gbps
 - Support *IP Multicast*, only TGW
 - Multi account & VPC Direct conn: On-prem Router / Firewall -> DX Location -> DX Gateway -> TGW -> VPC
 
-
-
 ### S2S VPN ECMP: Equal-Cost Multi-Path Routing
 
 - Allow pkt FW over multi best path
@@ -3365,8 +2809,6 @@ Hosted Connection: 50 Mbps - 25 Gbps
 - On-prem Router / Firewall -> S2S VPNs -> TGW -> VPCs
 - 1 S2S VPN - TGW conn util 2 tunnels, cf. S2S VPN: 2 tunnels, util 1, 1 for failover
 - VPN -> VGW: 1.25 Gbps; VPN -> TGW: 2.5 Gbps (1x, ECMP), more VPN, more thruput
-
-
 
 ## Traffic Mirroring
 
@@ -3377,19 +2819,16 @@ Hosted Connection: 50 Mbps - 25 Gbps
 - Capture all or interested pkt
 - Source & Target: same VPC or VPC Peering
 
-
-
 ## IPv6
+
 - All IPv6 adr in AWS are public
 - Dual-stack VPC, IPv6 only Subnet: CIDR-maxxing, not limited by IPv4 CIDR
-
 
 ## Egress-Only Internet Gateway
 
 - IPv6 only IGW, ~ NATGW for IPv4
 - Allow VPC outbound over IPv6, while preventing internet to init IPv6 conn to the inst
 - Private Subnet Route Table
-
 
 | Dest          | Target    |
 | ------------- | --------- |
@@ -3398,14 +2837,9 @@ Hosted Connection: 50 Mbps - 25 Gbps
 | 0.0.0.0/0     | NATGW-id  |
 | ::/0          | EIGW-id   |
 
-
-
-
 ## Others
 
 - PrivateLink / VPC Endpoint Service: Conn. VPC as service provider to others accounts' VPC as customer. Pre: NLB, ENI
-
-
 
 ## Network Firewall
 
@@ -3413,9 +2847,6 @@ Hosted Connection: 50 Mbps - 25 Gbps
 - GWLB as backend
 - Rule: IP, port, protocol, stateful domain list (*.example.com, 3e party repo)
 - Allow, drop, alert
-
-
-
 
 # AWS Networking Costs
 
@@ -3425,14 +2856,10 @@ Hosted Connection: 50 Mbps - 25 Gbps
 - Inter-EC2 w/ Public IP/EIP cross-AZ: $0.02 per GB
 - Inter-EC2 cross-region: $0.02 per GB
 
-
-
 ## Egress Traffic
 
 - AWS -> outside
 - DX Location co-loc in the same Region
-
-
 
 ## S3 Data Transfer (US)
 
@@ -3442,23 +2869,17 @@ Hosted Connection: 50 Mbps - 25 Gbps
 - S3 -> CloudFront -> Internet: $0, $0.085 per GB
 - S3 CRR: $0.02 per GB
 
-
-
 ## NATGW vs. VPC Endpoint
-
 
 |                  | NATGW                         | VPC Endpoint             |
 | ---------------- | ----------------------------- | ------------------------ |
 | $                | $0.045 per hr + $0.045 per GB | 0                        |
 | S3 Data Transfer | $0.09*, 0**                   | $0.01 per GB***, 0****   |
 
-
 - *: cross-region
 - **: same-region
 - ***: same-region, Interface Endpoint
 - ****: GW Endpoint
-
-
 
 # DR
 
@@ -3469,22 +2890,16 @@ Hosted Connection: 50 Mbps - 25 Gbps
   - ✅ Data plane: create Route 53 health checks qua on/oﬀ switches
   - ❌ Control plane: weighted routing policy
 
-
-
 ## Backup & Restore
 
 - On-prem -> Storage GW / Snowball -> S3
 - EBS, Redshift, RDS Snapshots
 - Hi RPO, Hi RTO
 
-
-
 ## Pilot Light
 
 - Pilot light: cirtical core, small ver of app always running on cloud
 - On-prem DB replicate to RDS
-
-
 
 ## Warm Standby
 
@@ -3492,14 +2907,10 @@ Hosted Connection: 50 Mbps - 25 Gbps
 - ASG (min) -> Primary DB (on-prem), Primary DB replicate to RDS
 - Disaster: Route 53 failover, ASG failover to RDS
 
-
-
 ## Hot Site / Multi Site
 
 - Full prod scale on cloud
 - Route 53 to on-prem & AWS active-active
-
-
 
 # DRS: Elastic DR
 
@@ -3507,8 +2918,6 @@ Hosted Connection: 50 Mbps - 25 Gbps
 - AWS Replication Agent on-prem -> replication (sec) -> AWS Staging env
 - Failover: mins
 - Failback once recovered
-
-
 
 # DMS: Database Migration Service
 
@@ -3518,15 +2927,11 @@ Hosted Connection: 50 Mbps - 25 Gbps
 - Source: on-prem & EC2 DB, Azure SQL, RDS, Aurora, S3, DocumentDB
 - Target: on-prem & EC2 DB, RDS, Redshift, DynamoDB, S3, OpenSearch, Kinesis, Kafka, DocumentDB, Neptune, Redis, Babelfish
 
-
-
 ## AWS SCT: Schema Conversion Tool
 
 - Convert schema b/w  *engines*
 - Schema conversion: Src SB -> On-prem server w/ SCT -> Target DB
 - Migration: Src DB -> EC2: DMS -> Target DB
-
-
 
 # RDS & Aurora Migrations
 
@@ -3539,8 +2944,6 @@ Hosted Connection: 50 Mbps - 25 Gbps
   - Postgres: Backup -> S3 -> Import w/ `aws_s3` Aurora extension
 - DMS
 
-
-
 # On-prem Strategy w/ AWS
 
 - Download Amazon Linux AMI .iso
@@ -3548,8 +2951,6 @@ Hosted Connection: 50 Mbps - 25 Gbps
 - Application Discovery Service
 - DMS
 - MGN: on-prem live servers -> AWS incremental replication
-
-
 
 # AWS Backup
 
@@ -3562,8 +2963,6 @@ Hosted Connection: 50 Mbps - 25 Gbps
 - Backup Plan: freq, window, transition to Cold Storage, retention
 - Backup Vault Lock: enforce WORM, defend against inadvertent/malicious delete, updates qui shorten/alter retention. Root user cannot delete backups
 
-
-
 # Application Discovery Service
 
 - Gather on-prem info for migration
@@ -3572,14 +2971,10 @@ Hosted Connection: 50 Mbps - 25 Gbps
 - AWS Application Discovery Agent: sys config, performance, running proc, network conn
 - View result in Migration Hub
 
-
-
 # MGN: Application Migration Service
 
 - Lift-and-shift (rehost)
 - AWS Replication Agent on-prem -> AWS Staging env
-
-
 
 # Transfer Large Data to AWS
 
@@ -3588,13 +2983,9 @@ Hosted Connection: 50 Mbps - 25 Gbps
 - Snowball: 1 week, combined w/ DMS
 - On-going replication: S2S VPN, DX, DataSync
 
-
-
 # VMware Cloud on AWS
 
 - Extend capacity to AWS
-
-
 
 # Event Processing Arch
 
@@ -3608,18 +2999,12 @@ Hosted Connection: 50 Mbps - 25 Gbps
   - EventBridge capabilities: Archive, Replay, Reliable delivery
 - EventBridge: API call -> AWS services -> CloudTrail -> EventBridge -> SNS
 
-
-
 # Caching Strategy
 
 - CloudFront -> API Gateway -> EC2/Lambda -> Redis/Memcached/DAX -> DB
 - CloudFront -> S3
 
-
-
 # HPC
-
-
 
 ## Data Mgmt & Transfer
 
@@ -3627,23 +3012,17 @@ Hosted Connection: 50 Mbps - 25 Gbps
 - Snowball
 - DataSync
 
-
-
 ## Compute & Networking
 
 - EC2: CPU/GPU optm
 - Spot inst/fleet + autoscaling
 - Placement group: `Cluster` for network perf
 
-
-
 ### EC2 Enhanced Networking (SR-IOV)
 
 - Hi BW, PPS (pkt per sec)
 - *ENA: Elastic Network Adapter. Max 100 Gbps*
 - Intel 82599 VF: Max 10 Gbps
-
-
 
 ### EFA: Elastic Fabric Adapter
 
@@ -3652,18 +3031,12 @@ Hosted Connection: 50 Mbps - 25 Gbps
 - Inter-node comm, tightly coupled workloads
 - Util MPI standard: bypass OS for lo-latency, reliable transport
 
-
-
 ## Storage
-
-
 
 ### Instance Attached Storage
 
 - EBS: `io2 Block Express`
 - Instance Store
-
-
 
 ### Network Storage
 
@@ -3671,16 +3044,12 @@ Hosted Connection: 50 Mbps - 25 Gbps
 - EFS: scale IOPS based on total size
 - FSx for Lustre
 
-
-
 ## Automation & Orchestration
 
 - AWS Batch: multi-node parallel jobs, single job across multi EC2
 - AWS ParallelCluster: 
   - Config w/ text file, automate VPC, Subnet, cluster type, inst type
   - *Enable EFA*
-
-
 
 # EC2 HA
 
@@ -3700,22 +3069,16 @@ Hosted Connection: 50 Mbps - 25 Gbps
   1. Snapshot + tag on ASG Terminate lifecycle hook
   2. Create & attach EBS on ASG Launch lifecycle hook
 
-
-
 # CloudFormation
 
 - Decl. for AWS infra, IaC
 - Cost saving: resources w/in a stack is tagged w/ an identifier, cost estimation w/ template
 - Integration: Infrastructure Composer for resource visualisation
 
-
-
 ## Service Role
 
 - IAM Role for CloudFormation to CRUD resources
 - Give user w/o perm ability to control stack resources: `iam:PassRole`
-
-
 
 # SES: Simple Email Service
 
@@ -3724,8 +3087,6 @@ Hosted Connection: 50 Mbps - 25 Gbps
 - Flexible IP deployment
 - Send emails w/ app using AWS Console, API, SMTP
 
-
-
 # Pinpoint
 
 - In/Out-bound marketing comm. service
@@ -3733,8 +3094,6 @@ Hosted Connection: 50 Mbps - 25 Gbps
 - Pinpoint vs. SNS / SES:
   - SNS & SES: mng msg audience, content, delivery schedule
   - Pinpoint: create templates, delivery schedule, highly-targeted segments
-
-
 
 # SSM Session Manager
 
@@ -3747,11 +3106,7 @@ Hosted Connection: 50 Mbps - 25 Gbps
 - SSM > Node Tools > Fleet Manager > Managed Nodes: check EC2 in the list
 - SSM > Node Tools > Session Manager
 
-
-
 # SSM Other Services
-
-
 
 ## Run Command
 
@@ -3760,8 +3115,6 @@ Hosted Connection: 50 Mbps - 25 Gbps
 - Output: S3, CloudWatch Logs
 - Trigger: EventBridge
 
-
-
 ## Patch Manager
 
 - Patching automation: OS, app, security updates
@@ -3769,19 +3122,13 @@ Hosted Connection: 50 Mbps - 25 Gbps
 - On-demand / Maintenance Window
 - Maintenance Window: Schedule, Duration, Set of registered inst, Set of registered tasks
 
-
-
 ## Automation
 
 - Common maintenance & deployment tasks of EC2, EBS, RDS, etc.
 - Automation Runbook: SSM Document, def action on AWS resources
 - Trigger: AWS Console, CLI, SDK, EventBridge, Maintenance Window, AWS Config (rule remediations)
 
-
-
 # Other Services
-
-
 
 ## Cost Explorer
 
@@ -3789,13 +3136,9 @@ Hosted Connection: 50 Mbps - 25 Gbps
 - Choose optm Savings Plan 
 - Forecast: Max 18 mo
 
-
-
 ## Cost Anomaly Detection
 
 - Cont. monitor costs & usage w/ ML
-
-
 
 ## AWS Outposts
 
@@ -3812,9 +3155,8 @@ Hosted Connection: 50 Mbps - 25 Gbps
 - Docker image qua Batch job
 - Run on ECS, EKS, Fargate
 
-
-
 ### AWS Batch vs. Lambda
+
 |              | AWS Batch            | Lambda        |
 | ------------ | -------------------- | ------------- |
 | Time Limit   | ♾️                   | 15min         |
@@ -3822,43 +3164,45 @@ Hosted Connection: 50 Mbps - 25 Gbps
 | Temp Storage | EBS / Instance Store | 512MB - 10GB  |
 |              | EC2                  | Serverless    |
 
-
 ## AppSync
+
 - Serverless GraphQL & Pub/Sub API service
 - GraphQL Resolvers: mapping templates to convert a GraphQL expression into a format that the data source can use.
   - Unit resolver: perf single op against a predefined data source
-  - Pipeline resolver: serial exec op against multi data sources in 1 API call, trig by queries, mutations, or subscriptions
-
+  - Pipeline resolver: serial exec op against multi data sources in 1 API call, trig. by queries, mutations, or subscriptions
 
 ## AppFlow
+
 - Integrate AWS & SaaS for data transfer
 - Source: Salesforce, SAP, Zendesk, Slack
 - Dest: AWS services, other SaaS
 - Freq: schedule, event, on-demand
 
-## Amplify 
+## Amplify
+
 - Elastic Beanstalk for web/mobile app
 - Tools & Lib to build on AWS
 - Backend: AWS services
 - Frontend: React, Angular, Flutter, Android, etc.
 
-
 ## AWS X-Ray
+
 - Analyse & debug dstb app
 - Traced req to app
 - Req, Resp, App -> downstream calls (DB, web API, AWS resources)
 
-
 ## Instance Scheduler
+
 - Sol, not Service, deployed thru CloudFormation
 - Auto start/stop AWS services: $ -
 - Support: EC2, ASG, RDS, cross-region & account
 - DynamoDB Table: Schedule mgmt
 - Resource Tag & Lambda: start/stop inst
 
-
 # AWS Well-Architected Framework
+
 ## Principles
+
 - Stop guessing capacity: ASG
 - Test sys @ prod scale
 - Automation for easy arch experiment: CloudWatch template
@@ -3867,6 +3211,7 @@ Hosted Connection: 50 Mbps - 25 Gbps
 - Improve thru game days: sim app for sale days
 
 ## 6 Pillars
+
 1. Operational Excellence
 2. Security
 3. Reliability
@@ -3877,8 +3222,10 @@ Hosted Connection: 50 Mbps - 25 Gbps
 - AWS Well-Architected Tool: review arch against 6 pillars
 
 # Trusted Advisor
+
 - Analyse AWS account on 6 categories: Operational excellence, Security, Fault tolerance, Performance, Cost optm, Service limits
 
 # Ref
+
 [AWS Architecture Center: Examples & Diagrams](https://aws.amazon.com/architecture/)
 [AWS Solutions Library: Business & Tech Use Cases](https://aws.amazon.com/solutions/)
